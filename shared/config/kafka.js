@@ -1,0 +1,123 @@
+/**
+ * Kafka producer and consumer configuration
+ */
+
+const { Kafka } = require('kafkajs');
+const logger = require('../utils/logger');
+
+const KAFKA_BROKERS = process.env.KAFKA_BROKERS ? 
+  process.env.KAFKA_BROKERS.split(',') : 
+  ['localhost:9092'];
+
+const kafka = new Kafka({
+  clientId: process.env.KAFKA_CLIENT_ID || 'aerive-backend',
+  brokers: KAFKA_BROKERS,
+  retry: {
+    initialRetryTime: 100,
+    retries: 8
+  }
+});
+
+let producer = null;
+let consumers = {};
+
+/**
+ * Get or create Kafka producer
+ */
+async function getProducer() {
+  if (producer) {
+    return producer;
+  }
+
+  try {
+    producer = kafka.producer();
+    await producer.connect();
+    logger.info('Kafka producer connected');
+    return producer;
+  } catch (error) {
+    logger.error('Kafka producer connection error:', error);
+    throw error;
+  }
+}
+
+/**
+ * Send message to Kafka topic
+ */
+async function sendMessage(topic, message) {
+  try {
+    const producerInstance = await getProducer();
+    await producerInstance.send({
+      topic,
+      messages: [{
+        key: message.key || null,
+        value: JSON.stringify(message.value),
+        headers: message.headers || {}
+      }]
+    });
+    logger.info(`Message sent to topic ${topic}`);
+  } catch (error) {
+    logger.error(`Error sending message to topic ${topic}:`, error);
+    throw error;
+  }
+}
+
+/**
+ * Create Kafka consumer
+ */
+async function createConsumer(groupId, topics, messageHandler) {
+  try {
+    const consumer = kafka.consumer({ groupId });
+    await consumer.connect();
+    
+    for (const topic of topics) {
+      await consumer.subscribe({ topic, fromBeginning: false });
+    }
+    
+    await consumer.run({
+      eachMessage: async ({ topic, partition, message }) => {
+        try {
+          const value = JSON.parse(message.value.toString());
+          await messageHandler(topic, value, { partition, offset: message.offset });
+        } catch (error) {
+          logger.error(`Error processing message from topic ${topic}:`, error);
+        }
+      }
+    });
+    
+    consumers[groupId] = consumer;
+    logger.info(`Kafka consumer ${groupId} created and subscribed to topics: ${topics.join(', ')}`);
+    return consumer;
+  } catch (error) {
+    logger.error(`Error creating Kafka consumer ${groupId}:`, error);
+    throw error;
+  }
+}
+
+/**
+ * Disconnect all consumers and producer
+ */
+async function disconnect() {
+  try {
+    if (producer) {
+      await producer.disconnect();
+      producer = null;
+    }
+    
+    for (const [groupId, consumer] of Object.entries(consumers)) {
+      await consumer.disconnect();
+      logger.info(`Kafka consumer ${groupId} disconnected`);
+    }
+    consumers = {};
+  } catch (error) {
+    logger.error('Error disconnecting Kafka clients:', error);
+  }
+}
+
+module.exports = {
+  getProducer,
+  sendMessage,
+  createConsumer,
+  disconnect,
+  kafka
+};
+
