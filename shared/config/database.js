@@ -19,8 +19,9 @@ async function connectMongoDB() {
 
     const options = {
       maxPoolSize: 10,
-      serverSelectionTimeoutMS: 5000,
+      serverSelectionTimeoutMS: 30000, // Increased for Atlas connections
       socketTimeoutMS: 45000,
+      connectTimeoutMS: 30000, // Connection timeout
     };
 
     mongoConnection = await mongoose.connect(MONGODB_URI, options);

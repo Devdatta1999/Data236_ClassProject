@@ -4,7 +4,7 @@ metadata:
   name: aerive-config
   namespace: aerive
 data:
-  MONGODB_URI: "mongodb+srv://username:password@cluster.mongodb.net/aerive?retryWrites=true&w=majority"
+  # MongoDB URI is in Secrets (aerive-secrets)
   # Supabase PostgreSQL Configuration (Option 1: Use connection string)
   # SUPABASE_DB_URL: "postgresql://postgres.[PROJECT_REF]:[PASSWORD]@aws-0-[REGION].pooler.supabase.com:6543/postgres"
   # Or use individual parameters (Option 2)
