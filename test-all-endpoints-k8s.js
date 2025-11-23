@@ -204,11 +204,17 @@ function recordTest(type, name, success, error = null) {
 
 async function testKafkaUserSignup() {
   logTest('Kafka: User Signup');
+  // Generate valid SSN format: XXX-XX-XXXX
+  const ssnPart1 = String(Math.floor(Math.random() * 900) + 100); // 100-999
+  const ssnPart2 = String(Math.floor(Math.random() * 90) + 10);   // 10-99
+  const ssnPart3 = String(Math.floor(Math.random() * 10000)).padStart(4, '0'); // 0000-9999
+  const userId = `${ssnPart1}-${ssnPart2}-${ssnPart3}`;
+  
   const result = await sendKafkaEvent(
     'user-events',
     {
       eventType: 'user.signup',
-      userId: `123-45-${Math.floor(Math.random() * 10000)}`,
+      userId: userId,
       firstName: 'Test',
       lastName: 'User',
       address: '123 Test St',
