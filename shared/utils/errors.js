@@ -2,6 +2,8 @@
  * Custom error classes for Aerive backend
  */
 
+const logger = require('./logger');
+
 class AppError extends Error {
   constructor(message, statusCode = 500, code = 'INTERNAL_ERROR') {
     super(message);
@@ -57,26 +59,40 @@ class DatabaseError extends AppError {
 
 // Error handler middleware
 function errorHandler(err, req, res, next) {
+  // Don't send response if request was aborted
+  if (req.aborted || res.headersSent) {
+    return;
+  }
+
+  // Handle request aborted errors
+  if (err.code === 'ECONNABORTED' || err.message === 'request aborted') {
+    logger.warn('Request aborted by client');
+    return;
+  }
+
   const statusCode = err.statusCode || 500;
   const code = err.code || 'INTERNAL_ERROR';
   const message = err.message || 'Internal server error';
 
   // Log error for debugging
-  console.error('Error:', {
+  logger.error('Error:', {
     message,
     code,
     statusCode,
     stack: process.env.NODE_ENV === 'development' ? err.stack : undefined
   });
 
-  res.status(statusCode).json({
-    success: false,
-    error: {
-      code,
-      message,
-      ...(err.field && { field: err.field })
-    }
-  });
+  // Only send response if headers haven't been sent
+  if (!res.headersSent) {
+    res.status(statusCode).json({
+      success: false,
+      error: {
+        code,
+        message,
+        ...(err.field && { field: err.field })
+      }
+    });
+  }
 }
 
 // Async error wrapper

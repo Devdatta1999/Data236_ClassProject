@@ -5,13 +5,13 @@
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
-const { connectMongoDB } = require('../../shared/config/database');
+const { connectMongoDB, mongoose } = require('../../shared/config/database');
 const { getRedisClient } = require('../../shared/config/redis');
 const { createConsumer } = require('../../shared/config/kafka');
 const { errorHandler } = require('../../shared/utils/errors');
 const logger = require('../../shared/utils/logger');
-const listingRoutes = require('./routes/listingRoutes');
-const { handleSearchEvent } = require('./consumers/searchEventConsumer');
+// NOTE: Routes and consumers will be loaded AFTER MongoDB connection
+// to ensure models are registered when mongoose is already connected
 
 const app = express();
 const PORT = process.env.PORT || 3002;
@@ -26,28 +26,78 @@ app.get('/health', (req, res) => {
   res.json({ status: 'ok', service: 'listing-service' });
 });
 
-// Routes
-app.use('/api/listings', listingRoutes);
+// Readiness check - returns 503 until MongoDB is connected
+app.get('/readyz', (req, res) => {
+  const { mongoose } = require('../../shared/config/database');
+  const readyState = mongoose.connection.readyState;
+  
+  if (readyState !== 1 || !mongoose.connection.db) {
+    return res.status(503).json({ 
+      status: 'not ready', 
+      service: 'listing-service',
+      mongoDB: {
+        readyState: readyState,
+        state: readyState === 0 ? 'disconnected' : readyState === 2 ? 'connecting' : 'disconnecting',
+        hasDb: !!mongoose.connection.db
+      }
+    });
+  }
+  
+  res.json({ 
+    status: 'ready', 
+    service: 'listing-service',
+    mongoDB: {
+      readyState: readyState,
+      state: 'connected',
+      dbName: mongoose.connection.db.databaseName
+    }
+  });
+});
 
-// Error handler
-app.use(errorHandler);
+// Routes will be registered after MongoDB connection in startServer()
+// Error handler will be added after routes are loaded
 
 // Start server
 async function startServer() {
   try {
+    // Connect to MongoDB FIRST, before loading any models
+    logger.info('Connecting to MongoDB...');
     await connectMongoDB();
+    logger.info('MongoDB connected and ready for queries');
+    
+    // Verify connection is ready
+    if (mongoose.connection.readyState !== 1 || !mongoose.connection.db) {
+      throw new Error(`Cannot load routes - MongoDB not connected (readyState: ${mongoose.connection.readyState})`);
+    }
+    logger.info('MongoDB connection verified before loading routes', {
+      readyState: mongoose.connection.readyState,
+      dbName: mongoose.connection.db.databaseName
+    });
+    
+    // NOW load routes (which loads models) AFTER mongoose is connected
+    logger.info('Loading listing routes...');
+    const listingRoutes = require('./routes/listingRoutes');
+    app.use('/api/listings', listingRoutes);
+    logger.info('Listing routes registered successfully');
+    
+    // Add error handler AFTER routes
+    app.use(errorHandler);
+    
+    // Connect to Redis
     await getRedisClient();
     
-    // Setup Kafka consumer for search events
+    // Setup Kafka consumer for search events (also loads models, so after connection)
+    logger.info('Loading search event consumer...');
+    const { handleSearchEvent } = require('./consumers/searchEventConsumer');
     await createConsumer(
       'listing-service-group',
       ['search-events'],
       handleSearchEvent
     );
+    logger.info('Kafka consumer subscribed to: search-events');
     
     app.listen(PORT, () => {
       logger.info(`Listing service running on port ${PORT}`);
-      logger.info('Kafka consumer subscribed to: search-events');
     });
   } catch (error) {
     logger.error('Failed to start listing service:', error);

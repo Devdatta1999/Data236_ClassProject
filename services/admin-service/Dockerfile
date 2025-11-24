@@ -8,7 +8,8 @@ COPY shared/ ./shared/
 WORKDIR /workspace/shared
 RUN npm install
 
-# Copy models needed by admin service
+# Copy models needed by admin service to correct location
+WORKDIR /workspace
 COPY services/listing-service/models/ ./services/listing-service/models/
 COPY services/user-service/models/ ./services/user-service/models/
 

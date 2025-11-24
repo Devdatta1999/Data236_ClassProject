@@ -1,8 +1,12 @@
 /**
  * Provider Model
+ * Fix #3: CRITICAL - Use mongoose from shared/config/database.js to ensure same instance
+ * DO NOT require('mongoose') directly - use the one that was connected
  */
 
-const mongoose = require('mongoose');
+// Import mongoose from the database module to ensure we use the SAME instance that was connected
+const { mongoose } = require('../../../shared/config/database');
+const bcrypt = require('bcrypt');
 
 const providerSchema = new mongoose.Schema({
   providerId: {
@@ -21,6 +25,12 @@ const providerSchema = new mongoose.Schema({
     unique: true,
     lowercase: true,
     index: true
+  },
+  password: {
+    type: String,
+    required: true,
+    minlength: 8,
+    select: false // Don't include password in queries by default
   },
   phoneNumber: {
     type: String,
@@ -59,6 +69,32 @@ const providerSchema = new mongoose.Schema({
 }, {
   timestamps: true
 });
+
+// Hash password before saving
+providerSchema.pre('save', async function(next) {
+  if (!this.isModified('password')) {
+    return next();
+  }
+  try {
+    const salt = await bcrypt.genSalt(10);
+    this.password = await bcrypt.hash(this.password, salt);
+    next();
+  } catch (error) {
+    next(error);
+  }
+});
+
+// Method to compare password
+providerSchema.methods.comparePassword = async function(candidatePassword) {
+  return bcrypt.compare(candidatePassword, this.password);
+};
+
+// Method to return safe object without password
+providerSchema.methods.toSafeObject = function() {
+  const obj = this.toObject();
+  delete obj.password;
+  return obj;
+};
 
 const Provider = mongoose.model('Provider', providerSchema);
 

@@ -5,7 +5,7 @@
  */
 
 const Car = require('../models/Car');
-const { NotFoundError, ValidationError, asyncHandler } = require('../../../shared/utils/errors');
+const { NotFoundError, ValidationError, AuthenticationError, asyncHandler } = require('../../../shared/utils/errors');
 const { getCache, setCache, deleteCache, deleteCachePattern } = require('../../../shared/config/redis');
 const logger = require('../../../shared/utils/logger');
 
@@ -43,9 +43,14 @@ const createCar = asyncHandler(async (req, res) => {
     throw new ValidationError('Car with this ID already exists');
   }
 
+  // Allow admin to set status to 'Active', otherwise default to 'Pending'
+  const status = (req.user?.role === 'admin' && carData.status === 'Active') 
+    ? 'Active' 
+    : 'Pending';
+  
   const car = new Car({
     ...carData,
-    status: 'Pending'
+    status
   });
 
   await car.save();
@@ -94,13 +99,23 @@ const updateCar = asyncHandler(async (req, res) => {
 
 /**
  * Delete car
+ * Allows admin or the owner (provider) to delete
  */
 const deleteCar = asyncHandler(async (req, res) => {
   const { carId } = req.params;
+  const user = req.user; // From auth middleware
 
   const car = await Car.findOne({ carId });
   if (!car) {
     throw new NotFoundError('Car');
+  }
+
+  // Check if user is admin OR the owner of the listing
+  const isAdmin = user.role === 'admin';
+  const isOwner = user.role === 'provider' && user.providerId === car.providerId;
+
+  if (!isAdmin && !isOwner) {
+    throw new AuthenticationError('You do not have permission to delete this listing');
   }
 
   await Car.deleteOne({ carId });
@@ -108,7 +123,7 @@ const deleteCar = asyncHandler(async (req, res) => {
   await deleteCache(`car:${carId}`);
   await deleteCachePattern('search:car:*');
 
-  logger.info(`Car deleted: ${carId}`);
+  logger.info(`Car deleted: ${carId} by ${isAdmin ? 'admin' : 'provider'}`);
 
   res.json({
     success: true,
@@ -156,6 +171,33 @@ const addReview = asyncHandler(async (req, res) => {
 });
 
 /**
+ * Get cars by providerId
+ */
+const getCarsByProvider = asyncHandler(async (req, res) => {
+  const { providerId } = req.query;
+  const user = req.user; // From auth middleware
+
+  if (!providerId) {
+    throw new ValidationError('Provider ID is required');
+  }
+
+  // Check if user is admin OR the owner of the listings
+  const isAdmin = user?.role === 'admin';
+  const isOwner = user?.role === 'provider' && user.providerId === providerId;
+
+  if (!isAdmin && !isOwner) {
+    throw new AuthenticationError('You do not have permission to view these listings');
+  }
+
+  const cars = await Car.find({ providerId }).lean();
+
+  res.json({
+    success: true,
+    data: { cars }
+  });
+});
+
+/**
  * Get car reviews
  */
 const getReviews = asyncHandler(async (req, res) => {
@@ -175,6 +217,7 @@ const getReviews = asyncHandler(async (req, res) => {
 
 module.exports = {
   getCar,
+  getCarsByProvider,
   createCar,
   updateCar,
   deleteCar,

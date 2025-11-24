@@ -51,11 +51,11 @@ const login = asyncHandler(async (req, res) => {
 
 /**
  * Get pending listings
+ * CRITICAL: Query MongoDB directly since search endpoints are Kafka-only
  */
 const getPendingListings = asyncHandler(async (req, res) => {
   const { listingType } = req.query;
 
-  // Call listing service to get pending listings
   const pendingListings = {
     flights: [],
     hotels: [],
@@ -63,20 +63,28 @@ const getPendingListings = asyncHandler(async (req, res) => {
   };
 
   try {
+    // Import models directly to query MongoDB
+    // Path: /workspace/services/admin-service/controllers -> /workspace/services/listing-service/models
+    // From admin-service/controllers: ../../listing-service/models
+    const Flight = require('../../listing-service/models/Flight');
+    const Hotel = require('../../listing-service/models/Hotel');
+    const Car = require('../../listing-service/models/Car');
+
+    // Query pending listings directly from MongoDB
     if (!listingType || listingType === 'Flight') {
-      const response = await axios.get(`${LISTING_SERVICE_URL}/api/listings/flights/search?status=Pending`);
-      pendingListings.flights = response.data.data?.flights || [];
+      pendingListings.flights = await Flight.find({ status: 'Pending' }).lean();
     }
     if (!listingType || listingType === 'Hotel') {
-      const response = await axios.get(`${LISTING_SERVICE_URL}/api/listings/hotels/search?status=Pending`);
-      pendingListings.hotels = response.data.data?.hotels || [];
+      pendingListings.hotels = await Hotel.find({ status: 'Pending' }).lean();
     }
     if (!listingType || listingType === 'Car') {
-      const response = await axios.get(`${LISTING_SERVICE_URL}/api/listings/cars/search?status=Pending`);
-      pendingListings.cars = response.data.data?.cars || [];
+      pendingListings.cars = await Car.find({ status: 'Pending' }).lean();
     }
+
+    logger.info(`Fetched pending listings: ${pendingListings.flights.length} flights, ${pendingListings.hotels.length} hotels, ${pendingListings.cars.length} cars`);
   } catch (error) {
     logger.error('Error fetching pending listings:', error);
+    throw error;
   }
 
   res.json({
@@ -86,13 +94,61 @@ const getPendingListings = asyncHandler(async (req, res) => {
 });
 
 /**
+ * Get approved listings
+ */
+const getApprovedListings = asyncHandler(async (req, res) => {
+  const { listingType } = req.query;
+
+  const approvedListings = {
+    flights: [],
+    hotels: [],
+    cars: []
+  };
+
+  try {
+    // Import models directly to query MongoDB
+    const Flight = require('../../listing-service/models/Flight');
+    const Hotel = require('../../listing-service/models/Hotel');
+    const Car = require('../../listing-service/models/Car');
+
+    // Query approved (Active) listings directly from MongoDB
+    if (!listingType || listingType === 'Flight') {
+      approvedListings.flights = await Flight.find({ status: 'Active' }).lean();
+    }
+    if (!listingType || listingType === 'Hotel') {
+      approvedListings.hotels = await Hotel.find({ status: 'Active' }).lean();
+    }
+    if (!listingType || listingType === 'Car') {
+      approvedListings.cars = await Car.find({ status: 'Active' }).lean();
+    }
+
+    logger.info(`Fetched approved listings: ${approvedListings.flights.length} flights, ${approvedListings.hotels.length} hotels, ${approvedListings.cars.length} cars`);
+  } catch (error) {
+    logger.error('Error fetching approved listings:', error);
+    throw error;
+  }
+
+  res.json({
+    success: true,
+    data: { approvedListings }
+  });
+});
+
+/**
  * Approve listing
  */
 const approveListing = asyncHandler(async (req, res) => {
-  const { listingId, listingType } = req.body;
+  const { listingId } = req.params; // Get from URL params
+  const { listingType } = req.body;
 
   if (!['Flight', 'Hotel', 'Car'].includes(listingType)) {
     throw new ValidationError('Invalid listing type');
+  }
+
+  // Get auth token to forward to listing service
+  const authToken = req.headers.authorization || req.headers.Authorization;
+  if (!authToken) {
+    throw new ValidationError('Authentication token is required');
   }
 
   // Call listing service to update status
@@ -101,10 +157,21 @@ const approveListing = asyncHandler(async (req, res) => {
   try {
     const response = await axios.put(
       `${LISTING_SERVICE_URL}/api/listings/${listingTypeLower}/${listingId}`,
-      { status: 'Active' }
+      { status: 'Active' },
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': authToken // Forward the auth token
+        }
+      }
     );
     listing = response.data.data[listingTypeLower.slice(0, -1)];
   } catch (error) {
+    logger.error(`Error approving listing: ${error.message}`, {
+      listingId,
+      listingType,
+      response: error.response?.data
+    });
     throw new NotFoundError('Listing');
   }
 
@@ -121,10 +188,17 @@ const approveListing = asyncHandler(async (req, res) => {
  * Reject listing
  */
 const rejectListing = asyncHandler(async (req, res) => {
-  const { listingId, listingType, reason } = req.body;
+  const { listingId } = req.params; // Get from URL params
+  const { listingType, reason } = req.body;
 
   if (!['Flight', 'Hotel', 'Car'].includes(listingType)) {
     throw new ValidationError('Invalid listing type');
+  }
+
+  // Get auth token to forward to listing service
+  const authToken = req.headers.authorization || req.headers.Authorization;
+  if (!authToken) {
+    throw new ValidationError('Authentication token is required');
   }
 
   // Call listing service to update status
@@ -133,10 +207,21 @@ const rejectListing = asyncHandler(async (req, res) => {
   try {
     const response = await axios.put(
       `${LISTING_SERVICE_URL}/api/listings/${listingTypeLower}/${listingId}`,
-      { status: 'Inactive' }
+      { status: 'Inactive' },
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': authToken // Forward the auth token
+        }
+      }
     );
     listing = response.data.data[listingTypeLower.slice(0, -1)];
   } catch (error) {
+    logger.error(`Error rejecting listing: ${error.message}`, {
+      listingId,
+      listingType,
+      response: error.response?.data
+    });
     throw new NotFoundError('Listing');
   }
 
@@ -284,6 +369,7 @@ const getProviderAnalytics = asyncHandler(async (req, res) => {
 module.exports = {
   login,
   getPendingListings,
+  getApprovedListings,
   approveListing,
   rejectListing,
   listUsers,

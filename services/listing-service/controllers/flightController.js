@@ -5,7 +5,7 @@
  */
 
 const Flight = require('../models/Flight');
-const { NotFoundError, ValidationError, asyncHandler } = require('../../../shared/utils/errors');
+const { NotFoundError, ValidationError, AuthenticationError, asyncHandler } = require('../../../shared/utils/errors');
 const { getCache, setCache, deleteCache, deleteCachePattern } = require('../../../shared/config/redis');
 const logger = require('../../../shared/utils/logger');
 
@@ -44,10 +44,15 @@ const createFlight = asyncHandler(async (req, res) => {
     throw new ValidationError('Flight with this ID already exists');
   }
 
+  // Allow admin to set status to 'Active', otherwise default to 'Pending'
+  const status = (req.user?.role === 'admin' && flightData.status === 'Active') 
+    ? 'Active' 
+    : 'Pending';
+  
   const flight = new Flight({
     ...flightData,
     flightId: flightData.flightId.toUpperCase(),
-    status: 'Pending' // Requires admin approval
+    status
   });
 
   await flight.save();
@@ -98,13 +103,23 @@ const updateFlight = asyncHandler(async (req, res) => {
 
 /**
  * Delete flight
+ * Allows admin or the owner (provider) to delete
  */
 const deleteFlight = asyncHandler(async (req, res) => {
   const { flightId } = req.params;
+  const user = req.user; // From auth middleware
 
   const flight = await Flight.findOne({ flightId: flightId.toUpperCase() });
   if (!flight) {
     throw new NotFoundError('Flight');
+  }
+
+  // Check if user is admin OR the owner of the listing
+  const isAdmin = user.role === 'admin';
+  const isOwner = user.role === 'provider' && user.providerId === flight.providerId;
+
+  if (!isAdmin && !isOwner) {
+    throw new AuthenticationError('You do not have permission to delete this listing');
   }
 
   await Flight.deleteOne({ flightId: flightId.toUpperCase() });
@@ -113,7 +128,7 @@ const deleteFlight = asyncHandler(async (req, res) => {
   await deleteCache(`flight:${flightId}`);
   await deleteCachePattern('search:flight:*');
 
-  logger.info(`Flight deleted: ${flightId}`);
+  logger.info(`Flight deleted: ${flightId} by ${isAdmin ? 'admin' : 'provider'}`);
 
   res.json({
     success: true,
@@ -162,6 +177,33 @@ const addReview = asyncHandler(async (req, res) => {
 });
 
 /**
+ * Get flights by providerId
+ */
+const getFlightsByProvider = asyncHandler(async (req, res) => {
+  const { providerId } = req.query;
+  const user = req.user; // From auth middleware
+
+  if (!providerId) {
+    throw new ValidationError('Provider ID is required');
+  }
+
+  // Check if user is admin OR the owner of the listings
+  const isAdmin = user?.role === 'admin';
+  const isOwner = user?.role === 'provider' && user.providerId === providerId;
+
+  if (!isAdmin && !isOwner) {
+    throw new AuthenticationError('You do not have permission to view these listings');
+  }
+
+  const flights = await Flight.find({ providerId }).lean();
+
+  res.json({
+    success: true,
+    data: { flights }
+  });
+});
+
+/**
  * Get flight reviews
  */
 const getReviews = asyncHandler(async (req, res) => {
@@ -181,6 +223,7 @@ const getReviews = asyncHandler(async (req, res) => {
 
 module.exports = {
   getFlight,
+  getFlightsByProvider,
   createFlight,
   updateFlight,
   deleteFlight,

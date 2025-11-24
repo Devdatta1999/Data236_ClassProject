@@ -1,8 +1,9 @@
 /**
  * Flight Model
+ * CRITICAL: Use mongoose from shared/config/database.js to ensure same instance
  */
 
-const mongoose = require('mongoose');
+const { mongoose } = require('../../../shared/config/database');
 
 const reviewSchema = new mongoose.Schema({
   reviewId: {

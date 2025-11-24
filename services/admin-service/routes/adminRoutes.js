@@ -9,6 +9,7 @@ const { authenticate, requireAdmin } = require('../../../shared/middleware/auth'
 
 router.post('/login', adminController.login);
 router.get('/listings/pending', authenticate, requireAdmin, adminController.getPendingListings);
+router.get('/listings/approved', authenticate, requireAdmin, adminController.getApprovedListings);
 router.put('/listings/:listingId/approve', authenticate, requireAdmin, adminController.approveListing);
 router.put('/listings/:listingId/reject', authenticate, requireAdmin, adminController.rejectListing);
 router.get('/users', authenticate, requireAdmin, adminController.listUsers);

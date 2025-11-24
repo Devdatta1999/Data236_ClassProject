@@ -5,7 +5,7 @@
  */
 
 const Hotel = require('../models/Hotel');
-const { NotFoundError, ValidationError, asyncHandler } = require('../../../shared/utils/errors');
+const { NotFoundError, ValidationError, AuthenticationError, asyncHandler } = require('../../../shared/utils/errors');
 const { getCache, setCache, deleteCache, deleteCachePattern } = require('../../../shared/config/redis');
 const logger = require('../../../shared/utils/logger');
 
@@ -43,10 +43,15 @@ const createHotel = asyncHandler(async (req, res) => {
     throw new ValidationError('Hotel with this ID already exists');
   }
 
+  // Allow admin to set status to 'Active', otherwise default to 'Pending'
+  const status = (req.user?.role === 'admin' && hotelData.status === 'Active') 
+    ? 'Active' 
+    : 'Pending';
+  
   const hotel = new Hotel({
     ...hotelData,
     state: hotelData.state.toUpperCase(),
-    status: 'Pending'
+    status
   });
 
   await hotel.save();
@@ -97,13 +102,23 @@ const updateHotel = asyncHandler(async (req, res) => {
 
 /**
  * Delete hotel
+ * Allows admin or the owner (provider) to delete
  */
 const deleteHotel = asyncHandler(async (req, res) => {
   const { hotelId } = req.params;
+  const user = req.user; // From auth middleware
 
   const hotel = await Hotel.findOne({ hotelId });
   if (!hotel) {
     throw new NotFoundError('Hotel');
+  }
+
+  // Check if user is admin OR the owner of the listing
+  const isAdmin = user.role === 'admin';
+  const isOwner = user.role === 'provider' && user.providerId === hotel.providerId;
+
+  if (!isAdmin && !isOwner) {
+    throw new AuthenticationError('You do not have permission to delete this listing');
   }
 
   await Hotel.deleteOne({ hotelId });
@@ -111,7 +126,7 @@ const deleteHotel = asyncHandler(async (req, res) => {
   await deleteCache(`hotel:${hotelId}`);
   await deleteCachePattern('search:hotel:*');
 
-  logger.info(`Hotel deleted: ${hotelId}`);
+  logger.info(`Hotel deleted: ${hotelId} by ${isAdmin ? 'admin' : 'provider'}`);
 
   res.json({
     success: true,
@@ -159,6 +174,33 @@ const addReview = asyncHandler(async (req, res) => {
 });
 
 /**
+ * Get hotels by providerId
+ */
+const getHotelsByProvider = asyncHandler(async (req, res) => {
+  const { providerId } = req.query;
+  const user = req.user; // From auth middleware
+
+  if (!providerId) {
+    throw new ValidationError('Provider ID is required');
+  }
+
+  // Check if user is admin OR the owner of the listings
+  const isAdmin = user?.role === 'admin';
+  const isOwner = user?.role === 'provider' && user.providerId === providerId;
+
+  if (!isAdmin && !isOwner) {
+    throw new AuthenticationError('You do not have permission to view these listings');
+  }
+
+  const hotels = await Hotel.find({ providerId }).lean();
+
+  res.json({
+    success: true,
+    data: { hotels }
+  });
+});
+
+/**
  * Get hotel reviews
  */
 const getReviews = asyncHandler(async (req, res) => {
@@ -178,6 +220,7 @@ const getReviews = asyncHandler(async (req, res) => {
 
 module.exports = {
   getHotel,
+  getHotelsByProvider,
   createHotel,
   updateHotel,
   deleteHotel,

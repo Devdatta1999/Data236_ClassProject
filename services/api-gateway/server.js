@@ -22,8 +22,10 @@ const PROVIDER_SERVICE = process.env.PROVIDER_SERVICE_URL || 'http://localhost:3
 const ADMIN_SERVICE = process.env.ADMIN_SERVICE_URL || 'http://localhost:3006';
 
 app.use(cors());
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+// Don't parse JSON globally - let proxy middleware handle it for proxied routes
+// We'll add json parser selectively for non-proxied routes if needed
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
 // Health check
 app.get('/health', (req, res) => {
@@ -57,8 +59,16 @@ app.use('/api/listings', createProxyMiddleware({
   pathRewrite: {
     '^/api/listings': '/api/listings'
   },
+  buffer: false,
   onProxyReq: (proxyReq, req, res) => {
     logger.info(`Proxying to Listing Service: ${req.method} ${req.path}`);
+    if (req.body && typeof req.body === 'object') {
+      const bodyData = JSON.stringify(req.body);
+      proxyReq.setHeader('Content-Type', 'application/json');
+      proxyReq.setHeader('Content-Length', Buffer.byteLength(bodyData));
+      proxyReq.write(bodyData);
+      proxyReq.end();
+    }
   }
 }));
 
@@ -69,8 +79,16 @@ app.use('/api/bookings', createProxyMiddleware({
   pathRewrite: {
     '^/api/bookings': '/api/bookings'
   },
+  buffer: false,
   onProxyReq: (proxyReq, req, res) => {
     logger.info(`Proxying to Booking Service: ${req.method} ${req.path}`);
+    if (req.body && typeof req.body === 'object') {
+      const bodyData = JSON.stringify(req.body);
+      proxyReq.setHeader('Content-Type', 'application/json');
+      proxyReq.setHeader('Content-Length', Buffer.byteLength(bodyData));
+      proxyReq.write(bodyData);
+      proxyReq.end();
+    }
   }
 }));
 
@@ -81,8 +99,16 @@ app.use('/api/billing', createProxyMiddleware({
   pathRewrite: {
     '^/api/billing': '/api/billing'
   },
+  buffer: false,
   onProxyReq: (proxyReq, req, res) => {
     logger.info(`Proxying to Billing Service: ${req.method} ${req.path}`);
+    if (req.body && typeof req.body === 'object') {
+      const bodyData = JSON.stringify(req.body);
+      proxyReq.setHeader('Content-Type', 'application/json');
+      proxyReq.setHeader('Content-Length', Buffer.byteLength(bodyData));
+      proxyReq.write(bodyData);
+      proxyReq.end();
+    }
   }
 }));
 
@@ -93,8 +119,39 @@ app.use('/api/providers', createProxyMiddleware({
   pathRewrite: {
     '^/api/providers': '/api/providers'
   },
+  timeout: 60000, // 60 second timeout
+  proxyTimeout: 60000,
+  // CRITICAL: Don't buffer the request body, stream it directly
+  buffer: false,
+  // Ensure proper handling of request body
   onProxyReq: (proxyReq, req, res) => {
-    logger.info(`Proxying to Provider Service: ${req.method} ${req.path}`);
+    logger.info(`Proxying to Provider Service: ${req.method} ${req.path}`, {
+      target: PROVIDER_SERVICE,
+      hasBody: !!req.body,
+      contentType: req.headers['content-type']
+    });
+    
+    // If body was parsed by express.json(), we need to re-stringify it
+    if (req.body && typeof req.body === 'object') {
+      const bodyData = JSON.stringify(req.body);
+      proxyReq.setHeader('Content-Type', 'application/json');
+      proxyReq.setHeader('Content-Length', Buffer.byteLength(bodyData));
+      proxyReq.write(bodyData);
+      proxyReq.end();
+    }
+  },
+  onError: (err, req, res) => {
+    logger.error('Provider Service proxy error:', {
+      message: err.message,
+      code: err.code,
+      stack: err.stack?.split('\n').slice(0, 3).join('\n')
+    });
+    if (!res.headersSent) {
+      res.status(502).json({ error: 'Provider service unavailable', details: err.message });
+    }
+  },
+  onProxyRes: (proxyRes, req, res) => {
+    logger.info(`Provider Service responded: ${proxyRes.statusCode} for ${req.method} ${req.path}`);
   }
 }));
 
@@ -105,8 +162,16 @@ app.use('/api/admin', createProxyMiddleware({
   pathRewrite: {
     '^/api/admin': '/api/admin'
   },
+  buffer: false,
   onProxyReq: (proxyReq, req, res) => {
     logger.info(`Proxying to Admin Service: ${req.method} ${req.path}`);
+    if (req.body && typeof req.body === 'object') {
+      const bodyData = JSON.stringify(req.body);
+      proxyReq.setHeader('Content-Type', 'application/json');
+      proxyReq.setHeader('Content-Length', Buffer.byteLength(bodyData));
+      proxyReq.write(bodyData);
+      proxyReq.end();
+    }
   }
 }));
 
