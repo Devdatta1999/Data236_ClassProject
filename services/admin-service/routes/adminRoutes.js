@@ -7,6 +7,7 @@ const router = express.Router();
 const adminController = require('../controllers/adminController');
 const { authenticate, requireAdmin } = require('../../../shared/middleware/auth');
 
+router.post('/register', adminController.register);
 router.post('/login', adminController.login);
 router.get('/listings/pending', authenticate, requireAdmin, adminController.getPendingListings);
 router.get('/listings/approved', authenticate, requireAdmin, adminController.getApprovedListings);

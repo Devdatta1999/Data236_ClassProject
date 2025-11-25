@@ -27,41 +27,120 @@ app.get('/health', (req, res) => {
 });
 
 // Routes will be registered after MongoDB connection in startServer()
-
-// Error handler
-app.use(errorHandler);
+// Error handler will be added after routes are loaded
 
 // Start server
 async function startServer() {
   try {
     // Connect to MongoDB FIRST, before loading any models
     // This ensures mongoose is connected before models are registered
+    logger.info('Connecting to MongoDB...');
     await connectMongoDB();
     logger.info('MongoDB connected and ready for queries');
     
+    // Verify MongoDB connection is truly ready
+    const { mongoose } = require('../../shared/config/database');
+    if (mongoose.connection.readyState !== 1 || !mongoose.connection.db) {
+      throw new Error(`Cannot load routes - MongoDB not connected (readyState: ${mongoose.connection.readyState})`);
+    }
+    logger.info('MongoDB connection verified before loading routes', {
+      readyState: mongoose.connection.readyState,
+      dbName: mongoose.connection.db.databaseName
+    });
+    
     // NOW load routes (which loads User model via controller) AFTER mongoose is connected
     // This ensures User model is registered when mongoose.connection.readyState === 1
+    logger.info('Loading user routes...');
     const userRoutes = require('./routes/userRoutes');
+    
+    // Verify User model is using the connected mongoose instance
+    const User = require('./models/User');
+    if (User.db?.base !== mongoose.connection.base) {
+      throw new Error('CRITICAL: User model is using a different mongoose instance!');
+    }
+    logger.info('User model verified to use connected mongoose instance');
+    
+    // Add request logging middleware BEFORE routes
+    app.use((req, res, next) => {
+      logger.info(`${req.method} ${req.path}`, { 
+        body: req.method === 'POST' ? req.body : undefined,
+        query: req.query 
+      });
+      next();
+    });
+    
     app.use('/api/users', userRoutes);
-    logger.info('User routes loaded after MongoDB connection');
+    logger.info('User routes registered successfully');
     
     // NOW load the consumer (which also uses User model) AFTER mongoose is connected
+    logger.info('Loading user event consumer...');
     const { handleUserEvent } = require('./consumers/userEventConsumer');
     logger.info('User consumer loaded after MongoDB connection');
     
     // Connect to Redis
+    logger.info('Connecting to Redis...');
     await getRedisClient();
+    logger.info('Redis connected successfully');
     
     // Setup Kafka consumer for user events
+    logger.info('Setting up Kafka consumer...');
     await createConsumer(
       'user-service-group',
       ['user-events'],
       handleUserEvent
     );
+    logger.info('Kafka consumer subscribed to: user-events');
     
-    app.listen(PORT, () => {
+    // Add readiness probe endpoint AFTER MongoDB is connected
+    app.get('/readyz', (req, res) => {
+      const { mongoose } = require('../../shared/config/database');
+      const readyState = mongoose.connection.readyState;
+      
+      // Only return 200 if explicitly connected (1)
+      // Return 503 for disconnected (0), connecting (2), or disconnecting (3)
+      if (readyState !== 1) {
+        return res.status(503).json({ 
+          status: 'not ready', 
+          service: 'user-service',
+          mongoDB: {
+            readyState: readyState,
+            state: readyState === 0 ? 'disconnected' : readyState === 2 ? 'connecting' : 'disconnecting',
+            hasDb: !!mongoose.connection.db
+          }
+        });
+      }
+      
+      // Verify db object exists
+      if (!mongoose.connection.db) {
+        return res.status(503).json({ 
+          status: 'not ready', 
+          service: 'user-service',
+          mongoDB: {
+            readyState: readyState,
+            state: 'connected but db object missing',
+            hasDb: false
+          }
+        });
+      }
+      
+      res.json({ 
+        status: 'ready', 
+        service: 'user-service',
+        mongoDB: {
+          readyState: readyState,
+          state: 'connected',
+          dbName: mongoose.connection.db.databaseName
+        }
+      });
+    });
+    
+    // Add error handler AFTER routes
+    app.use(errorHandler);
+    
+    // Start server only after all connections and routes are ready
+    app.listen(PORT, '0.0.0.0', () => {
       logger.info(`User service running on port ${PORT}`);
-      logger.info('Kafka consumer subscribed to: user-events');
+      logger.info('Ready to accept requests');
     });
   } catch (error) {
     logger.error('Failed to start user service:', error);

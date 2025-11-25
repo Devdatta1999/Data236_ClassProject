@@ -285,6 +285,24 @@ const CreateListingRequest = ({ onSuccess }) => {
                 step="0.01"
                 required
               />
+              <input
+                type="date"
+                placeholder="Available From"
+                value={formData.availableFrom || ''}
+                onChange={(e) => setFormData({ ...formData, availableFrom: e.target.value })}
+                className="input-field"
+                required
+                min={new Date().toISOString().split('T')[0]}
+              />
+              <input
+                type="date"
+                placeholder="Available To"
+                value={formData.availableTo || ''}
+                onChange={(e) => setFormData({ ...formData, availableTo: e.target.value })}
+                className="input-field"
+                required
+                min={formData.availableFrom || new Date().toISOString().split('T')[0]}
+              />
             </div>
           )}
 

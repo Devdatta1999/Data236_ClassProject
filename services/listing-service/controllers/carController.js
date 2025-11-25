@@ -48,10 +48,18 @@ const createCar = asyncHandler(async (req, res) => {
     ? 'Active' 
     : 'Pending';
   
+  // Ensure dates are properly formatted
   const car = new Car({
     ...carData,
+    availableFrom: carData.availableFrom ? new Date(carData.availableFrom) : undefined,
+    availableTo: carData.availableTo ? new Date(carData.availableTo) : undefined,
     status
   });
+  
+  // Validate date range
+  if (car.availableFrom && car.availableTo && car.availableFrom >= car.availableTo) {
+    throw new ValidationError('Available To date must be after Available From date');
+  }
 
   await car.save();
 

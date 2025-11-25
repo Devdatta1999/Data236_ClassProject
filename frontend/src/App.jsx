@@ -13,6 +13,7 @@ import LandingPage from './pages/LandingPage'
 import LoginPage from './pages/LoginPage'
 import SignupPage from './pages/SignupPage'
 import HostSignupPage from './pages/HostSignupPage'
+import AdminSignupPage from './pages/AdminSignupPage'
 import TravelerDashboard from './pages/traveler/TravelerDashboard'
 import SearchResults from './pages/traveler/SearchResults'
 import BookingDetails from './pages/traveler/BookingDetails'
@@ -46,6 +47,7 @@ function App() {
         <Route path="/login" element={!isAuthenticated ? <LoginPage /> : <Navigate to="/dashboard" />} />
         <Route path="/signup" element={!isAuthenticated ? <SignupPage /> : <Navigate to="/dashboard" />} />
         <Route path="/host/register" element={!isAuthenticated ? <HostSignupPage /> : <Navigate to="/host" />} />
+        <Route path="/admin/register" element={!isAuthenticated ? <AdminSignupPage /> : <Navigate to="/admin" />} />
         
         {/* Traveler Routes */}
         <Route

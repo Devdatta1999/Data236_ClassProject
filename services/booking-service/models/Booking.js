@@ -34,15 +34,15 @@ const bookingSchema = new mongoose.Schema({
   },
   checkInDate: {
     type: Date,
-    default: null // For hotels
+    default: null // For hotels and cars
   },
   checkOutDate: {
     type: Date,
-    default: null // For hotels
+    default: null // For hotels and cars
   },
   travelDate: {
     type: Date,
-    default: null // For flights and cars
+    default: null // For flights only
   },
   quantity: {
     type: Number,

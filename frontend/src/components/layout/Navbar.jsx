@@ -56,6 +56,12 @@ const Navbar = () => {
                     Host Register
                   </Link>
                   <Link
+                    to="/admin/register"
+                    className="text-gray-700 hover:text-primary-600 transition-colors"
+                  >
+                    Admin Register
+                  </Link>
+                  <Link
                     to="/signup"
                     className="btn-primary"
                   >
@@ -140,6 +146,9 @@ const Navbar = () => {
                 </Link>
                 <Link to="/host/register" className="block text-gray-700 hover:text-primary-600">
                   Host Register
+                </Link>
+                <Link to="/admin/register" className="block text-gray-700 hover:text-primary-600">
+                  Admin Register
                 </Link>
                 <Link to="/signup" className="block btn-primary text-center">
                   Sign Up

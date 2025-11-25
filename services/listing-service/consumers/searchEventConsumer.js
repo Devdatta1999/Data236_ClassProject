@@ -153,13 +153,18 @@ async function handleHotelSearch(event) {
  * Handle car search event
  */
 async function handleCarSearch(event) {
-  const { requestId, carType, minPrice, maxPrice, transmissionType, minSeats, sortBy } = event;
+  const { requestId, carType, minPrice, maxPrice, transmissionType, minSeats, sortBy, pickupDate, dropoffDate } = event;
 
   try {
     const query = { 
-      status: 'Active',
-      availabilityStatus: 'Available'
+      status: 'Active'
     };
+    
+    // Only filter by availabilityStatus if dates are provided (to check actual availability)
+    // Otherwise, show all Active cars (availabilityStatus can be checked later during booking)
+    if (pickupDate && dropoffDate) {
+      query.availabilityStatus = 'Available';
+    }
 
     if (carType) query.carType = carType;
     if (transmissionType) query.transmissionType = transmissionType;
@@ -169,6 +174,39 @@ async function handleCarSearch(event) {
       if (minPrice) query.dailyRentalPrice.$gte = parseFloat(minPrice);
       if (maxPrice) query.dailyRentalPrice.$lte = parseFloat(maxPrice);
     }
+    
+    // Filter by availability dates if provided
+    // Note: Cars created before availableFrom/availableTo were added may have null/undefined dates
+    // In that case, we should include them (assume they're always available)
+    if (pickupDate && dropoffDate) {
+      const pickup = new Date(pickupDate);
+      const dropoff = new Date(dropoffDate);
+      
+      // Build date filter to include cars without dates OR cars with overlapping dates
+      // We use $or at the root level, but need to include all other conditions in each branch
+      // Instead, we'll use a simpler approach: filter in post-processing
+      // For now, include cars that either have no dates or have overlapping dates
+      query.$and = [
+        {
+          $or: [
+            // Cars without date ranges (null/undefined) - assume always available
+            { availableFrom: null },
+            { availableFrom: { $exists: false } },
+            { availableTo: null },
+            { availableTo: { $exists: false } },
+            // Cars with date ranges that overlap the requested period
+            {
+              $and: [
+                { availableFrom: { $exists: true, $ne: null } },
+                { availableTo: { $exists: true, $ne: null } },
+                { availableFrom: { $lte: dropoff } },
+                { availableTo: { $gte: pickup } }
+              ]
+            }
+          ]
+        }
+      ];
+    }
 
     const cacheKey = `search:car:${crypto.createHash('md5').update(JSON.stringify(query)).digest('hex')}`;
     
@@ -176,6 +214,40 @@ async function handleCarSearch(event) {
     
     if (!cars) {
       cars = await Car.find(query).sort({ [sortBy || 'dailyRentalPrice']: 1 }).limit(100);
+      
+      // If dates provided, check for booking conflicts
+      if (pickupDate && dropoffDate) {
+        try {
+          const Booking = require('../../booking-service/models/Booking');
+          const pickup = new Date(pickupDate);
+          const dropoff = new Date(dropoffDate);
+          
+          // Filter out cars with conflicting bookings
+          const availableCars = [];
+          for (const car of cars) {
+            const conflictingBookings = await Booking.find({
+              listingId: car.carId,
+              listingType: 'Car',
+              status: { $in: ['Confirmed', 'Pending'] },
+              $or: [
+                {
+                  checkInDate: { $lte: dropoff },
+                  checkOutDate: { $gte: pickup }
+                }
+              ]
+            });
+            
+            if (conflictingBookings.length === 0) {
+              availableCars.push(car);
+            }
+          }
+          cars = availableCars;
+        } catch (error) {
+          logger.error('Error checking booking conflicts:', error);
+          // Continue with original cars list if booking check fails
+        }
+      }
+      
       await setCache(cacheKey, cars, 900);
     }
 

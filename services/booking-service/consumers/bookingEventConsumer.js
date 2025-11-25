@@ -66,8 +66,40 @@ async function handleBookingCreate(event) {
       if (listing.availabilityStatus !== 'Available') {
         throw new ValidationError('Car is not available');
       }
-      if (!travelDate) {
-        throw new ValidationError('Travel date is required for car rentals');
+      if (!checkInDate || !checkOutDate) {
+        throw new ValidationError('Pick-up and drop-off dates are required for car rentals');
+      }
+      
+      // Validate dates are within car's availability window
+      const pickupDate = new Date(checkInDate);
+      const dropoffDate = new Date(checkOutDate);
+      const availableFrom = new Date(listing.availableFrom);
+      const availableTo = new Date(listing.availableTo);
+      
+      if (pickupDate < availableFrom || dropoffDate > availableTo) {
+        throw new ValidationError('Selected dates are outside the car\'s availability period');
+      }
+      
+      if (pickupDate >= dropoffDate) {
+        throw new ValidationError('Drop-off date must be after pick-up date');
+      }
+      
+      // Check for date conflicts with existing bookings
+      const Booking = require('../models/Booking');
+      const conflictingBookings = await Booking.find({
+        listingId,
+        listingType: 'Car',
+        status: { $in: ['Confirmed', 'Pending'] },
+        $or: [
+          {
+            checkInDate: { $lte: dropoffDate },
+            checkOutDate: { $gte: pickupDate }
+          }
+        ]
+      });
+      
+      if (conflictingBookings.length > 0) {
+        throw new ValidationError('Car is already booked for the selected dates');
       }
     }
 
@@ -82,7 +114,10 @@ async function handleBookingCreate(event) {
         : listing.pricePerNight || 0;
       totalAmount = roomPrice * nights * quantity;
     } else if (listingType === 'Car') {
-      const days = Math.ceil((new Date(travelDate) - new Date()) / (1000 * 60 * 60 * 24)) || 1;
+      const days = Math.ceil((new Date(checkOutDate) - new Date(checkInDate)) / (1000 * 60 * 60 * 24));
+      if (days < 1) {
+        throw new ValidationError('Rental period must be at least 1 day');
+      }
       totalAmount = listing.dailyRentalPrice * days * quantity;
     }
 
@@ -95,10 +130,12 @@ async function handleBookingCreate(event) {
       listingType,
       quantity,
       totalAmount,
-      checkInDate: checkInDate || null,
-      checkOutDate: checkOutDate || null,
-      travelDate: travelDate || null,
-      status: 'Pending'
+      checkInDate: listingType === 'Hotel' || listingType === 'Car' ? checkInDate : null,
+      checkOutDate: listingType === 'Hotel' || listingType === 'Car' ? checkOutDate : null,
+      travelDate: listingType === 'Flight' ? travelDate : null,
+      status: 'Pending',
+      checkoutId,
+      parentRequestId
     });
 
     await booking.save({ session });
@@ -114,9 +151,9 @@ async function handleBookingCreate(event) {
           availableRooms: listing.availableRooms - quantity
         });
       } else if (listingType === 'Car') {
-        await axios.put(`${LISTING_SERVICE_URL}/api/listings/cars/${listingId}`, {
-          availabilityStatus: 'Booked'
-        });
+        // For cars, availability is managed by date-based booking conflicts
+        // No need to update availabilityStatus - conflicts are checked during booking
+        logger.info(`Car booking created: ${listingId} for dates ${checkInDate} to ${checkOutDate}`);
       }
     } catch (error) {
       throw new TransactionError('Failed to update listing availability');

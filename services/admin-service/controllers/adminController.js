@@ -15,12 +15,69 @@ const { getPostgresPool } = require('../../../shared/config/database');
 const logger = require('../../../shared/utils/logger');
 
 /**
+ * Admin registration
+ */
+const register = asyncHandler(async (req, res) => {
+  const {
+    adminId,
+    firstName,
+    lastName,
+    email,
+    password,
+    phoneNumber,
+    address
+  } = req.body;
+
+  if (!adminId || !firstName || !lastName || !email || !password || !phoneNumber) {
+    throw new ValidationError('Missing required fields: adminId, firstName, lastName, email, password, phoneNumber');
+  }
+
+  // Validate password length
+  if (password.length < 8) {
+    throw new ValidationError('Password must be at least 8 characters long');
+  }
+
+  const { validateEmail, validatePhoneNumber } = require('../../../shared/utils/validators');
+  validateEmail(email);
+  validatePhoneNumber(phoneNumber);
+
+  // Check if admin already exists
+  const existing = await Admin.findOne({ 
+    $or: [{ adminId }, { email: email.toLowerCase() }] 
+  });
+
+  if (existing) {
+    throw new ValidationError('Admin with this ID or email already exists');
+  }
+
+  const admin = new Admin({
+    adminId,
+    firstName,
+    lastName,
+    email: email.toLowerCase(),
+    password, // Will be hashed by pre-save hook
+    phoneNumber,
+    address
+  });
+
+  await admin.save();
+
+  logger.info(`Admin registered: ${adminId}`);
+
+  res.status(201).json({
+    success: true,
+    message: 'Admin registered successfully',
+    data: { admin: admin.toSafeObject() }
+  });
+});
+
+/**
  * Admin login
  */
 const login = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
 
-  const admin = await Admin.findOne({ email: email.toLowerCase() });
+  const admin = await Admin.findOne({ email: email.toLowerCase() }).select('+password');
   if (!admin) {
     throw new AuthenticationError('Invalid credentials');
   }
@@ -367,6 +424,7 @@ const getProviderAnalytics = asyncHandler(async (req, res) => {
 });
 
 module.exports = {
+  register,
   login,
   getPendingListings,
   getApprovedListings,

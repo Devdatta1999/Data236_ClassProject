@@ -74,7 +74,10 @@ const SignupPage = () => {
     } catch (err) {
       const errorMessage = err.message || 'Signup failed'
       setError(errorMessage)
-      dispatch(setError(errorMessage))
+      // Only dispatch if errorMessage is a string to avoid Redux errors
+      if (typeof errorMessage === 'string') {
+        dispatch(setError(errorMessage))
+      }
     } finally {
       dispatch(setLoading(false))
     }
@@ -106,12 +109,20 @@ const SignupPage = () => {
                 type="text"
                 required
                 value={formData.userId}
-                onChange={(e) => setFormData({ ...formData, userId: e.target.value })}
+                onChange={(e) => {
+                  // Auto-format SSN as user types
+                  let value = e.target.value.replace(/\D/g, ''); // Remove non-digits
+                  if (value.length > 3) value = value.slice(0, 3) + '-' + value.slice(3);
+                  if (value.length > 6) value = value.slice(0, 6) + '-' + value.slice(6);
+                  if (value.length > 11) value = value.slice(0, 11); // Limit to XXX-XX-XXXX
+                  setFormData({ ...formData, userId: value });
+                }}
                 className="input-field mt-1"
                 placeholder="XXX-XX-XXXX"
                 pattern="[0-9]{3}-[0-9]{2}-[0-9]{4}"
+                maxLength="11"
               />
-              <p className="text-xs text-gray-500 mt-1">Format: XXX-XX-XXXX</p>
+              <p className="text-xs text-gray-500 mt-1">Format: XXX-XX-XXXX (auto-formatted as you type)</p>
             </div>
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-gray-700">

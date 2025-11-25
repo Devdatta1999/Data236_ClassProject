@@ -1,8 +1,9 @@
 /**
  * User Model for MongoDB
+ * CRITICAL: Use mongoose from shared/config/database.js to ensure same instance
  */
 
-const mongoose = require('mongoose');
+const { mongoose } = require('../../../shared/config/database');
 const bcrypt = require('bcrypt');
 const { encrypt, decrypt } = require('../../../shared/utils/encryption');
 
@@ -77,7 +78,8 @@ const userSchema = new mongoose.Schema({
   password: {
     type: String,
     required: true,
-    minlength: 8
+    minlength: 8,
+    select: false // Don't include password in queries by default
   },
   profileImage: {
     type: String,

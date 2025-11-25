@@ -46,8 +46,17 @@ async function handleUserSignup(event) {
     validateEmail(email);
     validatePhoneNumber(phoneNumber);
 
+    // Ensure MongoDB connection is ready before querying
+    const { mongoose, waitForMongoDBReady } = require('../../../shared/config/database');
+    if (mongoose.connection.readyState !== 1) {
+      logger.warn('MongoDB connection not ready, waiting...', {
+        readyState: mongoose.connection.readyState
+      });
+      await waitForMongoDBReady(15000);
+    }
+    
     // Check if user already exists
-    const existingUser = await User.findOne({ $or: [{ userId }, { email }] });
+    const existingUser = await User.findOne({ $or: [{ userId }, { email }] }).maxTimeMS(15000);
     if (existingUser) {
       throw new ConflictError('User with this ID or email already exists');
     }
@@ -105,10 +114,7 @@ async function handleUserSignup(event) {
         requestId,
         success: false,
         eventType: 'user.signup',
-        error: {
-          code: error.code || 'INTERNAL_ERROR',
-          message: error.message
-        }
+        error: error.message || 'Internal error' // Send error message as string for easier frontend handling
       }
     });
   }
@@ -125,17 +131,21 @@ async function handleUserLogin(event) {
       throw new ValidationError('Email and password are required');
     }
 
-    // Check cache first
-    const cacheKey = `user:email:${email.toLowerCase()}`;
-    let user = await getCache(cacheKey);
-
+    // Always fetch from database for login to get password hash
+    // Cache is not used for login since we need the password field
+    // Ensure MongoDB connection is ready before querying
+    const { mongoose, waitForMongoDBReady } = require('../../../shared/config/database');
+    if (mongoose.connection.readyState !== 1) {
+      logger.warn('MongoDB connection not ready, waiting...', {
+        readyState: mongoose.connection.readyState
+      });
+      await waitForMongoDBReady(15000);
+    }
+    
+    // Fetch user with password field included (select('+password'))
+    const user = await User.findOne({ email: email.toLowerCase() }).select('+password').maxTimeMS(15000);
     if (!user) {
-      user = await User.findOne({ email: email.toLowerCase() });
-      if (!user) {
-        throw new ValidationError('Invalid credentials');
-      }
-      // Cache user data (without password)
-      await setCache(cacheKey, user.toSafeObject(), 900);
+      throw new ValidationError('Invalid credentials');
     }
 
     // Verify password
@@ -143,6 +153,10 @@ async function handleUserLogin(event) {
     if (!isMatch) {
       throw new ValidationError('Invalid credentials');
     }
+    
+    // Update cache after successful login (without password)
+    const cacheKey = `user:email:${email.toLowerCase()}`;
+    await setCache(cacheKey, user.toSafeObject(), 900);
 
     const token = generateToken({
       userId: user.userId,
@@ -169,16 +183,15 @@ async function handleUserLogin(event) {
   } catch (error) {
     logger.error(`Error handling user login: ${error.message}`);
     
+    // Send error as a simple string message for easier frontend handling
+    const errorMessage = error.message || 'Internal error';
     await sendMessage('user-events-response', {
       key: requestId,
       value: {
         requestId,
         success: false,
         eventType: 'user.login',
-        error: {
-          code: error.code || 'INTERNAL_ERROR',
-          message: error.message
-        }
+        error: errorMessage
       }
     });
   }

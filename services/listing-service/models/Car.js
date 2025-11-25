@@ -86,6 +86,16 @@ const carSchema = new mongoose.Schema({
     max: 5
   },
   reviews: [reviewSchema],
+  availableFrom: {
+    type: Date,
+    required: true,
+    index: true
+  },
+  availableTo: {
+    type: Date,
+    required: true,
+    index: true
+  },
   availabilityStatus: {
     type: String,
     enum: ['Available', 'Booked', 'Maintenance'],
@@ -113,6 +123,8 @@ const carSchema = new mongoose.Schema({
 // Indexes for search optimization
 carSchema.index({ carType: 1, dailyRentalPrice: 1 });
 carSchema.index({ status: 1, availabilityStatus: 1 });
+carSchema.index({ availableFrom: 1, availableTo: 1 });
+carSchema.index({ status: 1, availableFrom: 1, availableTo: 1 });
 
 // Method to update rating
 carSchema.methods.updateRating = function() {

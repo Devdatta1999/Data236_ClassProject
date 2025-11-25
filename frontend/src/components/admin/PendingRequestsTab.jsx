@@ -67,12 +67,55 @@ const PendingRequestsTab = ({ onRefresh }) => {
                 </div>
                 <div className="flex-1">
                   <h3 className="text-xl font-semibold mb-2">
-                    {listing.flightId || listing.hotelName || listing.carModel}
+                    {listing.flightId || listing.hotelName || `${listing.model} (${listing.year})`}
                   </h3>
                   <p className="text-gray-600 mb-2">Type: {listing.type}</p>
-                  <p className="text-sm text-gray-500">
+                  <p className="text-sm text-gray-500 mb-2">
                     Provider: {listing.providerName || 'N/A'}
                   </p>
+                  <p className="text-sm text-gray-500 mb-2">
+                    ID: {listing.flightId || listing.hotelId || listing.carId}
+                  </p>
+                  
+                  {/* Flight Details */}
+                  {listing.type === 'Flight' && (
+                    <div className="text-sm text-gray-600 space-y-1 mt-2">
+                      <p><strong>Route:</strong> {listing.departureAirport} → {listing.arrivalAirport}</p>
+                      <p><strong>Departure:</strong> {listing.departureDateTime ? new Date(listing.departureDateTime).toLocaleString() : 'N/A'}</p>
+                      <p><strong>Arrival:</strong> {listing.arrivalDateTime ? new Date(listing.arrivalDateTime).toLocaleString() : 'N/A'}</p>
+                      <p><strong>Class:</strong> {listing.flightClass}</p>
+                      <p><strong>Price:</strong> ${listing.ticketPrice}</p>
+                      <p><strong>Seats:</strong> {listing.availableSeats}/{listing.totalSeats}</p>
+                    </div>
+                  )}
+                  
+                  {/* Hotel Details */}
+                  {listing.type === 'Hotel' && (
+                    <div className="text-sm text-gray-600 space-y-1 mt-2">
+                      <p><strong>Location:</strong> {listing.city}, {listing.state}</p>
+                      <p><strong>Address:</strong> {listing.address}</p>
+                      <p><strong>ZIP:</strong> {listing.zipCode}</p>
+                      <p><strong>Rating:</strong> {'⭐'.repeat(listing.starRating || 0)}</p>
+                      <p><strong>Rooms:</strong> {listing.availableRooms}/{listing.totalRooms}</p>
+                      {listing.roomTypes && listing.roomTypes.length > 0 && (
+                        <p><strong>Price:</strong> ${listing.roomTypes[0].pricePerNight}/night</p>
+                      )}
+                    </div>
+                  )}
+                  
+                  {/* Car Details */}
+                  {listing.type === 'Car' && (
+                    <div className="text-sm text-gray-600 space-y-1 mt-2">
+                      <p><strong>Model:</strong> {listing.model} ({listing.year})</p>
+                      <p><strong>Type:</strong> {listing.carType}</p>
+                      <p><strong>Transmission:</strong> {listing.transmissionType}</p>
+                      <p><strong>Seats:</strong> {listing.numberOfSeats}</p>
+                      <p><strong>Price:</strong> ${listing.dailyRentalPrice}/day</p>
+                      <p><strong>Available From:</strong> {listing.availableFrom ? new Date(listing.availableFrom).toLocaleDateString() : 'N/A'}</p>
+                      <p><strong>Available To:</strong> {listing.availableTo ? new Date(listing.availableTo).toLocaleDateString() : 'N/A'}</p>
+                    </div>
+                  )}
+                  
                   {listing.status && (
                     <span className="inline-block mt-2 px-2 py-1 bg-yellow-100 text-yellow-800 text-xs rounded">
                       {listing.status}

@@ -245,6 +245,11 @@ const getMyProvider = asyncHandler(async (req, res) => {
 const getProvider = asyncHandler(async (req, res) => {
   const { providerId } = req.params;
   
+  // Guard: Reject special route names that should be handled by specific routes
+  if (providerId === 'search' || providerId === 'listings' || providerId === 'me' || providerId === 'register' || providerId === 'login') {
+    throw new NotFoundError('Route not found');
+  }
+  
   logger.info('getProvider called', { providerId, path: req.path });
 
   // Don't match "listings" or "me" as providerId - these should be handled by specific routes
@@ -474,6 +479,45 @@ const deleteMyListing = asyncHandler(async (req, res) => {
   }
 });
 
+/**
+ * Search providers by name (for autocomplete)
+ */
+const searchProviders = asyncHandler(async (req, res) => {
+  const { q } = req.query; // Search query
+  
+  try {
+    const { mongoose, waitForMongoDBReady } = require('../../../shared/config/database');
+    if (mongoose.connection.readyState !== 1) {
+      await waitForMongoDBReady(15000);
+    }
+    
+    let query = {};
+    if (q && q.trim()) {
+      // Search by providerName (case-insensitive partial match)
+      query.providerName = new RegExp(q.trim(), 'i');
+    }
+    
+    const providers = await Provider.find(query)
+      .select('providerId providerName email')
+      .limit(20)
+      .sort({ providerName: 1 })
+      .lean()
+      .maxTimeMS(15000);
+    
+    logger.info(`Found ${providers.length} providers matching query: ${q || 'all'}`);
+    
+    res.json({
+      success: true,
+      data: {
+        providers
+      }
+    });
+  } catch (error) {
+    logger.error(`Error searching providers: ${error.message}`);
+    throw error;
+  }
+});
+
 module.exports = {
   registerProvider,
   loginProvider,
@@ -482,6 +526,7 @@ module.exports = {
   getMyProvider,
   getProviderAnalytics,
   getMyListings,
-  deleteMyListing
+  deleteMyListing,
+  searchProviders
 };
 
