@@ -23,7 +23,19 @@ app.use(express.urlencoded({ extended: true }));
 
 // Serve uploaded images statically
 const path = require('path');
-app.use('/api/listings/images', express.static(path.join(__dirname, '../uploads/images')));
+// Use express.static with options to handle URL-encoded filenames
+app.use('/api/listings/images', express.static(path.join(__dirname, '../uploads/images'), {
+  setHeaders: (res, filePath) => {
+    // Set proper content type for images
+    if (filePath.endsWith('.webp')) {
+      res.setHeader('Content-Type', 'image/webp');
+    } else if (filePath.endsWith('.jpg') || filePath.endsWith('.jpeg')) {
+      res.setHeader('Content-Type', 'image/jpeg');
+    } else if (filePath.endsWith('.png')) {
+      res.setHeader('Content-Type', 'image/png');
+    }
+  }
+}));
 
 // Health check
 app.get('/health', (req, res) => {

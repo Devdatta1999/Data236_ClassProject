@@ -27,13 +27,15 @@ const HotelDetailPage = () => {
   const [checkOutDate, setCheckOutDate] = useState('')
   const [numberOfAdults, setNumberOfAdults] = useState(2)
   const [numberOfRooms, setNumberOfRooms] = useState(1)
-  const [selectedImageIndex, setSelectedImageIndex] = useState(0)
+  const [selectedImageIndex, setSelectedImageIndex] = useState(null)
 
   useEffect(() => {
     const fetchHotel = async () => {
       try {
         // If hotel data is passed from search results, use it
         if (location.state?.hotel) {
+          console.log('Hotel from location.state:', location.state.hotel)
+          console.log('Hotel images:', location.state.hotel.images)
           setHotel(location.state.hotel)
           setCheckInDate(location.state.searchParams?.checkInDate || '')
           setCheckOutDate(location.state.searchParams?.checkOutDate || '')
@@ -92,37 +94,47 @@ const HotelDetailPage = () => {
       return
     }
 
-    // For now, add the first selected room type to cart
-    // In a full implementation, you might want to add multiple room types as separate cart items
-    const firstRoom = selectedRooms[0]
-    const roomTypeData = hotel.roomAvailability?.find(rt => rt.type === firstRoom.roomType) 
-      || hotel.roomTypes?.find(rt => rt.type === firstRoom.roomType)
-    
-    if (!roomTypeData) {
-      setNotification({ type: 'error', message: 'Selected room type not found' })
-      return
-    }
-
     const nights = differenceInDays(new Date(checkOutDate), new Date(checkInDate)) || 1
-    const totalPrice = roomTypeData.pricePerNight * nights * firstRoom.quantity
+    let addedCount = 0
 
-    const cartItem = {
-      listingId: hotel.hotelId,
-      listingType: 'Hotel',
-      listingName: hotel.hotelName,
-      roomType: firstRoom.roomType,
-      quantity: firstRoom.quantity,
-      pricePerNight: roomTypeData.pricePerNight,
-      totalPrice,
-      checkInDate,
-      checkOutDate,
-      numberOfNights: nights,
-      image: hotel.images && hotel.images.length > 0 ? hotel.images[0] : null,
-      address: `${hotel.address}, ${hotel.city}, ${hotel.state}`,
+    // Add each selected room type as a separate cart item
+    selectedRooms.forEach((room) => {
+      const roomTypeData = hotel.roomAvailability?.find(rt => rt.type === room.roomType) 
+        || hotel.roomTypes?.find(rt => rt.type === room.roomType)
+      
+      if (!roomTypeData) {
+        console.error(`Room type ${room.roomType} not found`)
+        return
+      }
+
+      const totalPrice = roomTypeData.pricePerNight * nights * room.quantity
+
+      const cartItem = {
+        listingId: hotel.hotelId,
+        listingType: 'Hotel',
+        listingName: hotel.hotelName,
+        listing: hotel, // Include full hotel object for checkout
+        roomType: room.roomType,
+        quantity: room.quantity,
+        pricePerNight: roomTypeData.pricePerNight,
+        totalPrice,
+        checkInDate,
+        checkOutDate,
+        numberOfNights: nights,
+        image: hotel.images && hotel.images.length > 0 ? hotel.images[0] : null,
+        address: `${hotel.address}, ${hotel.city}, ${hotel.state}`,
+      }
+
+      dispatch(addToCart(cartItem))
+      addedCount++
+    })
+
+    if (addedCount > 0) {
+      setNotification({ 
+        type: 'success', 
+        message: `Added ${addedCount} room type${addedCount > 1 ? 's' : ''} to cart!` 
+      })
     }
-
-    dispatch(addToCart(cartItem))
-    setNotification({ type: 'success', message: 'Added to cart!' })
   }
 
   const getAmenityIcon = (amenity) => {
@@ -185,7 +197,19 @@ const HotelDetailPage = () => {
       <div className="bg-white border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <button
-            onClick={() => navigate(-1)}
+            onClick={() => {
+              // Navigate back to search results, preserving search params
+              if (location.state?.searchParams) {
+                navigate('/search', { 
+                  state: { 
+                    searchParams: location.state.searchParams,
+                    type: 'hotels'
+                  } 
+                })
+              } else {
+                navigate(-1)
+              }
+            }}
             className="text-primary-600 hover:text-primary-700 mb-4 flex items-center space-x-2"
           >
             <ArrowLeft className="w-4 h-4" />
@@ -220,19 +244,36 @@ const HotelDetailPage = () => {
           {/* Main Content */}
           <div className="lg:col-span-2 space-y-8">
             {/* Image Gallery - Airbnb Style */}
-            {hotel.images && hotel.images.length > 0 && (
+            {hotel.images && hotel.images.length > 0 ? (
               <div className="relative">
                 <div className="grid grid-cols-2 gap-2 h-96 rounded-lg overflow-hidden">
                   {/* Main large image */}
-                  <div className="col-span-2 relative group cursor-pointer" onClick={() => setSelectedImageIndex(0)}>
+                  <div className="col-span-2 relative group cursor-pointer bg-gray-200" onClick={() => setSelectedImageIndex(0)}>
                     <img
-                      src={hotel.images[0]?.startsWith('http') ? hotel.images[0] : `${API_BASE_URL}${hotel.images[0]}`}
+                      src={(() => {
+                        const imagePath = hotel.images[0]
+                        if (!imagePath) return ''
+                        if (imagePath.startsWith('http')) return imagePath
+                        // Extract just the filename from the path and encode it properly
+                        const filename = imagePath.split('/').pop()
+                        // Encode the filename to handle spaces and special characters
+                        const encodedFilename = encodeURIComponent(filename)
+                        return `${API_BASE_URL}/api/listings/images/${encodedFilename}`
+                      })()}
                       alt={hotel.hotelName}
                       className="w-full h-full object-cover"
                       onError={(e) => {
-                        e.target.src = 'https://via.placeholder.com/800x400?text=Hotel+Image'
+                        console.error('Image load error:', e.target.src)
+                        e.target.style.display = 'none'
+                        const placeholder = e.target.parentElement?.querySelector('.image-placeholder')
+                        if (placeholder) placeholder.classList.remove('hidden')
                       }}
+                      onLoad={() => console.log('Image loaded successfully:', hotel.images[0])}
                     />
+                    {/* Placeholder for when image fails to load */}
+                    <div className="image-placeholder hidden absolute inset-0 flex items-center justify-center bg-gray-200">
+                      <Building2 className="w-16 h-16 text-gray-400" />
+                    </div>
                     {hotel.images.length > 1 && (
                       <div className="absolute bottom-4 right-4 bg-black bg-opacity-50 text-white px-3 py-1 rounded-full text-sm">
                         View all {hotel.images.length} photos
@@ -249,11 +290,18 @@ const HotelDetailPage = () => {
                           onClick={() => setSelectedImageIndex(idx + 1)}
                         >
                           <img
-                            src={image?.startsWith('http') ? image : `${API_BASE_URL}${image}`}
+                            src={(() => {
+                              if (!image) return ''
+                              if (image.startsWith('http')) return image
+                              const filename = image.split('/').pop()
+                              // Encode the filename to handle spaces and special characters
+                              const encodedFilename = encodeURIComponent(filename)
+                              return `${API_BASE_URL}/api/listings/images/${encodedFilename}`
+                            })()}
                             alt={`${hotel.hotelName} ${idx + 2}`}
                             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
                             onError={(e) => {
-                              e.target.src = 'https://via.placeholder.com/400x200?text=Hotel+Image'
+                              e.target.style.display = 'none'
                             }}
                           />
                           {idx === 3 && hotel.images.length > 5 && (
@@ -303,12 +351,20 @@ const HotelDetailPage = () => {
                         </>
                       )}
                       <img
-                        src={hotel.images[selectedImageIndex]?.startsWith('http') ? hotel.images[selectedImageIndex] : `${API_BASE_URL}${hotel.images[selectedImageIndex]}`}
+                        src={(() => {
+                          const imagePath = hotel.images[selectedImageIndex]
+                          if (!imagePath) return ''
+                          if (imagePath.startsWith('http')) return imagePath
+                          const filename = imagePath.split('/').pop()
+                          // Encode the filename to handle spaces and special characters
+                          const encodedFilename = encodeURIComponent(filename)
+                          return `${API_BASE_URL}/api/listings/images/${encodedFilename}`
+                        })()}
                         alt={`${hotel.hotelName} ${selectedImageIndex + 1}`}
                         className="max-w-full max-h-[90vh] object-contain"
                         onClick={(e) => e.stopPropagation()}
                         onError={(e) => {
-                          e.target.src = 'https://via.placeholder.com/800x600?text=Hotel+Image'
+                          e.target.style.display = 'none'
                         }}
                       />
                       {hotel.images.length > 1 && (
@@ -319,6 +375,10 @@ const HotelDetailPage = () => {
                     </div>
                   </div>
                 )}
+              </div>
+            ) : (
+              <div className="h-96 rounded-lg overflow-hidden bg-gray-200 flex items-center justify-center">
+                <Building2 className="w-16 h-16 text-gray-400" />
               </div>
             )}
 

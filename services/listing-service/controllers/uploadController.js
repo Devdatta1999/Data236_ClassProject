@@ -21,9 +21,12 @@ const storage = multer.diskStorage({
   },
   filename: (req, file, cb) => {
     // Generate unique filename: timestamp-random-originalname
+    // Replace spaces and special characters to avoid URL encoding issues
     const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
     const ext = path.extname(file.originalname);
-    const name = path.basename(file.originalname, ext);
+    let name = path.basename(file.originalname, ext);
+    // Replace spaces with underscores and remove special characters that could cause issues
+    name = name.replace(/\s+/g, '_').replace(/[^a-zA-Z0-9_-]/g, '_');
     cb(null, `${name}-${uniqueSuffix}${ext}`);
   }
 });

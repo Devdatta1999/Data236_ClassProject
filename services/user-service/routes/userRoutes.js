@@ -1,13 +1,17 @@
 /**
  * User Routes
- * Note: User registration and login are handled via Kafka (user-events topic)
- * Only non-high-traffic operations remain as HTTP endpoints
+ * Note: User registration and login can be handled via Kafka (user-events topic) or HTTP
+ * HTTP endpoints are provided as a fallback and for reliability
  */
 
 const express = require('express');
 const router = express.Router();
 const userController = require('../controllers/userController');
 const { authenticate } = require('../../../shared/middleware/auth');
+
+// Public routes (login and signup)
+router.post('/login', userController.login);
+router.post('/signup', userController.signup);
 
 // Protected routes (non-high-traffic operations)
 router.get('/:userId', authenticate, userController.getUser);

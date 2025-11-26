@@ -6,11 +6,10 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const { testPostgresConnection, connectMongoDB } = require('../../shared/config/database');
-const { createConsumer } = require('../../shared/config/kafka');
 const { errorHandler } = require('../../shared/utils/errors');
 const logger = require('../../shared/utils/logger');
 const billingRoutes = require('./routes/billingRoutes');
-const { handleBillingEvent, handleBookingResponseForCheckout } = require('./consumers/billingEventConsumer');
+// Note: Kafka consumers removed - checkout and payment now use HTTP endpoints
 
 const app = express();
 const PORT = process.env.PORT || 3004;
@@ -50,41 +49,13 @@ async function startServer() {
       // Don't exit - allow service to start even if DB connection fails initially
     }
     
-    // Setup Kafka consumers for checkout and payment events
-    try {
-      await createConsumer(
-        'billing-service-group',
-        ['checkout-events', 'payment-events'],
-        handleBillingEvent
-      );
-      logger.info('Kafka consumer created for checkout-events and payment-events');
-    } catch (kafkaError) {
-      logger.error(`Failed to create Kafka consumer: ${kafkaError.message}`);
-      // Continue anyway - Kafka might be starting up
-    }
-
-    // Also consume booking responses to handle checkout aggregation
-    try {
-      await createConsumer(
-        'billing-service-booking-response-group',
-        ['booking-events-response'],
-        async (topic, message, metadata) => {
-          try {
-            const response = typeof message === 'string' ? JSON.parse(message) : message;
-            await handleBookingResponseForCheckout(response);
-          } catch (error) {
-            logger.error(`Error handling booking response for checkout: ${error.message}`);
-          }
-        }
-      );
-      logger.info('Kafka consumer created for booking-events-response');
-    } catch (kafkaError) {
-      logger.error(`Failed to create booking response consumer: ${kafkaError.message}`);
-    }
+    // Note: Checkout and payment are now handled via HTTP endpoints
+    // Kafka is still used for login, signup, and search (handled by other services)
+    // No Kafka consumers needed in billing service anymore
     
     app.listen(PORT, () => {
       logger.info(`Billing service running on port ${PORT}`);
-      logger.info('Kafka consumers subscribed to: checkout-events, payment-events, booking-events-response');
+      logger.info('Checkout and payment endpoints available at /api/billing/checkout and /api/billing/payment');
     });
   } catch (error) {
     logger.error('Failed to start billing service:', error);

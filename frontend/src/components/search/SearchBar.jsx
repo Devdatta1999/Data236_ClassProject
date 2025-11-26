@@ -110,35 +110,45 @@ const SearchBar = ({ type, onSearch }) => {
     return (
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="grid md:grid-cols-4 gap-4">
+          {/* Location */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              City
+              Location
             </label>
             <div className="relative">
               <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
               <input
                 type="text"
-                placeholder="City"
-                value={params.city}
-                onChange={(e) => setParams({ ...params, city: e.target.value })}
-                className="input-field pl-10"
+                placeholder="City, State (e.g., San Jose, CA)"
+                value={params.city && params.state ? `${params.city}, ${params.state}` : params.city || ''}
+                onChange={(e) => {
+                  const value = e.target.value
+                  // Split by comma if present, otherwise treat entire input as city
+                  if (value.includes(',')) {
+                    const parts = value.split(',').map(s => s.trim())
+                    const newCity = parts[0] || ''
+                    const newState = parts[1] ? parts[1].toUpperCase().substring(0, 2) : ''
+                    setParams({ 
+                      ...params, 
+                      city: newCity,
+                      state: newState
+                    })
+                  } else {
+                    // No comma - treat entire input as city (allows spaces like "San Jose")
+                    setParams({ 
+                      ...params, 
+                      city: value,
+                      state: ''
+                    })
+                  }
+                }}
+                className="input-field pl-10 text-gray-900"
                 required
               />
             </div>
           </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              State
-            </label>
-            <input
-              type="text"
-              placeholder="State (e.g., NY)"
-              value={params.state}
-              onChange={(e) => setParams({ ...params, state: e.target.value.toUpperCase() })}
-              className="input-field"
-              maxLength="2"
-            />
-          </div>
+
+          {/* Check-in */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Check-in
@@ -149,12 +159,14 @@ const SearchBar = ({ type, onSearch }) => {
                 type="date"
                 value={params.checkInDate}
                 onChange={(e) => setParams({ ...params, checkInDate: e.target.value })}
-                className="input-field pl-10"
+                className="input-field pl-10 text-gray-900"
                 required
                 min={new Date().toISOString().split('T')[0]}
               />
             </div>
           </div>
+
+          {/* Check-out */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Check-out
@@ -165,84 +177,111 @@ const SearchBar = ({ type, onSearch }) => {
                 type="date"
                 value={params.checkOutDate}
                 onChange={(e) => setParams({ ...params, checkOutDate: e.target.value })}
-                className="input-field pl-10"
+                className="input-field pl-10 text-gray-900"
                 required
                 min={params.checkInDate || new Date().toISOString().split('T')[0]}
               />
             </div>
           </div>
+
+          {/* Rooms & Guests */}
           <div className="relative">
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Rooms & Guests
             </label>
             <button
               type="button"
-              onClick={() => setParams({ ...params, showRoomGuests: !params.showRoomGuests })}
+              onClick={(e) => {
+                e.preventDefault()
+                setParams({ ...params, showRoomGuests: !params.showRoomGuests })
+              }}
               className="input-field w-full text-left flex items-center justify-between cursor-pointer"
             >
-              <span>{params.numberOfRooms} room{params.numberOfRooms > 1 ? 's' : ''}, {params.numberOfAdults} guest{params.numberOfAdults > 1 ? 's' : ''}</span>
+              <span>{params.numberOfRooms} {params.numberOfRooms === 1 ? 'room' : 'rooms'} · {params.numberOfAdults} {params.numberOfAdults === 1 ? 'adult' : 'adults'}</span>
               <Users className="w-5 h-5 text-gray-400" />
             </button>
+            
+            {/* Dropdown */}
             {params.showRoomGuests && (
-              <div className="absolute z-10 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg p-4">
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="font-medium">Rooms</p>
-                      <p className="text-sm text-gray-500">Each room accommodates 2 guests</p>
+              <>
+                <div 
+                  className="fixed inset-0 z-40"
+                  onClick={() => setParams({ ...params, showRoomGuests: false })}
+                ></div>
+                <div className="absolute z-50 mt-1 left-0 md:right-0 w-[320px] md:w-[300px] bg-white border border-gray-200 rounded-lg shadow-xl p-4" onClick={(e) => e.stopPropagation()}>
+                  <div className="space-y-4">
+                    {/* Rooms */}
+                    <div className="flex items-center justify-between">
+                      <p className="font-semibold text-gray-900">Rooms</p>
+                      <div className="flex items-center border border-gray-300 rounded-md overflow-hidden">
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            setParams({ ...params, numberOfRooms: Math.max(1, params.numberOfRooms - 1) })
+                          }}
+                          className="px-4 py-2 text-primary-600 font-semibold hover:bg-gray-50 transition-colors disabled:text-gray-400 disabled:cursor-not-allowed disabled:hover:bg-transparent"
+                          disabled={params.numberOfRooms <= 1}
+                        >
+                          −
+                        </button>
+                        <span className="px-6 py-2 text-center font-semibold text-gray-900 border-l border-r border-gray-300 min-w-[3rem] bg-white">{params.numberOfRooms}</span>
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            setParams({ ...params, numberOfRooms: params.numberOfRooms + 1 })
+                          }}
+                          className="px-4 py-2 text-primary-600 font-semibold hover:bg-gray-50 transition-colors"
+                        >
+                          +
+                        </button>
+                      </div>
                     </div>
-                    <div className="flex items-center space-x-3">
-                      <button
-                        type="button"
-                        onClick={() => setParams({ ...params, numberOfRooms: Math.max(1, params.numberOfRooms - 1) })}
-                        className="w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center hover:border-gray-400"
-                        disabled={params.numberOfRooms <= 1}
-                      >
-                        <Minus className="w-4 h-4" />
-                      </button>
-                      <span className="w-8 text-center">{params.numberOfRooms}</span>
-                      <button
-                        type="button"
-                        onClick={() => setParams({ ...params, numberOfRooms: params.numberOfRooms + 1 })}
-                        className="w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center hover:border-gray-400"
-                      >
-                        <Plus className="w-4 h-4" />
-                      </button>
+
+                    {/* Adults */}
+                    <div className="flex items-center justify-between">
+                      <p className="font-semibold text-gray-900">Adults</p>
+                      <div className="flex items-center border border-gray-300 rounded-md overflow-hidden">
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            setParams({ ...params, numberOfAdults: Math.max(1, params.numberOfAdults - 1) })
+                          }}
+                          className="px-4 py-2 text-primary-600 font-semibold hover:bg-gray-50 transition-colors disabled:text-gray-400 disabled:cursor-not-allowed disabled:hover:bg-transparent"
+                          disabled={params.numberOfAdults <= 1}
+                        >
+                          −
+                        </button>
+                        <span className="px-6 py-2 text-center font-semibold text-gray-900 border-l border-r border-gray-300 min-w-[3rem] bg-white">{params.numberOfAdults}</span>
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            setParams({ ...params, numberOfAdults: params.numberOfAdults + 1 })
+                          }}
+                          className="px-4 py-2 text-primary-600 font-semibold hover:bg-gray-50 transition-colors"
+                        >
+                          +
+                        </button>
+                      </div>
                     </div>
+
+                    {/* Done Button */}
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        setParams({ ...params, showRoomGuests: false })
+                      }}
+                      className="w-full bg-primary-600 text-white py-2 rounded-lg font-semibold hover:bg-primary-700 transition-colors text-sm mt-2"
+                    >
+                      Done
+                    </button>
                   </div>
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="font-medium">Adults</p>
-                      <p className="text-sm text-gray-500">Ages 13+</p>
-                    </div>
-                    <div className="flex items-center space-x-3">
-                      <button
-                        type="button"
-                        onClick={() => setParams({ ...params, numberOfAdults: Math.max(1, params.numberOfAdults - 1) })}
-                        className="w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center hover:border-gray-400"
-                        disabled={params.numberOfAdults <= 1}
-                      >
-                        <Minus className="w-4 h-4" />
-                      </button>
-                      <span className="w-8 text-center">{params.numberOfAdults}</span>
-                      <button
-                        type="button"
-                        onClick={() => setParams({ ...params, numberOfAdults: params.numberOfAdults + 1 })}
-                        className="w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center hover:border-gray-400"
-                      >
-                        <Plus className="w-4 h-4" />
-                      </button>
-                    </div>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => setParams({ ...params, showRoomGuests: false })}
-                    className="w-full btn-primary"
-                  >
-                    Done
-                  </button>
                 </div>
-              </div>
+              </>
             )}
           </div>
         </div>

@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
-import { sendEventAndWait } from '../../services/kafkaService'
 import { clearCart } from '../../store/slices/cartSlice'
 import { setLoading, setError } from '../../store/slices/cartSlice'
 import { addBooking } from '../../store/slices/bookingSlice'
@@ -159,31 +158,30 @@ const PaymentPage = () => {
         return
       }
 
-      const response = await sendEventAndWait(
-        'payment-events',
-        {
-          eventType: 'payment.complete',
-          checkoutId: finalCheckoutId,
-          userId: user.userId,
-          bookingIds: checkoutData?.bookings?.map((b) => b.bookingId) || [],
-          paymentMethod: 'Credit Card',
-          cardData, // Include card data
-        },
-        'payment-events-response',
-        60000
-      )
+      // Use HTTP endpoint instead of Kafka
+      const response = await api.post('/api/billing/payment', {
+        checkoutId: finalCheckoutId,
+        userId: user.userId,
+        bookingIds: checkoutData?.bookings?.map((b) => b.bookingId) || [],
+        paymentMethod: 'Credit Card',
+        cardData, // Include card data
+      })
 
-      // Add bookings to Redux
-      if (response.bills) {
-        response.bills.forEach((bill) => {
-          // Find corresponding booking
-          const booking = checkoutData?.bookings?.find(
-            (b) => b.bookingId === bill.booking_id?.split('-').pop()
-          )
-          if (booking) {
-            dispatch(addBooking({ ...booking, status: 'Confirmed' }))
-          }
-        })
+      if (response.data.success) {
+        // Add bookings to Redux
+        if (response.data.data.bills) {
+          response.data.data.bills.forEach((bill) => {
+            // Find corresponding booking
+            const booking = checkoutData?.bookings?.find(
+              (b) => b.bookingId === bill.booking_id?.split('-').pop()
+            )
+            if (booking) {
+              dispatch(addBooking({ ...booking, status: 'Confirmed' }))
+            }
+          })
+        }
+      } else {
+        throw new Error(response.data.message || 'Payment failed')
       }
 
       setPaymentCompleted(true) // Mark payment as completed before navigation

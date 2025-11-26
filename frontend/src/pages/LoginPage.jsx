@@ -22,7 +22,7 @@ const LoginPage = () => {
 
     try {
       if (formData.userType === 'traveler') {
-        // Use Kafka for traveler login
+        // Use Kafka for traveler login (as per original design)
         const response = await sendEventAndWait(
           'user-events',
           {

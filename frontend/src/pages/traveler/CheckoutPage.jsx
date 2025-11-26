@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
-import { sendEventAndWait } from '../../services/kafkaService'
 import { setCheckoutId, setLoading, setError } from '../../store/slices/cartSlice'
 import { Trash2, ArrowRight, Calendar } from 'lucide-react'
 import { removeFromCart, updateQuantity } from '../../store/slices/cartSlice'
@@ -16,8 +15,8 @@ const CheckoutPage = () => {
   const { user } = useSelector((state) => state.auth)
   const [notification, setNotification] = useState(null)
 
-  // Mark any pending bookings as Failed when user navigates to checkout
-  // This ensures bookings from failed payments are freed up
+  // Mark only OLD pending bookings as Failed when user navigates to checkout
+  // This ensures bookings from failed payments are freed up, but NOT the current checkout
   useEffect(() => {
     const markFailedBookings = async () => {
       if (!user?.userId) return
@@ -27,20 +26,26 @@ const CheckoutPage = () => {
         const response = await api.get(`/api/bookings/user/${user.userId}`)
         const bookings = response.data.data?.bookings || []
         
-        // Find pending bookings that might be from a failed payment
-        const pendingBookings = bookings.filter(b => b.status === 'Pending')
+        // Only mark bookings as Failed if they're older than 15 minutes (abandoned checkouts)
+        // This prevents marking the current checkout's booking as Failed
+        const fifteenMinutesAgo = new Date(Date.now() - 15 * 60 * 1000)
+        const oldPendingBookings = bookings.filter(b => {
+          if (b.status !== 'Pending') return false
+          const bookingDate = new Date(b.createdAt || b.bookingDate)
+          return bookingDate < fifteenMinutesAgo
+        })
         
-        if (pendingBookings.length > 0) {
-          // Mark them as Failed to free up inventory
-          const bookingIds = pendingBookings.map(b => b.bookingId)
+        if (oldPendingBookings.length > 0) {
+          // Mark only old pending bookings as Failed to free up inventory
+          const bookingIds = oldPendingBookings.map(b => b.bookingId)
           
-          console.log(`[CheckoutPage] Found ${pendingBookings.length} pending booking(s) from previous session, marking as Failed...`)
+          console.log(`[CheckoutPage] Found ${oldPendingBookings.length} old pending booking(s) from previous session, marking as Failed...`)
           
           await api.post('/api/bookings/fail', { bookingIds }, {
             timeout: 5000
           })
           
-          console.log(`[CheckoutPage] Successfully marked ${pendingBookings.length} booking(s) as Failed`)
+          console.log(`[CheckoutPage] Successfully marked ${oldPendingBookings.length} old booking(s) as Failed`)
         }
       } catch (err) {
         console.error('[CheckoutPage] Error marking failed bookings:', err)
@@ -66,33 +71,54 @@ const CheckoutPage = () => {
     dispatch(setLoading(true))
 
     try {
-      const cartItems = items.map((item) => ({
-        listingId: item.listingId,
-        listingType: item.listingType,
-        quantity: item.quantity,
-        ...(item.travelDate && { travelDate: item.travelDate }),
-        ...(item.checkInDate && { checkInDate: item.checkInDate }),
-        ...(item.checkOutDate && { checkOutDate: item.checkOutDate }),
-        ...(item.pickupDate && { pickupDate: item.pickupDate }),
-        ...(item.returnDate && { returnDate: item.returnDate }),
-        ...(item.roomType && { roomType: item.roomType }), // For hotels
-      }))
+      const cartItems = items.map((item) => {
+        const cartItem = {
+          listingId: item.listingId,
+          listingType: item.listingType,
+          quantity: item.quantity,
+        }
+        
+        // Add dates if they exist (for hotels and cars)
+        if (item.checkInDate) cartItem.checkInDate = item.checkInDate
+        if (item.checkOutDate) cartItem.checkOutDate = item.checkOutDate
+        if (item.pickupDate) cartItem.pickupDate = item.pickupDate
+        if (item.returnDate) cartItem.returnDate = item.returnDate
+        if (item.travelDate) cartItem.travelDate = item.travelDate
+        if (item.roomType) cartItem.roomType = item.roomType // For hotels
+        
+        return cartItem
+      })
 
-      const response = await sendEventAndWait(
-        'checkout-events',
-        {
-          eventType: 'checkout.initiate',
-          userId: user.userId,
-          cartItems,
-        },
-        'checkout-events-response',
-        60000
-      )
+      console.log('[CheckoutPage] Sending checkout request:', {
+        userId: user.userId,
+        cartItemsCount: cartItems.length,
+        cartItems: cartItems.map(item => ({
+          listingId: item.listingId,
+          listingType: item.listingType,
+          quantity: item.quantity,
+          checkInDate: item.checkInDate,
+          checkOutDate: item.checkOutDate,
+          roomType: item.roomType
+        }))
+      })
 
-      dispatch(setCheckoutId(response.checkoutId))
-      navigate('/payment', { state: { checkoutData: response } })
+      // Use HTTP endpoint instead of Kafka
+      const response = await api.post('/api/billing/checkout', {
+        userId: user.userId,
+        cartItems,
+      })
+
+      if (response.data.success) {
+        dispatch(setCheckoutId(response.data.data.checkoutId))
+        navigate('/payment', { state: { checkoutData: response.data.data } })
+      } else {
+        throw new Error(response.data.message || 'Checkout failed')
+      }
     } catch (err) {
-      const errorMessage = err.message || 'Checkout failed. Please try again.'
+      console.error('[CheckoutPage] Checkout error:', err)
+      console.error('[CheckoutPage] Error response:', err.response?.data)
+      console.error('[CheckoutPage] Error status:', err.response?.status)
+      const errorMessage = err.response?.data?.message || err.message || 'Checkout failed. Please try again.'
       dispatch(setError(errorMessage))
       setNotification({ type: 'error', message: errorMessage })
     } finally {
@@ -140,114 +166,225 @@ const CheckoutPage = () => {
 
         <div className="grid md:grid-cols-3 gap-8">
           <div className="md:col-span-2 space-y-4">
-            {items.map((item, index) => {
-              const listing = item.listing
-              let price = 0
-              let totalPrice = 0
-              let priceLabel = ''
-
-              if (item.listingType === 'Car' && item.pickupDate && item.returnDate && item.numberOfDays) {
-                // For cars: dailyRentalPrice × numberOfDays
-                price = listing?.dailyRentalPrice || 0
-                totalPrice = price * item.numberOfDays * item.quantity
-                priceLabel = `$${price.toFixed(2)}/day × ${item.numberOfDays} ${item.numberOfDays === 1 ? 'day' : 'days'}`
-              } else if (item.listingType === 'Flight') {
-                price = listing?.ticketPrice || 0
-                totalPrice = price * item.quantity
-                priceLabel = `$${price.toFixed(2)} each`
-              } else if (item.listingType === 'Hotel') {
-                // For hotels, use pricePerNight from cart item (which includes room type price)
-                price = item.pricePerNight || listing?.pricePerNight || 0
-                const nights = item.numberOfNights || (item.checkInDate && item.checkOutDate 
-                  ? Math.ceil((new Date(item.checkOutDate) - new Date(item.checkInDate)) / (1000 * 60 * 60 * 24)) || 1
-                  : 1)
-                totalPrice = price * nights * item.quantity
-                priceLabel = `$${price.toFixed(2)}/night × ${nights} night${nights > 1 ? 's' : ''}`
-              } else {
-                price = listing?.dailyRentalPrice || 0
-                totalPrice = price * item.quantity
-                priceLabel = `$${price.toFixed(2)} each`
-              }
-
-              return (
-                <div key={index} className="card">
-                  <div className="flex justify-between items-start">
-                    <div className="flex-1">
-                      <h3 className="text-lg font-semibold mb-2">
-                        {listing?.flightId || listing?.hotelName || listing?.model || listing?.carModel}
-                      </h3>
-                      <p className="text-sm text-gray-600 mb-2">
-                        Type: {item.listingType}
-                        {item.roomType && ` - ${item.roomType} Room`}
-                      </p>
-                      {item.listingType === 'Hotel' && item.checkInDate && item.checkOutDate && (
-                        <div className="flex items-center space-x-2 mb-2 text-sm text-gray-600">
-                          <Calendar className="w-4 h-4" />
-                          <span>
-                            Check-in: {format(new Date(item.checkInDate), 'MMM dd, yyyy')} - 
-                            Check-out: {format(new Date(item.checkOutDate), 'MMM dd, yyyy')}
-                            {item.numberOfNights && ` (${item.numberOfNights} ${item.numberOfNights === 1 ? 'night' : 'nights'})`}
-                          </span>
+            {/* Group hotel items by listingId (same hotel) */}
+            {(() => {
+              // Group items: hotels by listingId, others individually
+              const grouped = {}
+              items.forEach((item, idx) => {
+                if (item.listingType === 'Hotel') {
+                  const key = item.listingId
+                  if (!grouped[key]) {
+                    grouped[key] = []
+                  }
+                  grouped[key].push({ ...item, originalIndex: idx })
+                } else {
+                  grouped[`${item.listingType}-${item.listingId}-${idx}`] = [{ ...item, originalIndex: idx }]
+                }
+              })
+              
+              return Object.entries(grouped).map(([groupKey, groupItems]) => {
+                const firstItem = groupItems[0]
+                const isHotelGroup = firstItem.listingType === 'Hotel' && groupItems.length > 1
+                
+                if (isHotelGroup) {
+                  // Render grouped hotel bookings
+                  const listing = firstItem.listing
+                  const totalGroupPrice = groupItems.reduce((sum, item) => {
+                    const price = item.pricePerNight || 0
+                    const nights = item.numberOfNights || (item.checkInDate && item.checkOutDate 
+                      ? Math.ceil((new Date(item.checkOutDate) - new Date(item.checkInDate)) / (1000 * 60 * 60 * 24)) || 1
+                      : 1)
+                    return sum + (price * nights * item.quantity)
+                  }, 0)
+                  
+                  return (
+                    <div key={groupKey} className="card">
+                      <div className="flex justify-between items-start mb-4">
+                        <div className="flex-1">
+                          <h3 className="text-lg font-semibold mb-2">
+                            {firstItem.listingName || listing?.hotelName || 'Hotel'}
+                          </h3>
+                          {firstItem.checkInDate && firstItem.checkOutDate && (
+                            <div className="flex items-center space-x-2 mb-2 text-sm text-gray-600">
+                              <Calendar className="w-4 h-4" />
+                              <span>
+                                Check-in: {format(new Date(firstItem.checkInDate), 'MMM dd, yyyy')} - 
+                                Check-out: {format(new Date(firstItem.checkOutDate), 'MMM dd, yyyy')}
+                                {firstItem.numberOfNights && ` (${firstItem.numberOfNights} ${firstItem.numberOfNights === 1 ? 'night' : 'nights'})`}
+                              </span>
+                            </div>
+                          )}
                         </div>
-                      )}
-                      {item.listingType === 'Car' && item.pickupDate && item.returnDate && (
-                        <div className="flex items-center space-x-2 mb-2 text-sm text-gray-600">
-                          <Calendar className="w-4 h-4" />
-                          <span>
-                            {format(new Date(item.pickupDate), 'MMM dd, yyyy')} - {format(new Date(item.returnDate), 'MMM dd, yyyy')}
-                            {item.numberOfDays && ` (${item.numberOfDays} ${item.numberOfDays === 1 ? 'day' : 'days'})`}
-                          </span>
+                        <div className="text-right ml-4">
+                          <p className="text-xl font-bold text-primary-600">
+                            ${totalGroupPrice.toFixed(2)}
+                          </p>
+                          <p className="text-sm text-gray-500">Total for {groupItems.length} room type{groupItems.length > 1 ? 's' : ''}</p>
                         </div>
-                      )}
-                      <div className="flex items-center space-x-4">
-                        <label className="text-sm text-gray-700">
-                          {item.listingType === 'Car' ? 'Quantity:' : 'Quantity:'}
-                        </label>
-                        {item.listingType === 'Car' ? (
-                          <input
-                            type="number"
-                            value="1"
-                            readOnly
-                            disabled
-                            className="w-20 px-2 py-1 border border-gray-300 rounded bg-gray-50 text-gray-600 cursor-not-allowed"
-                          />
-                        ) : (
-                          <input
-                            type="number"
-                            min="1"
-                            value={item.quantity}
-                            onChange={(e) => dispatch(updateQuantity({
-                              listingId: item.listingId,
-                              listingType: item.listingType,
-                              quantity: parseInt(e.target.value),
-                            }))}
-                            className="w-20 px-2 py-1 border border-gray-300 rounded text-gray-900"
-                          />
-                        )}
+                      </div>
+                      
+                      {/* List all room types */}
+                      <div className="border-t pt-4 space-y-3">
+                        {groupItems.map((item, itemIdx) => {
+                          const price = item.pricePerNight || 0
+                          const nights = item.numberOfNights || (item.checkInDate && item.checkOutDate 
+                            ? Math.ceil((new Date(item.checkOutDate) - new Date(item.checkInDate)) / (1000 * 60 * 60 * 24)) || 1
+                            : 1)
+                          const itemTotal = price * nights * item.quantity
+                          
+                          return (
+                            <div key={itemIdx} className="flex justify-between items-center bg-gray-50 p-3 rounded">
+                              <div className="flex-1">
+                                <p className="font-medium text-gray-900">
+                                  {item.roomType} Room
+                                </p>
+                                <p className="text-sm text-gray-600">
+                                  {item.quantity} room{item.quantity > 1 ? 's' : ''} × ${price.toFixed(2)}/night × {nights} night{nights > 1 ? 's' : ''}
+                                </p>
+                              </div>
+                              <div className="text-right ml-4">
+                                <p className="font-semibold text-gray-900">
+                                  ${itemTotal.toFixed(2)}
+                                </p>
+                                <button
+                                  onClick={() => dispatch(removeFromCart({
+                                    listingId: item.listingId,
+                                    listingType: item.listingType,
+                                    roomType: item.roomType,
+                                    checkInDate: item.checkInDate,
+                                    checkOutDate: item.checkOutDate,
+                                  }))}
+                                  className="mt-1 text-red-600 hover:text-red-700 text-xs flex items-center space-x-1"
+                                >
+                                  <Trash2 className="w-3 h-3" />
+                                  <span>Remove</span>
+                                </button>
+                              </div>
+                            </div>
+                          )
+                        })}
                       </div>
                     </div>
-                    <div className="text-right ml-4">
-                      <p className="text-xl font-bold text-primary-600">
-                        ${totalPrice.toFixed(2)}
-                      </p>
-                      <p className="text-sm text-gray-500">{priceLabel}</p>
-                      <button
-                        onClick={() => dispatch(removeFromCart({
-                          listingId: item.listingId,
-                          listingType: item.listingType,
-                          pickupDate: item.pickupDate,
-                          returnDate: item.returnDate,
-                        }))}
-                        className="mt-2 text-red-600 hover:text-red-700 text-sm flex items-center space-x-1"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                        <span>Remove</span>
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              )
-            })}
+                  )
+                } else {
+                  // Render individual item (non-hotel or single hotel room)
+                  return groupItems.map((item) => {
+                    const listing = item.listing
+                    let price = 0
+                    let totalPrice = 0
+                    let priceLabel = ''
+
+                    if (item.listingType === 'Car' && item.pickupDate && item.returnDate && item.numberOfDays) {
+                      price = listing?.dailyRentalPrice || 0
+                      totalPrice = price * item.numberOfDays * item.quantity
+                      priceLabel = `$${price.toFixed(2)}/day × ${item.numberOfDays} ${item.numberOfDays === 1 ? 'day' : 'days'}`
+                    } else if (item.listingType === 'Flight') {
+                      price = listing?.ticketPrice || 0
+                      totalPrice = price * item.quantity
+                      priceLabel = `$${price.toFixed(2)} each`
+                    } else if (item.listingType === 'Hotel') {
+                      price = item.pricePerNight || listing?.pricePerNight || 0
+                      const nights = item.numberOfNights || (item.checkInDate && item.checkOutDate 
+                        ? Math.ceil((new Date(item.checkOutDate) - new Date(item.checkInDate)) / (1000 * 60 * 60 * 24)) || 1
+                        : 1)
+                      totalPrice = price * nights * item.quantity
+                      priceLabel = `$${price.toFixed(2)}/night × ${nights} night${nights > 1 ? 's' : ''}`
+                    } else {
+                      price = listing?.dailyRentalPrice || 0
+                      totalPrice = price * item.quantity
+                      priceLabel = `$${price.toFixed(2)} each`
+                    }
+
+                    return (
+                      <div key={item.originalIndex} className="card">
+                        <div className="flex justify-between items-start">
+                          <div className="flex-1">
+                            <h3 className="text-lg font-semibold mb-2">
+                              {item.listingName || listing?.flightId || listing?.hotelName || listing?.model || listing?.carModel}
+                            </h3>
+                            <p className="text-sm text-gray-600 mb-2">
+                              Type: {item.listingType}
+                              {item.roomType && ` - ${item.roomType} Room`}
+                            </p>
+                            {item.listingType === 'Hotel' && item.checkInDate && item.checkOutDate && (
+                              <div className="flex items-center space-x-2 mb-2 text-sm text-gray-600">
+                                <Calendar className="w-4 h-4" />
+                                <span>
+                                  Check-in: {format(new Date(item.checkInDate), 'MMM dd, yyyy')} - 
+                                  Check-out: {format(new Date(item.checkOutDate), 'MMM dd, yyyy')}
+                                  {item.numberOfNights && ` (${item.numberOfNights} ${item.numberOfNights === 1 ? 'night' : 'nights'})`}
+                                </span>
+                              </div>
+                            )}
+                            {item.listingType === 'Car' && item.pickupDate && item.returnDate && (
+                              <div className="flex items-center space-x-2 mb-2 text-sm text-gray-600">
+                                <Calendar className="w-4 h-4" />
+                                <span>
+                                  {format(new Date(item.pickupDate), 'MMM dd, yyyy')} - {format(new Date(item.returnDate), 'MMM dd, yyyy')}
+                                  {item.numberOfDays && ` (${item.numberOfDays} ${item.numberOfDays === 1 ? 'day' : 'days'})`}
+                                </span>
+                              </div>
+                            )}
+                            <div className="flex items-center space-x-4">
+                              <label className="text-sm text-gray-700">
+                                {item.listingType === 'Car' ? 'Quantity:' : 'Quantity:'}
+                              </label>
+                              {item.listingType === 'Car' ? (
+                                <input
+                                  type="number"
+                                  value="1"
+                                  readOnly
+                                  disabled
+                                  className="w-20 px-2 py-1 border border-gray-300 rounded bg-gray-50 text-gray-600 cursor-not-allowed"
+                                />
+                              ) : (
+                                <input
+                                  type="number"
+                                  min="1"
+                                  value={item.quantity}
+                                  onChange={(e) => dispatch(updateQuantity({
+                                    listingId: item.listingId,
+                                    listingType: item.listingType,
+                                    quantity: parseInt(e.target.value),
+                                    roomType: item.roomType,
+                                    checkInDate: item.checkInDate,
+                                    checkOutDate: item.checkOutDate,
+                                    pickupDate: item.pickupDate,
+                                    returnDate: item.returnDate,
+                                  }))}
+                                  className="w-20 px-2 py-1 border border-gray-300 rounded text-gray-900"
+                                />
+                              )}
+                            </div>
+                          </div>
+                          <div className="text-right ml-4">
+                            <p className="text-xl font-bold text-primary-600">
+                              ${totalPrice.toFixed(2)}
+                            </p>
+                            <p className="text-sm text-gray-500">{priceLabel}</p>
+                            <button
+                              onClick={() => dispatch(removeFromCart({
+                                listingId: item.listingId,
+                                listingType: item.listingType,
+                                pickupDate: item.pickupDate,
+                                returnDate: item.returnDate,
+                                roomType: item.roomType,
+                                checkInDate: item.checkInDate,
+                                checkOutDate: item.checkOutDate,
+                              }))}
+                              className="mt-2 text-red-600 hover:text-red-700 text-sm flex items-center space-x-1"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                              <span>Remove</span>
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    )
+                  })
+                }
+              })
+            })()}
           </div>
 
           <div className="md:col-span-1">

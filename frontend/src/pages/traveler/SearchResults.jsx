@@ -1,7 +1,7 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
-import { setSearchResults, setLoading, setError } from '../../store/slices/searchSlice'
+import { setSearchResults, setLoading, setError, setSearchType } from '../../store/slices/searchSlice'
 import { addToCart } from '../../store/slices/cartSlice'
 import { sendEventAndWait } from '../../services/kafkaService'
 import { ShoppingCart, Star, MapPin, Calendar, Users, Check } from 'lucide-react'
@@ -16,15 +16,53 @@ const SearchResults = () => {
   const { searchResults, searchType, loading } = useSelector((state) => state.search)
   const { items: cartItems } = useSelector((state) => state.cart)
   const [results, setResults] = useState([])
+  const lastSearchKey = useRef(null)
+  const isSearching = useRef(false)
 
   useEffect(() => {
     const performSearch = async () => {
       const { searchParams, type } = location.state || {}
+      
+      // If no location.state but we have results in Redux, use those
       if (!searchParams || !type) {
+        const currentSearchType = searchType || 'hotels'
+        const existingResults = searchResults[currentSearchType] || []
+        if (existingResults.length > 0) {
+          setResults(existingResults)
+          dispatch(setLoading(false))
+          return
+        }
         navigate('/dashboard')
         return
       }
-
+      
+      const searchKey = JSON.stringify({ searchParams, type })
+      
+      // Prevent duplicate searches - if already searching or already completed this search, skip
+      if (lastSearchKey.current === searchKey) {
+        if (isSearching.current) {
+          // Still searching, don't start another
+          return
+        }
+        // Already completed, use cached results
+        if (results.length > 0) {
+          dispatch(setLoading(false))
+          return
+        }
+        const cachedResults = searchResults[type] || []
+        if (cachedResults.length > 0) {
+          setResults(cachedResults)
+          dispatch(setLoading(false))
+          return
+        }
+      }
+      
+      // Set search type
+      dispatch(setSearchType(type))
+      
+      // Mark that we're searching BEFORE starting
+      lastSearchKey.current = searchKey
+      isSearching.current = true
       dispatch(setLoading(true))
 
       try {
@@ -41,8 +79,8 @@ const SearchResults = () => {
         } else if (type === 'hotels') {
           eventType = 'search.hotels'
           eventData = {
-            city: searchParams.city,
-            state: searchParams.state,
+            city: searchParams.city ? searchParams.city.trim() : '',
+            state: searchParams.state ? searchParams.state.trim().toUpperCase() : '',
             checkInDate: searchParams.checkInDate,
             checkOutDate: searchParams.checkOutDate,
             numberOfRooms: searchParams.numberOfRooms || 1,
@@ -68,21 +106,36 @@ const SearchResults = () => {
           30000
         )
 
-        const resultKey = type === 'flights' ? 'flights' : type === 'hotels' ? 'hotels' : 'cars'
-        const items = response[resultKey] || []
+        // Handle different response formats
+        let items = []
+        if (response.hotels) {
+          items = response.hotels
+        } else if (response.data?.hotels) {
+          items = response.data.hotels
+        } else {
+          const resultKey = type === 'flights' ? 'flights' : type === 'hotels' ? 'hotels' : 'cars'
+          items = response[resultKey] || []
+        }
         
+        console.log(`Search results for ${type}:`, items.length, 'items found', items)
         dispatch(setSearchResults({ type, results: items }))
         setResults(items)
+        isSearching.current = false
+        dispatch(setLoading(false))
       } catch (err) {
         dispatch(setError(err.message))
         console.error('Search error:', err)
-      } finally {
+        isSearching.current = false
         dispatch(setLoading(false))
+        // Reset on error so it can retry if needed
+        lastSearchKey.current = null
       }
     }
 
     performSearch()
-  }, [location.state, dispatch, navigate])
+    // Only depend on location.state - don't include searchResults/searchType to avoid infinite loops
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [location.state])
 
   const handleAddToCart = (item) => {
     const listingId = item[`${searchType.slice(0, -1)}Id`] || item.flightId || item.hotelId || item.carId
@@ -252,26 +305,47 @@ const SearchResults = () => {
                 return (
                   <div 
                     className="flex justify-between items-start cursor-pointer hover:bg-gray-50 p-4 -m-4 rounded-lg transition-colors"
-                    onClick={() => navigate(`/hotel/${item.hotelId}`, { 
-                      state: { 
-                        hotel: item,
-                        searchParams: location.state?.searchParams 
-                      } 
-                    })}
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      navigate(`/hotel/${item.hotelId}`, { 
+                        state: { 
+                          hotel: item,
+                          searchParams: location.state?.searchParams || {},
+                          type: 'hotels',
+                          fromSearch: true
+                        } 
+                      })
+                    }}
                   >
                     {/* Hotel Image */}
-                    {item.images && item.images.length > 0 && (
-                      <div className="w-32 h-32 flex-shrink-0 mr-4 rounded-lg overflow-hidden">
+                    <div className="w-32 h-32 flex-shrink-0 mr-4 rounded-lg overflow-hidden bg-gray-200 flex items-center justify-center">
+                      {item.images && item.images.length > 0 ? (
                         <img
-                          src={item.images[0]?.startsWith('http') ? item.images[0] : `${API_BASE_URL}${item.images[0]}`}
+                          src={(() => {
+                            const imagePath = item.images[0]
+                            if (!imagePath) return ''
+                            if (imagePath.startsWith('http')) return imagePath
+                            // Extract just the filename from the path and encode it properly
+                            const filename = imagePath.split('/').pop()
+                            // Encode the filename to handle spaces and special characters
+                            const encodedFilename = encodeURIComponent(filename)
+                            return `${API_BASE_URL}/api/listings/images/${encodedFilename}`
+                          })()}
                           alt={item.hotelName}
                           className="w-full h-full object-cover"
                           onError={(e) => {
-                            e.target.src = 'https://via.placeholder.com/200x200?text=Hotel'
+                            // Hide image on error, show placeholder div instead
+                            e.target.style.display = 'none'
+                            e.target.nextSibling?.classList.remove('hidden')
                           }}
                         />
+                      ) : null}
+                      <div className={`w-full h-full flex items-center justify-center text-gray-400 ${item.images && item.images.length > 0 ? 'hidden' : ''}`}>
+                        <svg className="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                        </svg>
                       </div>
-                    )}
+                    </div>
                     <div className="flex-1">
                       <div className="flex items-center space-x-4 mb-2">
                         <h3 className="text-xl font-semibold">{item.hotelName}</h3>
@@ -329,7 +403,9 @@ const SearchResults = () => {
                           navigate(`/hotel/${item.hotelId}`, { 
                             state: { 
                               hotel: item,
-                              searchParams: location.state?.searchParams 
+                              searchParams: location.state?.searchParams || {},
+                              type: 'hotels',
+                              fromSearch: true
                             } 
                           })
                         }}

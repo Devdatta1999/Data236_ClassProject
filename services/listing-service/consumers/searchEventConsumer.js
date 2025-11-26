@@ -153,21 +153,64 @@ async function handleHotelSearch(event) {
 
   try {
     const query = { status: 'Active' };
+    const andConditions = [];
 
-    if (city) query.city = new RegExp(city, 'i');
-    if (state) query.state = state.toUpperCase();
-    if (starRating) query.starRating = parseInt(starRating);
+    // Search in both city and address fields for location matching
+    if (city) {
+      const citySearch = city.trim();
+      if (citySearch) {
+        // Use $or to search in both city and address fields for partial matches
+        // This allows searching for "San" to find "San Jose" or hotels in addresses containing "San"
+        const locationConditions = [
+          { city: new RegExp(citySearch, 'i') },
+          { address: new RegExp(citySearch, 'i') }
+        ];
+        andConditions.push({ $or: locationConditions });
+      }
+    }
+    
+    // Add state filter if provided
+    if (state) {
+      andConditions.push({ state: state.toUpperCase() });
+    }
+    
+    // Add other filters
+    if (starRating) {
+      andConditions.push({ starRating: parseInt(starRating) });
+    }
     if (amenities) {
       const amenityList = Array.isArray(amenities) ? amenities : [amenities];
-      query.amenities = { $in: amenityList };
+      andConditions.push({ amenities: { $in: amenityList } });
     }
-
+    
     // Filter by availability dates if provided
+    // Hotel must be available during the entire requested date range
     if (checkInDate && checkOutDate) {
       const checkIn = new Date(checkInDate);
       const checkOut = new Date(checkOutDate);
-      query.availableFrom = { $lte: checkIn };
-      query.availableTo = { $gte: checkOut };
+      
+      // Only apply date filter if dates are valid
+      if (!isNaN(checkIn.getTime()) && !isNaN(checkOut.getTime()) && checkOut > checkIn) {
+        // Hotel's availableFrom must be <= checkIn (hotel starts being available before or on check-in)
+        // Hotel's availableTo must be >= checkOut (hotel remains available after or on check-out)
+        andConditions.push({
+          availableFrom: { $lte: checkIn },
+          availableTo: { $gte: checkOut }
+        });
+      }
+    }
+    
+    // Combine all conditions - use $and if we have multiple, otherwise merge directly
+    if (andConditions.length > 1) {
+      query.$and = andConditions;
+    } else if (andConditions.length === 1) {
+      // If only one condition, merge it directly into query
+      const condition = andConditions[0];
+      if (condition.$or) {
+        query.$or = condition.$or;
+      } else {
+        Object.assign(query, condition);
+      }
     }
 
     const cacheKey = `search:hotel:${crypto.createHash('md5').update(JSON.stringify(query)).digest('hex')}`;
@@ -176,6 +219,18 @@ async function handleHotelSearch(event) {
     
     if (!hotels) {
       hotels = await Hotel.find(query).sort({ [sortBy || 'hotelRating']: -1 }).limit(100);
+      
+      // Convert to plain objects for caching (deep conversion)
+      hotels = hotels.map(h => {
+        const hotelObj = h.toObject ? h.toObject() : h;
+        // Ensure roomTypes array is also plain objects
+        if (hotelObj.roomTypes && Array.isArray(hotelObj.roomTypes)) {
+          hotelObj.roomTypes = hotelObj.roomTypes.map(rt => {
+            return rt && typeof rt.toObject === 'function' ? rt.toObject() : rt;
+          });
+        }
+        return hotelObj;
+      });
       
       // Filter by price if specified
       if (minPrice || maxPrice) {
@@ -189,11 +244,28 @@ async function handleHotelSearch(event) {
       }
       
       await setCache(cacheKey, hotels, 900);
+    } else {
+      // Hotels from cache - ensure roomTypes are plain objects
+      hotels = hotels.map(hotel => {
+        if (hotel.roomTypes && Array.isArray(hotel.roomTypes)) {
+          hotel.roomTypes = hotel.roomTypes.map(rt => {
+            // Remove any Mongoose methods/properties if present
+            // Ensure rt exists, is an object, and toObject is a function
+            if (rt && typeof rt === 'object' && rt.toObject && typeof rt.toObject === 'function') {
+              return rt.toObject();
+            }
+            return rt;
+          });
+        }
+        return hotel;
+      });
     }
 
     // Calculate availability for each hotel if dates are provided
+    // Use numberOfRooms if provided, otherwise calculate from numberOfAdults
     if (checkInDate && checkOutDate && (numberOfRooms || numberOfAdults)) {
-      const requiredRooms = numberOfRooms || Math.ceil((numberOfAdults || 1) / 2); // Assume 2 adults per room
+      // Priority: Use numberOfRooms if specified, otherwise calculate from adults (assuming 2 adults per room)
+      const requiredRooms = numberOfRooms || Math.ceil((numberOfAdults || 2) / 2);
       
       const hotelsWithAvailability = await Promise.all(
         hotels.map(async (hotel) => {
@@ -206,9 +278,14 @@ async function handleHotelSearch(event) {
           // Calculate available rooms for each room type
           const roomAvailability = hotel.roomTypes.map(roomType => {
             const booked = bookedByRoomType[roomType.type] || 0;
-            const available = Math.max(0, roomType.availableCount - booked);
+            // Handle both Mongoose documents and plain objects
+            // Use typeof check to ensure toObject is actually a function
+            const roomTypeObj = (roomType && typeof roomType.toObject === 'function') 
+              ? roomType.toObject() 
+              : (roomType || {});
+            const available = Math.max(0, (roomTypeObj.availableCount || 0) - booked);
             return {
-              ...roomType.toObject(),
+              ...roomTypeObj,
               available,
               booked
             };
@@ -218,8 +295,11 @@ async function handleHotelSearch(event) {
           const totalAvailable = roomAvailability.reduce((sum, rt) => sum + rt.available, 0);
           const hasEnoughRooms = totalAvailable >= requiredRooms;
           
+          // Handle both Mongoose documents and plain objects
+          const hotelObj = hotel && typeof hotel.toObject === 'function' ? hotel.toObject() : hotel;
+          
           return {
-            ...hotel.toObject(),
+            ...hotelObj,
             roomAvailability,
             totalAvailableRooms: totalAvailable,
             hasEnoughRooms
@@ -229,6 +309,8 @@ async function handleHotelSearch(event) {
       
       // Filter hotels that have enough rooms
       const availableHotels = hotelsWithAvailability.filter(h => h.hasEnoughRooms);
+      
+      logger.info(`Hotel search: Found ${hotels.length} hotels matching criteria, ${availableHotels.length} have enough rooms. Required: ${requiredRooms} rooms.`);
       
       await sendMessage('search-events-response', {
         key: requestId,

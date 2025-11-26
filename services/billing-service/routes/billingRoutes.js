@@ -1,13 +1,17 @@
 /**
  * Billing Routes
- * Note: Payment processing and checkout are handled via Kafka (payment-events and checkout-events topics)
- * Only non-high-traffic operations remain as HTTP endpoints
+ * Note: Payment processing and checkout are now handled via HTTP
+ * Kafka is still used for login, signup, and search
  */
 
 const express = require('express');
 const router = express.Router();
 const billingController = require('../controllers/billingController');
 const { authenticate, requireAdmin } = require('../../../shared/middleware/auth');
+
+// Checkout and payment endpoints (HTTP)
+router.post('/checkout', billingController.checkout);
+router.post('/payment', billingController.processPayment);
 
 // Non-high-traffic operations
 router.get('/:billingId', authenticate, billingController.getBilling);

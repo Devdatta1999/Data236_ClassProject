@@ -15,6 +15,14 @@ const LISTING_SERVICE_URL = process.env.LISTING_SERVICE_URL || 'http://localhost
  * Handle booking creation event
  */
 async function handleBookingCreate(event) {
+  logger.info(`[handleBookingCreate] Starting booking creation`, {
+    requestId: event.requestId,
+    listingType: event.listingType,
+    listingId: event.listingId,
+    roomType: event.roomType,
+    userId: event.userId
+  });
+
   const {
     requestId,
     userId,
@@ -84,10 +92,22 @@ async function handleBookingCreate(event) {
     let listing;
     try {
       const listingTypeLower = listingType.toLowerCase() + 's';
+      logger.info(`[handleBookingCreate] Fetching listing: ${listingTypeLower}/${listingId}`);
       const response = await axios.get(`${LISTING_SERVICE_URL}/api/listings/${listingTypeLower}/${listingId}`);
       listing = response.data.data[listingTypeLower.slice(0, -1)];
+      logger.info(`[handleBookingCreate] Listing fetched successfully`, {
+        listingId,
+        listingType,
+        hasRoomTypes: listing.roomTypes ? listing.roomTypes.length : 0
+      });
     } catch (error) {
-      throw new NotFoundError('Listing');
+      logger.error(`[handleBookingCreate] Failed to fetch listing: ${error.message}`, {
+        listingId,
+        listingType,
+        error: error.message,
+        response: error.response?.data
+      });
+      throw new NotFoundError(`Listing not found: ${listingId}`);
     }
 
     // Check availability
@@ -118,13 +138,36 @@ async function handleBookingCreate(event) {
         throw new ValidationError('Check-out date must be after check-in date');
       }
       
+      // Validate roomTypes array exists
+      if (!listing.roomTypes || !Array.isArray(listing.roomTypes)) {
+        logger.error(`[handleBookingCreate] Hotel listing missing roomTypes array`, {
+          listingId,
+          listingType,
+          hasRoomTypes: !!listing.roomTypes,
+          roomTypesType: typeof listing.roomTypes
+        });
+        throw new ValidationError('Hotel listing is missing room types information');
+      }
+      
       // Find the room type in the hotel
+      logger.info(`[handleBookingCreate] Looking for room type: ${roomType}`, {
+        listingId,
+        availableRoomTypes: listing.roomTypes.map(rt => rt.type),
+        requestedRoomType: roomType
+      });
+      
       const selectedRoomType = listing.roomTypes.find(rt => rt.type === roomType);
       if (!selectedRoomType) {
-        throw new ValidationError(`Room type '${roomType}' is not available at this hotel`);
+        logger.error(`[handleBookingCreate] Room type not found in hotel`, {
+          listingId,
+          requestedRoomType: roomType,
+          availableRoomTypes: listing.roomTypes.map(rt => rt.type)
+        });
+        throw new ValidationError(`Room type '${roomType}' is not available at this hotel. Available types: ${listing.roomTypes.map(rt => rt.type).join(', ')}`);
       }
       
       // Calculate availability for this room type for the date range
+      // Use session for read consistency within transaction
       const conflictingBookings = await Booking.find({
         listingId,
         listingType: 'Hotel',
@@ -136,11 +179,19 @@ async function handleBookingCreate(event) {
             checkOutDate: { $gt: checkIn }
           }
         ]
-      });
+      }).session(session);
       
       // Sum up booked quantities
       const bookedQuantity = conflictingBookings.reduce((sum, booking) => sum + booking.quantity, 0);
       const availableQuantity = selectedRoomType.availableCount - bookedQuantity;
+      
+      logger.info(`[handleBookingCreate] Room availability check`, {
+        roomType,
+        availableCount: selectedRoomType.availableCount,
+        bookedQuantity,
+        availableQuantity,
+        requestedQuantity: quantity
+      });
       
       if (availableQuantity < quantity) {
         throw new ValidationError(`Not enough ${roomType} rooms available. Only ${availableQuantity} room(s) available for the selected dates.`);
@@ -169,7 +220,7 @@ async function handleBookingCreate(event) {
       
       // Check for date conflicts with existing bookings
       // Exclude 'Failed' bookings as they don't hold inventory
-      const Booking = require('../models/Booking');
+      // Use session for read consistency within transaction
       const conflictingBookings = await Booking.find({
         listingId,
         listingType: 'Car',
@@ -180,7 +231,7 @@ async function handleBookingCreate(event) {
             checkOutDate: { $gte: pickupDate }
           }
         ]
-      });
+      }).session(session);
       
       if (conflictingBookings.length > 0) {
         throw new ValidationError('Car is already booked for the selected dates');
@@ -196,12 +247,28 @@ async function handleBookingCreate(event) {
       if (nights < 1) {
         throw new ValidationError('Stay period must be at least 1 night');
       }
-      // Get price for the selected room type
-      const selectedRoomType = listing.roomTypes.find(rt => rt.type === roomType);
-      if (!selectedRoomType) {
-        throw new ValidationError(`Room type '${roomType}' not found`);
+      // Get price for the selected room type (reuse the one found earlier for availability check)
+      // Note: selectedRoomType is already found above, but we need to find it again here
+      // because it's in a different scope. This is safe because we already validated it exists.
+      const priceRoomType = listing.roomTypes.find(rt => rt.type === roomType);
+      if (!priceRoomType) {
+        logger.error(`[handleBookingCreate] Room type not found for price calculation`, {
+          listingId,
+          roomType,
+          availableRoomTypes: listing.roomTypes.map(rt => rt.type)
+        });
+        throw new ValidationError(`Room type '${roomType}' not found for price calculation`);
       }
-      totalAmount = selectedRoomType.pricePerNight * nights * quantity;
+      totalAmount = priceRoomType.pricePerNight * nights * quantity;
+      
+      logger.info(`[handleBookingCreate] Calculated total amount for hotel booking`, {
+        listingId,
+        roomType,
+        pricePerNight: priceRoomType.pricePerNight,
+        nights,
+        quantity,
+        totalAmount
+      });
     } else if (listingType === 'Car') {
       const days = Math.ceil((new Date(checkOutDate) - new Date(checkInDate)) / (1000 * 60 * 60 * 24));
       if (days < 1) {
@@ -228,7 +295,22 @@ async function handleBookingCreate(event) {
       parentRequestId
     });
 
+    logger.info(`Attempting to save booking: ${bookingId}`, {
+      userId,
+      listingId,
+      listingType,
+      roomType,
+      quantity,
+      totalAmount,
+      status: booking.status
+    });
+
     await booking.save({ session });
+    
+    logger.info(`Booking saved successfully: ${bookingId}`, {
+      bookingId: booking.bookingId,
+      status: booking.status
+    });
 
     // Update listing availability
     try {
@@ -251,7 +333,15 @@ async function handleBookingCreate(event) {
 
     await session.commitTransaction();
 
-    logger.info(`Booking created via Kafka: ${bookingId}`);
+    logger.info(`[handleBookingCreate] Booking created and committed: ${bookingId}`, {
+      bookingId,
+      userId,
+      listingId,
+      listingType,
+      roomType,
+      status: booking.status,
+      totalAmount: booking.totalAmount
+    });
 
     await sendMessage('booking-events-response', {
       key: requestId,
@@ -268,7 +358,15 @@ async function handleBookingCreate(event) {
 
   } catch (error) {
     await session.abortTransaction();
-    logger.error(`Error handling booking create: ${error.message}`);
+    logger.error(`[handleBookingCreate] Error handling booking create: ${error.message}`, {
+      error: error.message,
+      stack: error.stack,
+      requestId,
+      listingId,
+      listingType,
+      roomType,
+      userId
+    });
     
     await sendMessage('booking-events-response', {
       key: requestId,
@@ -382,7 +480,12 @@ async function handleBookingEvent(topic, message, metadata) {
     const event = typeof message === 'string' ? JSON.parse(message) : message;
     const { eventType } = event;
 
-    logger.info(`Received booking event: ${eventType}`, { requestId: event.requestId });
+    logger.info(`[handleBookingEvent] Received booking event: ${eventType}`, { 
+      requestId: event.requestId,
+      listingType: event.listingType,
+      listingId: event.listingId,
+      userId: event.userId
+    });
 
     switch (eventType) {
       case 'booking.create':
@@ -392,10 +495,14 @@ async function handleBookingEvent(topic, message, metadata) {
         await handleBookingCancel(event);
         break;
       default:
-        logger.warn(`Unknown booking event type: ${eventType}`);
+        logger.warn(`[handleBookingEvent] Unknown booking event type: ${eventType}`);
     }
   } catch (error) {
-    logger.error(`Error processing booking event: ${error.message}`, error);
+    logger.error(`[handleBookingEvent] Error processing booking event: ${error.message}`, {
+      error: error.message,
+      stack: error.stack,
+      event: typeof message === 'string' ? JSON.parse(message) : message
+    });
   }
 }
 

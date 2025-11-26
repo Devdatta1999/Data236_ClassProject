@@ -71,6 +71,15 @@ const bookingSchema = new mongoose.Schema({
     default: null,
     index: true
   },
+  checkoutId: {
+    type: String,
+    default: null,
+    index: true
+  },
+  parentRequestId: {
+    type: String,
+    default: null
+  },
   createdAt: {
     type: Date,
     default: Date.now

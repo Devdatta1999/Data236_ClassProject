@@ -168,19 +168,129 @@ const MyBookings = () => {
           </div>
         ) : (
           <div className="space-y-4">
-            {bookingsWithDetails.map((booking) => {
-              const listing = booking.listing
-              const provider = booking.provider
+            {(() => {
+              // Group hotel bookings by listingId and billingId (same hotel, same checkout = one bill)
+              const grouped = {}
+              const ungrouped = []
               
-              // Get listing name/title based on type
-              let listingName = ''
-              if (booking.listingType === 'Car' && listing) {
-                listingName = `${listing.model || listing.carModel || 'Car'} ${listing.year ? `(${listing.year})` : ''}`
-              } else if (booking.listingType === 'Flight' && listing) {
-                listingName = `${listing.departureAirport || ''} → ${listing.arrivalAirport || ''}`
-              } else if (booking.listingType === 'Hotel' && listing) {
-                listingName = listing.hotelName || 'Hotel'
-              }
+              bookingsWithDetails.forEach((booking) => {
+                if (booking.listingType === 'Hotel' && booking.billingId) {
+                  // Group by billingId (same bill = same checkout)
+                  const key = booking.billingId
+                  if (!grouped[key]) {
+                    grouped[key] = []
+                  }
+                  grouped[key].push(booking)
+                } else {
+                  ungrouped.push(booking)
+                }
+              })
+              
+              // Render grouped hotel bookings first, then individual bookings
+              return [
+                ...Object.entries(grouped).map(([billingId, groupBookings]) => {
+                  const firstBooking = groupBookings[0]
+                  const listing = firstBooking.listing
+                  const provider = firstBooking.provider
+                  const listingName = listing?.hotelName || 'Hotel'
+                  const totalAmount = groupBookings.reduce((sum, b) => sum + (b.totalAmount || 0), 0)
+                  
+                  return (
+                    <div key={billingId} className="card hover:shadow-lg transition-shadow">
+                      <div className="flex justify-between items-start mb-4">
+                        <div className="flex-1">
+                          <div className="flex items-center space-x-3 mb-2">
+                            <h3 className="text-xl font-semibold">{listingName}</h3>
+                            <span className={`px-3 py-1 rounded-full text-sm font-medium flex items-center space-x-1 ${getStatusColor(firstBooking.status)}`}>
+                              {getStatusIcon(firstBooking.status)}
+                              <span>{firstBooking.status}</span>
+                            </span>
+                          </div>
+                          
+                          {billingId && (
+                            <p className="text-sm text-gray-500 mb-2">
+                              Billing ID: {billingId}
+                            </p>
+                          )}
+                          
+                          {provider && (
+                            <p className="text-gray-600 mb-2 flex items-center">
+                              <Building2 className="w-4 h-4 mr-2" />
+                              <span className="font-medium">Provider:</span> {provider.providerName || provider.name}
+                            </p>
+                          )}
+                          
+                          {firstBooking.checkInDate && (
+                            <div className="flex items-center text-gray-600 mb-2">
+                              <Calendar className="w-4 h-4 mr-2" />
+                              <span>
+                                <span className="font-medium">Check-in:</span> {format(new Date(firstBooking.checkInDate), 'MMM dd, yyyy')}
+                              </span>
+                            </div>
+                          )}
+                          {firstBooking.checkOutDate && (
+                            <div className="flex items-center text-gray-600 mb-2">
+                              <Calendar className="w-4 h-4 mr-2" />
+                              <span>
+                                <span className="font-medium">Check-out:</span> {format(new Date(firstBooking.checkOutDate), 'MMM dd, yyyy')}
+                              </span>
+                            </div>
+                          )}
+                        </div>
+                        <div className="text-right ml-6">
+                          <p className="text-2xl font-bold text-primary-600">
+                            ${totalAmount.toFixed(2)}
+                          </p>
+                          <p className="text-sm text-gray-500 mt-1">
+                            {groupBookings.length} room type{groupBookings.length > 1 ? 's' : ''}
+                          </p>
+                          <p className="text-sm text-gray-500 mt-1">
+                            Booked on {format(new Date(firstBooking.bookingDate), 'MMM dd, yyyy')}
+                          </p>
+                        </div>
+                      </div>
+                      
+                      {/* List all room types */}
+                      <div className="border-t pt-4 space-y-2">
+                        {groupBookings.map((booking) => (
+                          <div key={booking.bookingId} className="bg-gray-50 p-3 rounded">
+                            <div className="flex justify-between items-center">
+                              <div>
+                                <p className="font-medium text-gray-900">
+                                  {booking.roomType} Room
+                                </p>
+                                <p className="text-sm text-gray-600">
+                                  Quantity: {booking.quantity}
+                                </p>
+                                <p className="text-xs text-gray-500 mt-1">
+                                  Booking ID: {booking.bookingId}
+                                </p>
+                              </div>
+                              <div className="text-right">
+                                <p className="font-semibold text-gray-900">
+                                  ${booking.totalAmount?.toFixed(2) || '0.00'}
+                                </p>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )
+                }),
+                ...ungrouped.map((booking) => {
+                  const listing = booking.listing
+                  const provider = booking.provider
+                  
+                  // Get listing name/title based on type
+                  let listingName = ''
+                  if (booking.listingType === 'Car' && listing) {
+                    listingName = `${listing.model || listing.carModel || 'Car'} ${listing.year ? `(${listing.year})` : ''}`
+                  } else if (booking.listingType === 'Flight' && listing) {
+                    listingName = `${listing.departureAirport || ''} → ${listing.arrivalAirport || ''}`
+                  } else if (booking.listingType === 'Hotel' && listing) {
+                    listingName = listing.hotelName || 'Hotel'
+                  }
 
               return (
                 <div
@@ -298,7 +408,9 @@ const MyBookings = () => {
                   </div>
                 </div>
               )
-            })}
+            })
+              ]
+            })()}
           </div>
         )}
       </div>

@@ -7,10 +7,10 @@ const express = require('express');
 const cors = require('cors');
 const { connectMongoDB } = require('../../shared/config/database');
 const { getRedisClient } = require('../../shared/config/redis');
-const { createConsumer } = require('../../shared/config/kafka');
+// Note: Kafka consumers removed - booking creation now uses HTTP endpoint
 const { errorHandler } = require('../../shared/utils/errors');
 const logger = require('../../shared/utils/logger');
-// Routes and consumers will be loaded AFTER MongoDB connection to ensure models use connected instance
+// Routes will be loaded AFTER MongoDB connection to ensure models use connected instance
 
 const app = express();
 const PORT = process.env.PORT || 3003;
@@ -33,8 +33,7 @@ app.get('/readyz', (req, res) => {
 });
 
 // Routes will be loaded in startServer() after MongoDB connection
-
-app.use(errorHandler);
+// Note: errorHandler must be after routes, so we'll add it in startServer()
 
 async function startServer() {
   try {
@@ -53,24 +52,22 @@ async function startServer() {
     const bookingRoutes = require('./routes/bookingRoutes');
     app.use('/api/bookings', bookingRoutes);
     
+    // Add error handler AFTER routes
+    app.use(errorHandler);
+    
     // Verify Booking model is using the connected Mongoose instance
     const Booking = require('./models/Booking');
     logger.info('Booking model loaded, MongoDB readyState:', mongoose.connection.readyState);
     
     await getRedisClient();
     
-    // Setup Kafka consumer for booking events AFTER MongoDB is ready
-    // Consumer also loads Booking model, so it must be after MongoDB connection
-    const { handleBookingEvent } = require('./consumers/bookingEventConsumer');
-    await createConsumer(
-      'booking-service-group',
-      ['booking-events'],
-      handleBookingEvent
-    );
+    // Note: Booking creation is now handled via HTTP endpoint (POST /api/bookings/create)
+    // Kafka is still used for login, signup, and search (handled by other services)
+    // No Kafka consumers needed in booking service anymore
     
     app.listen(PORT, () => {
       logger.info(`Booking service running on port ${PORT}`);
-      logger.info('Kafka consumer subscribed to: booking-events');
+      logger.info('Booking creation endpoint available at POST /api/bookings/create');
       logger.info('MongoDB readyState:', mongoose.connection.readyState);
     });
   } catch (error) {

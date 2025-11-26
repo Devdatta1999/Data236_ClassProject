@@ -22,9 +22,126 @@ const logger = require('../../../shared/utils/logger');
 
 /**
  * User Controller
- * Note: User registration and login are handled via Kafka (user-events topic)
- * Only non-high-traffic operations remain as HTTP endpoints
+ * Note: User registration and login can be handled via Kafka (user-events topic) or HTTP
+ * HTTP endpoints are provided as a fallback and for reliability
  */
+
+/**
+ * User login (HTTP endpoint)
+ */
+const login = asyncHandler(async (req, res) => {
+  const { email, password } = req.body;
+
+  if (!email || !password) {
+    throw new ValidationError('Email and password are required');
+  }
+
+  // Always fetch from database for login to get password hash
+  const { waitForMongoDBReady } = require('../../../shared/config/database');
+  await waitForMongoDBReady(2000);
+
+  // Fetch user with password field included
+  const user = await User.findOne({ email: email.toLowerCase() }).select('+password').maxTimeMS(5000);
+  if (!user) {
+    throw new ValidationError('Invalid credentials');
+  }
+
+  // Verify password
+  const isMatch = await user.comparePassword(password);
+  if (!isMatch) {
+    throw new ValidationError('Invalid credentials');
+  }
+
+  const token = generateToken({
+    userId: user.userId,
+    email: user.email,
+    role: 'user'
+  });
+
+  // Update cache asynchronously (fire-and-forget)
+  const cacheKey = `user:email:${email.toLowerCase()}`;
+  setCache(cacheKey, user.toSafeObject(), 900).catch(err => {
+    logger.warn('Cache update failed (non-critical):', err.message);
+  });
+
+  logger.info(`User logged in via HTTP: ${user.userId}`);
+
+  res.json({
+    success: true,
+    data: {
+      user: user.toSafeObject(),
+      token
+    }
+  });
+});
+
+/**
+ * User signup (HTTP endpoint)
+ */
+const signup = asyncHandler(async (req, res) => {
+  const { email, password, firstName, lastName, userId, phoneNumber, address, city, state, zipCode, ssn } = req.body;
+
+  // Validation
+  if (!email || !password || !firstName || !lastName || !userId || !phoneNumber || !address || !city || !state || !zipCode || !ssn) {
+    throw new ValidationError('All fields are required');
+  }
+
+  validateEmail(email);
+  validatePhoneNumber(phoneNumber);
+  validateState(state);
+  validateZipCode(zipCode);
+  validateSSN(ssn);
+
+  // Check if user already exists
+  const existingUser = await User.findOne({
+    $or: [
+      { email: email.toLowerCase() },
+      { userId }
+    ]
+  });
+
+  if (existingUser) {
+    if (existingUser.email === email.toLowerCase()) {
+      throw new ConflictError('User with this email already exists');
+    }
+    if (existingUser.userId === userId) {
+      throw new ConflictError('User with this SSN already exists');
+    }
+  }
+
+  // Create new user
+  const user = new User({
+    email: email.toLowerCase(),
+    password,
+    firstName,
+    lastName,
+    userId,
+    phoneNumber,
+    address,
+    city,
+    state,
+    zipCode,
+    ssn
+  });
+
+  await user.save();
+
+  const token = generateToken({
+    userId: user.userId,
+    email: user.email,
+    role: 'user'
+  });
+
+  logger.info(`User registered via HTTP: ${user.userId}`);
+
+  res.status(201).json({
+    success: true,
+    data: {
+      user: user.toSafeObject(),
+      token
+    }
+  });
+});
 
 /**
  * Get user details
@@ -588,6 +705,8 @@ const deleteSavedCard = asyncHandler(async (req, res) => {
 });
 
 module.exports = {
+  login,
+  signup,
   getUser,
   updateUser,
   deleteUser,

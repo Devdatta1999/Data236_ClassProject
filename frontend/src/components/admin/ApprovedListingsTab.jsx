@@ -79,11 +79,19 @@ const ApprovedListingsTab = ({ onRefresh }) => {
               {isHotel && listing.images && listing.images.length > 0 && (
                 <div className="md:w-64 h-48 md:h-auto flex-shrink-0">
                   <img
-                    src={listing.images[0]?.startsWith('http') ? listing.images[0] : `${API_BASE_URL}${listing.images[0]}`}
+                    src={(() => {
+                      const imagePath = listing.images[0]
+                      if (!imagePath) return ''
+                      if (imagePath.startsWith('http')) return imagePath
+                      // Extract filename and encode it to handle spaces
+                      const filename = imagePath.split('/').pop()
+                      const encodedFilename = encodeURIComponent(filename)
+                      return `${API_BASE_URL}/api/listings/images/${encodedFilename}`
+                    })()}
                     alt={listing.hotelName || 'Hotel'}
                     className="w-full h-full object-cover rounded-lg"
                     onError={(e) => {
-                      e.target.src = 'https://via.placeholder.com/400x300?text=Hotel+Image'
+                      e.target.style.display = 'none'
                     }}
                   />
                 </div>

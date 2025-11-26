@@ -139,7 +139,13 @@ app.use('/api/billing', createProxyMiddleware({
   },
   buffer: false,
   onProxyReq: (proxyReq, req, res) => {
-    logger.info(`Proxying to Billing Service: ${req.method} ${req.path}`);
+    logger.info(`Proxying to Billing Service: ${req.method} ${req.path}`, {
+      hasBody: !!req.body,
+      bodyType: typeof req.body,
+      bodyKeys: req.body ? Object.keys(req.body) : [],
+      userId: req.body?.userId,
+      cartItemsCount: req.body?.cartItems?.length || 0
+    });
     if (req.body && typeof req.body === 'object') {
       const bodyData = JSON.stringify(req.body);
       proxyReq.setHeader('Content-Type', 'application/json');
@@ -147,6 +153,12 @@ app.use('/api/billing', createProxyMiddleware({
       proxyReq.write(bodyData);
       proxyReq.end();
     }
+  },
+  onProxyError: (err, req, res) => {
+    logger.error(`Proxy error for Billing Service: ${req.method} ${req.path}`, {
+      error: err.message,
+      stack: err.stack
+    });
   }
 }));
 

@@ -67,6 +67,12 @@ const pendingCheckouts = new Map();
  * Publishes booking.create events for each cart item
  */
 async function handleCheckoutInitiate(event) {
+  logger.info(`[handleCheckoutInitiate] Starting checkout initiation`, {
+    requestId: event.requestId,
+    userId: event.userId,
+    cartItemsCount: event.cartItems ? event.cartItems.length : 0
+  });
+
   const {
     requestId,
     userId,
@@ -121,8 +127,12 @@ async function handleCheckoutInitiate(event) {
     });
 
     // Publish booking creation events for each cart item via Kafka
-    for (const item of cartItems) {
-      const bookingRequestId = `${requestId}-${item.listingId}`;
+    for (let i = 0; i < cartItems.length; i++) {
+      const item = cartItems[i];
+      // Make bookingRequestId unique for each item (including same hotel with different room types)
+      // Use index to ensure uniqueness even if listingId, roomType, and dates are the same
+      const uniqueSuffix = item.roomType ? `${item.roomType}-${i}` : item.pickupDate ? `${item.pickupDate}-${i}` : i;
+      const bookingRequestId = `${requestId}-${item.listingId}-${uniqueSuffix}`;
       
       // Map date fields: for cars, pickupDate/returnDate map to checkInDate/checkOutDate
       // For hotels, checkInDate/checkOutDate are already correct
@@ -136,22 +146,34 @@ async function handleCheckoutInitiate(event) {
         checkOutDate = item.returnDate || item.checkOutDate;
       }
       
+      const bookingEvent = {
+        requestId: bookingRequestId,
+        eventType: 'booking.create',
+        userId,
+        listingId: item.listingId,
+        listingType: item.listingType,
+        quantity: item.quantity,
+        checkInDate: checkInDate,
+        checkOutDate: checkOutDate,
+        travelDate: item.travelDate,
+        roomType: item.roomType || null, // For hotels - this is critical for multiple room types
+        checkoutId, // Include checkout ID for correlation
+        parentRequestId: requestId // Link back to checkout request
+      };
+
+      logger.info(`[handleCheckoutInitiate] Publishing booking.create event`, {
+        bookingRequestId,
+        listingId: item.listingId,
+        listingType: item.listingType,
+        roomType: item.roomType,
+        checkInDate,
+        checkOutDate,
+        quantity: item.quantity
+      });
+
       await sendMessage('booking-events', {
         key: bookingRequestId,
-        value: {
-          requestId: bookingRequestId,
-          eventType: 'booking.create',
-          userId,
-          listingId: item.listingId,
-          listingType: item.listingType,
-          quantity: item.quantity,
-          checkInDate: checkInDate,
-          checkOutDate: checkOutDate,
-          travelDate: item.travelDate,
-          roomType: item.roomType || null, // For hotels
-          checkoutId, // Include checkout ID for correlation
-          parentRequestId: requestId // Link back to checkout request
-        }
+        value: bookingEvent
       });
     }
 
@@ -704,7 +726,25 @@ async function handlePaymentComplete(event) {
       throw validationError;
     }
 
-    // Create billing records for each booking
+    // Group bookings by listing (for hotels, group all room types from same hotel into one bill)
+    // For flights and cars, keep separate bills
+    const groupedBookings = new Map(); // key: listingId, value: array of bookings
+    
+    for (const booking of bookings) {
+      if (booking.listingType === 'Hotel') {
+        // Group hotel bookings by listingId (same hotel = one bill)
+        const key = booking.listingId;
+        if (!groupedBookings.has(key)) {
+          groupedBookings.set(key, []);
+        }
+        groupedBookings.get(key).push(booking);
+      } else {
+        // Flights and cars: one bill per booking
+        groupedBookings.set(booking.bookingId, [booking]);
+      }
+    }
+
+    // Create billing records - one per group
     const bills = [];
     const finalBillingId = billingId || `BILL-${Date.now()}-${Math.random().toString(36).substr(2, 9).toUpperCase()}`;
 
@@ -715,7 +755,53 @@ async function handlePaymentComplete(event) {
       throw new ValidationError('Checkout ID is required. Please start over from checkout.');
     }
 
-    for (const booking of bookings) {
+    for (const [groupKey, groupBookings] of groupedBookings.entries()) {
+      // Calculate total amount for the group
+      const groupTotalAmount = groupBookings.reduce((sum, b) => sum + b.totalAmount, 0);
+      
+      // For hotels, use the first booking's details as primary, but include all room types
+      // For flights/cars, use the single booking
+      const primaryBooking = groupBookings[0];
+      
+      // Build invoice details with all bookings in the group
+      const invoiceDetails = {
+        bookings: groupBookings.map(b => ({
+          bookingId: b.bookingId,
+          listingId: b.listingId,
+          listingType: b.listingType,
+          quantity: b.quantity,
+          roomType: b.roomType || null,
+          checkInDate: b.checkInDate || null,
+          checkOutDate: b.checkOutDate || null,
+          travelDate: b.travelDate || null,
+          totalAmount: b.totalAmount,
+          bookingDate: b.bookingDate
+        })),
+        listingId: primaryBooking.listingId,
+        listingType: primaryBooking.listingType,
+        checkoutId,
+        cardHolderName,
+        last4Digits: decryptedCardNumber.slice(-4),
+        expiryDate,
+        zipCode,
+        // For hotels, include room type summary
+        ...(primaryBooking.listingType === 'Hotel' && {
+          roomTypes: groupBookings.map(b => ({
+            type: b.roomType,
+            quantity: b.quantity,
+            pricePerNight: b.totalAmount / (b.quantity * Math.ceil((new Date(b.checkOutDate) - new Date(b.checkInDate)) / (1000 * 60 * 60 * 24)))
+          }))
+        })
+      };
+
+      // Generate billing ID: for hotels, use listingId; for others, use bookingId
+      const billingIdForGroup = primaryBooking.listingType === 'Hotel' 
+        ? `${finalBillingId}-${primaryBooking.listingId}`
+        : `${finalBillingId}-${primaryBooking.bookingId}`;
+
+      // For hotels, use comma-separated booking IDs; for others, single booking ID
+      const bookingIdsForBill = groupBookings.map(b => b.bookingId).join(',');
+
       const insertQuery = `
         INSERT INTO bills (
           billing_id, user_id, booking_type, booking_id, checkout_id,
@@ -725,33 +811,25 @@ async function handlePaymentComplete(event) {
         RETURNING *
       `;
 
-      const invoiceDetails = {
-        bookingId: booking.bookingId,
-        listingId: booking.listingId,
-        listingType: booking.listingType,
-        quantity: booking.quantity,
-        bookingDate: booking.bookingDate,
-        checkoutId,
-        cardHolderName,
-        last4Digits: decryptedCardNumber.slice(-4),
-        expiryDate,
-        zipCode
-      };
-
       const result = await client.query(insertQuery, [
-        `${finalBillingId}-${booking.bookingId}`,
+        billingIdForGroup,
         userId,
-        booking.listingType,
-        booking.bookingId,
-        checkoutId, // Add checkout_id as separate column
+        primaryBooking.listingType,
+        bookingIdsForBill, // Store all booking IDs (comma-separated for hotels)
+        checkoutId,
         new Date(),
-        booking.totalAmount,
+        groupTotalAmount,
         paymentMethod,
         'Completed',
         JSON.stringify(invoiceDetails)
       ]);
 
       bills.push(result.rows[0]);
+      
+      // Update all bookings in the group with the same billing ID
+      for (const booking of groupBookings) {
+        booking.billingId = billingIdForGroup;
+      }
     }
 
     // Step 2: Commit PostgreSQL transaction first
@@ -765,7 +843,7 @@ async function handlePaymentComplete(event) {
       for (const booking of bookings) {
         try {
           booking.status = 'Confirmed';
-          booking.billingId = `${finalBillingId}-${booking.bookingId}`;
+          // billingId was already set during bill creation (grouped for hotels)
           booking.updatedAt = new Date();
           await booking.save();
           confirmedBookings.push(booking.bookingId);
@@ -944,10 +1022,22 @@ async function handlePaymentComplete(event) {
  */
 async function handleBillingEvent(topic, message, metadata) {
   try {
+    logger.info(`[handleBillingEvent] Received message on topic: ${topic}`, {
+      topic,
+      messageType: typeof message,
+      hasMetadata: !!metadata
+    });
+
     const event = typeof message === 'string' ? JSON.parse(message) : message;
     const { eventType } = event;
 
-    logger.info(`Received billing event: ${eventType}`, { requestId: event.requestId });
+    logger.info(`[handleBillingEvent] Parsed event: ${eventType}`, { 
+      requestId: event.requestId,
+      eventType,
+      topic,
+      userId: event.userId,
+      hasCartItems: !!event.cartItems
+    });
 
     switch (eventType) {
       case 'checkout.initiate':
@@ -957,10 +1047,15 @@ async function handleBillingEvent(topic, message, metadata) {
         await handlePaymentComplete(event);
         break;
       default:
-        logger.warn(`Unknown billing event type: ${eventType}`);
+        logger.warn(`[handleBillingEvent] Unknown billing event type: ${eventType}`);
     }
   } catch (error) {
-    logger.error(`Error processing billing event: ${error.message}`, error);
+    logger.error(`[handleBillingEvent] Error processing billing event: ${error.message}`, {
+      error: error.message,
+      stack: error.stack,
+      topic,
+      message: typeof message === 'string' ? message.substring(0, 200) : JSON.stringify(message).substring(0, 200)
+    });
   }
 }
 
