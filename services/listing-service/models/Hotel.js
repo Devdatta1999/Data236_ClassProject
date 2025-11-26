@@ -33,7 +33,7 @@ const reviewSchema = new mongoose.Schema({
 const roomTypeSchema = new mongoose.Schema({
   type: {
     type: String,
-    enum: ['Single', 'Double', 'Suite', 'Deluxe', 'Presidential'],
+    enum: ['Standard', 'Suite', 'Deluxe', 'Single', 'Double', 'Presidential'],
     required: true
   },
   pricePerNight: {
@@ -88,12 +88,25 @@ const hotelSchema = new mongoose.Schema({
     type: String,
     required: true
   },
+  country: {
+    type: String,
+    default: 'USA',
+    required: true
+  },
   starRating: {
     type: Number,
     min: 1,
     max: 5,
     required: true,
     index: true
+  },
+  availableFrom: {
+    type: Date,
+    required: true
+  },
+  availableTo: {
+    type: Date,
+    required: true
   },
   totalRooms: {
     type: Number,
@@ -140,6 +153,8 @@ const hotelSchema = new mongoose.Schema({
 // Indexes for search optimization
 hotelSchema.index({ city: 1, state: 1, starRating: 1 });
 hotelSchema.index({ status: 1, city: 1 });
+hotelSchema.index({ availableFrom: 1, availableTo: 1 });
+hotelSchema.index({ status: 1, city: 1, state: 1 });
 
 // Method to update rating
 hotelSchema.methods.updateRating = function() {

@@ -108,6 +108,15 @@ const ApprovedListingsTab = ({ onRefresh }) => {
                       <p>Type: {listing.carType} | Transmission: {listing.transmissionType}</p>
                       <p>Seats: {listing.numberOfSeats} | Daily Rate: ${listing.dailyRentalPrice}</p>
                       <p>Status: {listing.availabilityStatus}</p>
+                      <div className="mt-2 pt-2 border-t border-gray-200">
+                        <p><strong>Location:</strong></p>
+                        {listing.neighbourhood && (
+                          <p className="ml-4">Neighbourhood: {listing.neighbourhood}</p>
+                        )}
+                        <p className="ml-4">City: {listing.city || 'N/A'}</p>
+                        <p className="ml-4">State: {listing.state || 'N/A'}</p>
+                        <p className="ml-4">Country: {listing.country || 'USA'}</p>
+                      </div>
                     </div>
                   )}
                   

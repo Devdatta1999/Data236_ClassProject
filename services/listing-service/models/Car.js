@@ -96,6 +96,27 @@ const carSchema = new mongoose.Schema({
     required: true,
     index: true
   },
+  // Location fields
+  neighbourhood: {
+    type: String,
+    default: ''
+  },
+  city: {
+    type: String,
+    required: true,
+    index: true
+  },
+  state: {
+    type: String,
+    required: true,
+    index: true
+  },
+  country: {
+    type: String,
+    required: true,
+    default: 'USA',
+    index: true
+  },
   availabilityStatus: {
     type: String,
     enum: ['Available', 'Booked', 'Maintenance'],
@@ -125,6 +146,8 @@ carSchema.index({ carType: 1, dailyRentalPrice: 1 });
 carSchema.index({ status: 1, availabilityStatus: 1 });
 carSchema.index({ availableFrom: 1, availableTo: 1 });
 carSchema.index({ status: 1, availableFrom: 1, availableTo: 1 });
+carSchema.index({ city: 1, state: 1, country: 1 });
+carSchema.index({ neighbourhood: 1, city: 1, state: 1 });
 
 // Method to update rating
 carSchema.methods.updateRating = function() {

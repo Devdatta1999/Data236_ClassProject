@@ -5,7 +5,7 @@
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
-const { testPostgresConnection } = require('../../shared/config/database');
+const { testPostgresConnection, connectMongoDB } = require('../../shared/config/database');
 const { createConsumer } = require('../../shared/config/kafka');
 const { errorHandler } = require('../../shared/utils/errors');
 const logger = require('../../shared/utils/logger');
@@ -29,6 +29,15 @@ app.use(errorHandler);
 
 async function startServer() {
   try {
+    // Connect to MongoDB first (needed for Booking queries)
+    try {
+      await connectMongoDB();
+      logger.info('MongoDB connection successful');
+    } catch (mongoError) {
+      logger.warn(`MongoDB connection failed (service will continue): ${mongoError.message}`);
+      // Don't exit - allow service to start even if DB connection fails initially
+    }
+    
     // Test PostgreSQL connection with timeout and better error handling
     try {
       await Promise.race([

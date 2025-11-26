@@ -1,10 +1,11 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
 import { setBookings, setLoading, setError } from '../../store/slices/bookingSlice'
 import api from '../../services/apiService'
-import { Calendar, MapPin, CheckCircle, Clock, XCircle, ArrowLeft } from 'lucide-react'
+import { Calendar, MapPin, CheckCircle, Clock, XCircle, ArrowLeft, Car, Building2 } from 'lucide-react'
 import { format } from 'date-fns'
+import Notification from '../../components/common/Notification'
 
 const MyBookings = () => {
   const navigate = useNavigate()
@@ -12,12 +13,25 @@ const MyBookings = () => {
   const dispatch = useDispatch()
   const { bookings, loading } = useSelector((state) => state.bookings)
   const { user } = useSelector((state) => state.auth)
+  const [bookingsWithDetails, setBookingsWithDetails] = useState([])
+  const [notification, setNotification] = useState(null)
 
   useEffect(() => {
+    // Show payment success notification only once and clear state immediately
     if (location.state?.paymentSuccess) {
-      alert('Payment successful! Your bookings have been confirmed.')
+      setNotification({ 
+        type: 'success', 
+        message: 'Payment successful! Your bookings have been confirmed.' 
+      })
+      // Clear the payment success state immediately to prevent it from showing again on refresh
+      window.history.replaceState({}, document.title, location.pathname)
+      // Auto-dismiss after 5 seconds
+      const timer = setTimeout(() => {
+        setNotification(null)
+      }, 5000)
+      return () => clearTimeout(timer)
     }
-  }, [location.state])
+  }, [location.state?.paymentSuccess, location.pathname])
 
   useEffect(() => {
     const fetchBookings = async () => {
@@ -25,8 +39,45 @@ const MyBookings = () => {
 
       dispatch(setLoading(true))
       try {
-        const response = await api.get(`/api/bookings/user/${user.userId}`)
-        dispatch(setBookings(response.data.data?.bookings || []))
+        // Only fetch confirmed bookings - add timestamp to bypass cache
+        const response = await api.get(`/api/bookings/user/${user.userId}?status=Confirmed&_t=${Date.now()}`)
+        const bookingsData = response.data.data?.bookings || []
+        dispatch(setBookings(bookingsData))
+
+        // Fetch listing details for each booking
+        const bookingsWithListingDetails = await Promise.all(
+          bookingsData.map(async (booking) => {
+            try {
+              const listingTypeLower = booking.listingType.toLowerCase() + 's'
+              const listingResponse = await api.get(
+                `/api/listings/${listingTypeLower}/${booking.listingId}`
+              )
+              const listing = listingResponse.data.data?.[listingTypeLower.slice(0, -1)]
+              
+              // Fetch provider details if providerId exists
+              let provider = null
+              if (listing?.providerId) {
+                try {
+                  const providerResponse = await api.get(`/api/providers/${listing.providerId}`)
+                  provider = providerResponse.data.data?.provider
+                } catch (err) {
+                  console.error('Error fetching provider:', err)
+                }
+              }
+
+              return {
+                ...booking,
+                listing,
+                provider
+              }
+            } catch (err) {
+              console.error(`Error fetching listing details for ${booking.listingId}:`, err)
+              return booking
+            }
+          })
+        )
+
+        setBookingsWithDetails(bookingsWithListingDetails)
       } catch (err) {
         dispatch(setError(err.message))
         console.error('Error fetching bookings:', err)
@@ -36,7 +87,16 @@ const MyBookings = () => {
     }
 
     fetchBookings()
-  }, [user, dispatch])
+    
+    // If payment was just successful, refetch after a delay to ensure new bookings are visible
+    // This handles cases where backend cache invalidation might take a moment
+    if (location.state?.paymentSuccess) {
+      const refetchTimer = setTimeout(() => {
+        fetchBookings()
+      }, 2000) // Wait 2 seconds for backend to complete and invalidate cache
+      return () => clearTimeout(refetchTimer)
+    }
+  }, [user, dispatch, location.state?.paymentSuccess])
 
   const getStatusIcon = (status) => {
     switch (status) {
@@ -88,7 +148,15 @@ const MyBookings = () => {
 
         <h2 className="text-3xl font-bold mb-8">My Bookings</h2>
 
-        {bookings.length === 0 ? (
+        {notification && (
+          <Notification
+            type={notification.type}
+            message={notification.message}
+            onClose={() => setNotification(null)}
+          />
+        )}
+
+        {bookingsWithDetails.length === 0 && !loading ? (
           <div className="text-center py-12">
             <p className="text-gray-600 text-lg mb-4">You don't have any bookings yet.</p>
             <button
@@ -100,52 +168,137 @@ const MyBookings = () => {
           </div>
         ) : (
           <div className="space-y-4">
-            {bookings.map((booking) => (
-              <div
-                key={booking.bookingId}
-                className="card hover:shadow-lg transition-shadow cursor-pointer"
-                onClick={() => navigate(`/booking/${booking.bookingId}`)}
-              >
-                <div className="flex justify-between items-start">
-                  <div className="flex-1">
-                    <div className="flex items-center space-x-3 mb-2">
-                      <h3 className="text-xl font-semibold">{booking.bookingId}</h3>
-                      <span className={`px-3 py-1 rounded-full text-sm font-medium flex items-center space-x-1 ${getStatusColor(booking.status)}`}>
-                        {getStatusIcon(booking.status)}
-                        <span>{booking.status}</span>
-                      </span>
-                    </div>
-                    <p className="text-gray-600 mb-2">
-                      <span className="font-medium">Type:</span> {booking.listingType}
-                    </p>
-                    <div className="flex items-center text-gray-600 mb-2">
-                      <Calendar className="w-4 h-4 mr-2" />
-                      <span>
-                        {booking.travelDate && format(new Date(booking.travelDate), 'MMM dd, yyyy')}
-                        {booking.checkInDate && `Check-in: ${format(new Date(booking.checkInDate), 'MMM dd, yyyy')}`}
-                      </span>
-                    </div>
-                    {booking.checkOutDate && (
-                      <div className="flex items-center text-gray-600 mb-2">
-                        <Calendar className="w-4 h-4 mr-2" />
-                        <span>Check-out: {format(new Date(booking.checkOutDate), 'MMM dd, yyyy')}</span>
+            {bookingsWithDetails.map((booking) => {
+              const listing = booking.listing
+              const provider = booking.provider
+              
+              // Get listing name/title based on type
+              let listingName = ''
+              if (booking.listingType === 'Car' && listing) {
+                listingName = `${listing.model || listing.carModel || 'Car'} ${listing.year ? `(${listing.year})` : ''}`
+              } else if (booking.listingType === 'Flight' && listing) {
+                listingName = `${listing.departureAirport || ''} → ${listing.arrivalAirport || ''}`
+              } else if (booking.listingType === 'Hotel' && listing) {
+                listingName = listing.hotelName || 'Hotel'
+              }
+
+              return (
+                <div
+                  key={booking.bookingId}
+                  className="card hover:shadow-lg transition-shadow cursor-pointer"
+                  onClick={() => navigate(`/booking/${booking.bookingId}`)}
+                >
+                  <div className="flex justify-between items-start">
+                    <div className="flex-1">
+                      <div className="flex items-center space-x-3 mb-2">
+                        <h3 className="text-xl font-semibold">{listingName || booking.bookingId}</h3>
+                        <span className={`px-3 py-1 rounded-full text-sm font-medium flex items-center space-x-1 ${getStatusColor(booking.status)}`}>
+                          {getStatusIcon(booking.status)}
+                          <span>{booking.status}</span>
+                        </span>
                       </div>
-                    )}
-                    <p className="text-sm text-gray-500">
-                      Quantity: {booking.quantity}
-                    </p>
-                  </div>
-                  <div className="text-right ml-6">
-                    <p className="text-2xl font-bold text-primary-600">
-                      ${booking.totalAmount?.toFixed(2) || '0.00'}
-                    </p>
-                    <p className="text-sm text-gray-500 mt-1">
-                      Booked on {format(new Date(booking.bookingDate), 'MMM dd, yyyy')}
-                    </p>
+                      
+                      {booking.bookingId && (
+                        <p className="text-sm text-gray-500 mb-2">
+                          Booking ID: {booking.bookingId}
+                        </p>
+                      )}
+
+                      {/* Provider name */}
+                      {provider && (
+                        <p className="text-gray-600 mb-2 flex items-center">
+                          <Building2 className="w-4 h-4 mr-2" />
+                          <span className="font-medium">Provider:</span> {provider.providerName || provider.name}
+                        </p>
+                      )}
+
+                      {/* Car-specific details */}
+                      {booking.listingType === 'Car' && listing && (
+                        <div className="mb-2">
+                          <p className="text-gray-600 flex items-center">
+                            <Car className="w-4 h-4 mr-2" />
+                            <span className="font-medium">Car:</span> {listing.carType || listing.type || 'N/A'}
+                            {listing.transmissionType && ` • ${listing.transmissionType}`}
+                            {listing.numberOfSeats && ` • ${listing.numberOfSeats} seats`}
+                          </p>
+                          {/* Location for cars */}
+                          {(listing.city || listing.state) && (
+                            <p className="text-gray-600 flex items-center mt-1">
+                              <MapPin className="w-4 h-4 mr-2" />
+                              {[listing.neighbourhood, listing.city, listing.state, listing.country]
+                                .filter(Boolean)
+                                .join(', ')}
+                            </p>
+                          )}
+                        </div>
+                      )}
+
+                      {/* Dates - use Pickup/Drop-off for cars, Check-in/Check-out for hotels */}
+                      {booking.listingType === 'Car' ? (
+                        <>
+                          {booking.checkInDate && (
+                            <div className="flex items-center text-gray-600 mb-2">
+                              <Calendar className="w-4 h-4 mr-2" />
+                              <span>
+                                <span className="font-medium">Pickup:</span> {format(new Date(booking.checkInDate), 'MMM dd, yyyy')}
+                              </span>
+                            </div>
+                          )}
+                          {booking.checkOutDate && (
+                            <div className="flex items-center text-gray-600 mb-2">
+                              <Calendar className="w-4 h-4 mr-2" />
+                              <span>
+                                <span className="font-medium">Drop-off:</span> {format(new Date(booking.checkOutDate), 'MMM dd, yyyy')}
+                              </span>
+                            </div>
+                          )}
+                        </>
+                      ) : booking.listingType === 'Hotel' ? (
+                        <>
+                          {booking.checkInDate && (
+                            <div className="flex items-center text-gray-600 mb-2">
+                              <Calendar className="w-4 h-4 mr-2" />
+                              <span>
+                                <span className="font-medium">Check-in:</span> {format(new Date(booking.checkInDate), 'MMM dd, yyyy')}
+                              </span>
+                            </div>
+                          )}
+                          {booking.checkOutDate && (
+                            <div className="flex items-center text-gray-600 mb-2">
+                              <Calendar className="w-4 h-4 mr-2" />
+                              <span>
+                                <span className="font-medium">Check-out:</span> {format(new Date(booking.checkOutDate), 'MMM dd, yyyy')}
+                              </span>
+                            </div>
+                          )}
+                        </>
+                      ) : (
+                        booking.travelDate && (
+                          <div className="flex items-center text-gray-600 mb-2">
+                            <Calendar className="w-4 h-4 mr-2" />
+                            <span>
+                              <span className="font-medium">Travel Date:</span> {format(new Date(booking.travelDate), 'MMM dd, yyyy')}
+                            </span>
+                          </div>
+                        )
+                      )}
+
+                      <p className="text-sm text-gray-500">
+                        Quantity: {booking.quantity}
+                      </p>
+                    </div>
+                    <div className="text-right ml-6">
+                      <p className="text-2xl font-bold text-primary-600">
+                        ${booking.totalAmount?.toFixed(2) || '0.00'}
+                      </p>
+                      <p className="text-sm text-gray-500 mt-1">
+                        Booked on {format(new Date(booking.bookingDate), 'MMM dd, yyyy')}
+                      </p>
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              )
+            })}
           </div>
         )}
       </div>

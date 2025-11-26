@@ -22,9 +22,21 @@ const KAFKA_BROKERS = process.env.KAFKA_BROKERS?.split(',') || ['localhost:9092'
 const kafka = new Kafka({
   clientId: 'kafka-proxy',
   brokers: KAFKA_BROKERS,
+  retry: {
+    initialRetryTime: 100,
+    retries: 3,
+    maxRetryTime: 1000
+  },
+  requestTimeout: 5000,
+  connectionTimeout: 3000
 });
 
-const producer = kafka.producer();
+const producer = kafka.producer({
+  // Optimize for low latency
+  maxInFlightRequests: 1,
+  idempotent: false,
+  transactionTimeout: 30000
+});
 
 // In-memory map of pending requests: requestId -> { resolve, reject, timeoutId, timestamp }
 const pendingRequests = new Map();
@@ -77,7 +89,13 @@ async function initResponseConsumer() {
     const uniqueGroupId = `kafka-proxy-response-${podName}`;
     console.log(`Creating consumer with unique groupId: ${uniqueGroupId}`);
     responseConsumer = kafka.consumer({ 
-      groupId: uniqueGroupId 
+      groupId: uniqueGroupId,
+      sessionTimeout: 10000, // 10 seconds
+      heartbeatInterval: 3000, // 3 seconds
+      maxBytesPerPartition: 1048576, // 1MB
+      minBytes: 1, // Get messages immediately
+      maxBytes: 10485760, // 10MB max
+      maxWaitTimeInMs: 50 // Poll every 50ms for faster response (default is 5000ms)
     });
 
     await responseConsumer.connect();
@@ -101,6 +119,10 @@ async function initResponseConsumer() {
 
     // Start consuming messages
     await responseConsumer.run({
+      // Optimize for low latency
+      autoCommit: true,
+      autoCommitInterval: 100, // Commit every 100ms
+      autoCommitThreshold: 1, // Commit after 1 message
       eachMessage: async ({ topic, partition, message }) => {
         try {
           const response = JSON.parse(message.value.toString());
@@ -216,7 +238,7 @@ app.post('/api/kafka/send', async (req, res) => {
       responsePromise = new Promise((resolve, reject) => {
         const timeoutId = setTimeout(() => {
           pendingRequests.delete(requestId);
-          reject(new Error('Response timeout'));
+          reject(new Error(`Response timeout after ${timeout}ms`));
         }, timeout);
 
         pendingRequests.set(requestId, {

@@ -85,28 +85,53 @@ const userSchema = new mongoose.Schema({
     type: String,
     default: null
   },
-  paymentDetails: {
+  savedCreditCards: [{
+    cardId: {
+      type: String,
+      required: true,
+      unique: true
+    },
     cardNumber: {
       type: String,
-      default: null
+      required: true
+      // Note: Mongoose doesn't support select: false on nested array fields
+      // Security is handled by: 1) Encryption before saving, 2) Masking in toSafeObject()
     },
     cardHolderName: {
       type: String,
-      default: null
+      required: true
     },
     expiryDate: {
       type: String,
-      default: null
+      required: true,
+      validate: {
+        validator: function(v) {
+          return /^(0[1-9]|1[0-2])\/\d{2}$/.test(v);
+        },
+        message: 'Expiry date must be in MM/YY format'
+      }
     },
-    cvv: {
+    last4Digits: {
       type: String,
-      default: null
+      required: true
     },
-    billingAddress: {
-      type: mongoose.Schema.Types.Mixed,
-      default: null
+    zipCode: {
+      type: String,
+      required: false, // Make optional to allow old cards without ZIP code
+      validate: {
+        validator: function(v) {
+          // Only validate if zipCode is provided
+          if (!v) return true; // Allow empty/undefined for old cards
+          return /^[0-9]{5}(-[0-9]{4})?$/.test(v);
+        },
+        message: 'ZIP code must be in format ##### or #####-####'
+      }
+    },
+    addedAt: {
+      type: Date,
+      default: Date.now
     }
-  },
+  }],
   bookingHistory: [{
     bookingId: {
       type: String,
@@ -183,15 +208,33 @@ userSchema.pre('save', async function(next) {
   }
 });
 
-// Encrypt payment details before saving
+// Encrypt credit card numbers before saving
 userSchema.pre('save', async function(next) {
-  if (this.isModified('paymentDetails')) {
-    if (this.paymentDetails.cardNumber) {
-      this.paymentDetails.cardNumber = encrypt(this.paymentDetails.cardNumber);
-    }
-    if (this.paymentDetails.cvv) {
-      this.paymentDetails.cvv = encrypt(this.paymentDetails.cvv);
-    }
+  if (this.isModified('savedCreditCards')) {
+    this.savedCreditCards.forEach((card, index) => {
+      // Check if this is a new card (not already encrypted)
+      const isNewCard = card.isNew || (!card.cardNumber.includes(':') && card.cardNumber && card.cardNumber.length > 4);
+      
+      if (isNewCard && card.cardNumber) {
+        // Clean card number
+        const cleanNumber = card.cardNumber.replace(/\s+/g, '').replace(/[^0-9]/gi, '');
+        
+        // Store last 4 digits if not already stored
+        if (!card.last4Digits && cleanNumber.length >= 4) {
+          this.savedCreditCards[index].last4Digits = cleanNumber.slice(-4);
+        }
+        
+        // Encrypt card number (check if already encrypted by looking for colon separator)
+        if (!cleanNumber.includes(':')) {
+          this.savedCreditCards[index].cardNumber = encrypt(cleanNumber);
+        }
+        
+        // Remove isNew flag after processing
+        if (card.isNew) {
+          delete this.savedCreditCards[index].isNew;
+        }
+      }
+    });
   }
   next();
 });
@@ -205,27 +248,73 @@ userSchema.methods.comparePassword = async function(candidatePassword) {
 userSchema.methods.toSafeObject = function() {
   const user = this.toObject();
   delete user.password;
-  if (user.paymentDetails) {
-    if (user.paymentDetails.cardNumber) {
-      user.paymentDetails.cardNumber = '****-****-****-' + decrypt(user.paymentDetails.cardNumber).slice(-4);
-    }
-    if (user.paymentDetails.cvv) {
-      delete user.paymentDetails.cvv;
-    }
+  
+  // Mask saved credit cards - NEVER expose encrypted card numbers from MongoDB
+  // Cards in MongoDB are encrypted as hex strings (salt:iv:tag:encrypted format)
+  if (user.savedCreditCards && user.savedCreditCards.length > 0) {
+    user.savedCreditCards = user.savedCreditCards.map((card) => {
+      // Always mask card number - detect encrypted format (contains colons)
+      let maskedCardNumber = '****-****-****-****';
+      
+      if (card.cardNumber) {
+        // If already masked, keep it
+        if (card.cardNumber.startsWith('****')) {
+          maskedCardNumber = card.cardNumber;
+        } 
+        // If encrypted (contains colons from encryption format), decrypt then mask
+        else if (card.cardNumber.includes(':')) {
+          try {
+            const decrypted = decrypt(card.cardNumber);
+            maskedCardNumber = '****-****-****-' + decrypted.slice(-4);
+          } catch (e) {
+            // If decryption fails, use last4Digits if available
+            maskedCardNumber = card.last4Digits 
+              ? '****-****-****-' + card.last4Digits 
+              : '****-****-****-****';
+          }
+        }
+        // If last4Digits available, use it
+        else if (card.last4Digits) {
+          maskedCardNumber = '****-****-****-' + card.last4Digits;
+        }
+      } else if (card.last4Digits) {
+        maskedCardNumber = '****-****-****-' + card.last4Digits;
+      }
+      
+      // Return only safe fields - NEVER expose encrypted card number
+      return {
+        cardId: card.cardId,
+        cardHolderName: card.cardHolderName,
+        expiryDate: card.expiryDate,
+        last4Digits: card.last4Digits,
+        zipCode: card.zipCode, // Include ZIP for payment validation
+        cardNumber: maskedCardNumber, // Always masked
+        addedAt: card.addedAt
+      };
+    });
   }
+  
   return user;
 };
 
-// Method to decrypt payment details when needed
-userSchema.methods.getPaymentDetails = function() {
-  const details = { ...this.paymentDetails.toObject() };
-  if (details.cardNumber) {
-    details.cardNumber = decrypt(details.cardNumber);
+// Method to decrypt a specific saved card (for payment)
+userSchema.methods.getDecryptedCard = function(cardId) {
+  const card = this.savedCreditCards.find((c) => c.cardId === cardId);
+  if (!card) {
+    return null;
   }
-  if (details.cvv) {
-    details.cvv = decrypt(details.cvv);
+  
+  const decrypted = card.toObject ? card.toObject() : { ...card };
+  if (decrypted.cardNumber && !decrypted.cardNumber.startsWith('****')) {
+    try {
+      decrypted.cardNumber = decrypt(decrypted.cardNumber);
+    } catch (e) {
+      // Handle error
+      return null;
+    }
   }
-  return details;
+  
+  return decrypted;
 };
 
 const User = mongoose.model('User', userSchema);

@@ -6,7 +6,12 @@
 
 const mongoose = require('mongoose');
 const { Pool } = require('pg');
+const dns = require('dns');
 const logger = require('../utils/logger');
+
+// Force IPv4 DNS resolution for PostgreSQL connections
+// This prevents IPv6 connection issues in Kubernetes
+dns.setDefaultResultOrder('ipv4first');
 
 // CRITICAL: Disable buffering IMMEDIATELY when this module loads
 // This must be set before ANY models are loaded anywhere in the application
@@ -63,16 +68,18 @@ async function connectMongoDB() {
     }
 
     const options = {
-      maxPoolSize: 10,
-      minPoolSize: 2, // Keep minimum connections alive
-      serverSelectionTimeoutMS: 30000, // Increased for Atlas connections
-      socketTimeoutMS: 60000, // Increased socket timeout
-      connectTimeoutMS: 30000, // Connection timeout
+      maxPoolSize: 20, // Increased pool size for better concurrency
+      minPoolSize: 5, // Keep more connections alive
+      serverSelectionTimeoutMS: 5000, // Reduced from 30s to 5s for faster failure
+      socketTimeoutMS: 10000, // Reduced from 60s to 10s
+      connectTimeoutMS: 5000, // Reduced from 30s to 5s
       retryWrites: true,
       w: 'majority',
       // Keep connections alive
       heartbeatFrequencyMS: 10000, // Send heartbeat every 10 seconds to keep connection alive
       retryReads: true,
+      // Optimize for low latency
+      maxIdleTimeMS: 30000, // Close idle connections after 30s
     };
 
     // CRITICAL: Disable buffering BEFORE connecting
@@ -219,19 +226,59 @@ async function waitForMongoDBReady(maxWaitMs = 10000) {
 // Supports both Supabase connection string and individual parameters
 let pgPool = null;
 
+// Resolve hostname to IPv4 address (async helper)
+async function resolveHostToIPv4(hostname) {
+  if (hostname === 'localhost' || /^\d+\.\d+\.\d+\.\d+$/.test(hostname)) {
+    return hostname; // Already an IP or localhost
+  }
+  
+  try {
+    const { promisify } = require('util');
+    const dnsPromises = require('dns').promises;
+    const addresses = await dnsPromises.resolve4(hostname);
+    if (addresses && addresses.length > 0) {
+      logger.info(`Resolved ${hostname} to IPv4: ${addresses[0]}`);
+      return addresses[0];
+    }
+  } catch (dnsError) {
+    logger.warn(`Failed to resolve ${hostname} to IPv4, will use hostname: ${dnsError.message}`);
+  }
+  return hostname; // Fallback to hostname
+}
+
 function getPostgresPool() {
   if (!pgPool) {
     let pgConfig;
     
     // Check if Supabase connection string is provided
-    if (process.env.SUPABASE_DB_URL || process.env.POSTGRES_URL || process.env.DATABASE_URL) {
-      // Use connection string (Supabase format)
+    // Prefer individual parameters if available (to avoid IPv6 issues)
+    if ((process.env.POSTGRES_HOST && process.env.POSTGRES_USER && process.env.POSTGRES_PASSWORD) || 
+        (process.env.SUPABASE_DB_HOST && process.env.SUPABASE_DB_USER && process.env.SUPABASE_DB_PASSWORD)) {
+      // Use individual connection parameters (preferred to avoid IPv6 issues)
+      const hostname = process.env.POSTGRES_HOST || process.env.SUPABASE_DB_HOST || 'localhost';
+      
+      // Note: DNS resolution will be done lazily when connection is attempted
+      // dns.setDefaultResultOrder('ipv4first') should make it prefer IPv4
+      pgConfig = {
+        host: hostname,
+        port: parseInt(process.env.POSTGRES_PORT || process.env.SUPABASE_DB_PORT || '5432'),
+        database: process.env.POSTGRES_DB || process.env.SUPABASE_DB_NAME || 'postgres',
+        user: process.env.POSTGRES_USER || process.env.SUPABASE_DB_USER || 'postgres',
+        password: process.env.POSTGRES_PASSWORD || process.env.SUPABASE_DB_PASSWORD || '',
+        max: 20,
+        idleTimeoutMillis: 30000,
+        connectionTimeoutMillis: 15000, // Increased timeout for Supabase
+        ssl: process.env.SUPABASE_SSL === 'true' || process.env.POSTGRES_SSL === 'true' ? { rejectUnauthorized: false } : false
+      };
+      logger.info('Using PostgreSQL connection parameters (individual params)', { host: hostname });
+    } else if (process.env.SUPABASE_DB_URL || process.env.POSTGRES_URL || process.env.DATABASE_URL) {
+      // Fallback to connection string (Supabase format)
       const connectionString = process.env.SUPABASE_DB_URL || process.env.POSTGRES_URL || process.env.DATABASE_URL;
       pgConfig = {
         connectionString: connectionString,
         max: 20,
         idleTimeoutMillis: 30000,
-        connectionTimeoutMillis: 2000,
+        connectionTimeoutMillis: 15000, // Increased timeout
         ssl: process.env.SUPABASE_SSL === 'true' || process.env.POSTGRES_SSL === 'true' ? { rejectUnauthorized: false } : false
       };
       logger.info('Using PostgreSQL connection string (Supabase)');
@@ -271,7 +318,8 @@ async function testPostgresConnection() {
     logger.info('PostgreSQL connection test successful');
   } catch (error) {
     logger.error('PostgreSQL connection test failed:', error);
-    throw error;
+    // Don't throw - let the service continue even if initial connection fails
+    // The connection will be retried when actually needed
   }
 }
 

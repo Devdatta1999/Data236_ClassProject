@@ -19,6 +19,9 @@ RUN npm install
 # Copy service source code
 COPY services/listing-service/ ./
 
+# Create uploads directory for images
+RUN mkdir -p uploads/images
+
 WORKDIR /workspace/services/listing-service
 
 EXPOSE 3002

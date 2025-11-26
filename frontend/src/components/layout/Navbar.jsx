@@ -4,6 +4,7 @@ import { ShoppingCart, User, LogOut, Menu } from 'lucide-react'
 import { useState } from 'react'
 import { logout } from '../../store/slices/authSlice'
 import { clearCart } from '../../store/slices/cartSlice'
+import api from '../../services/apiService'
 
 const Navbar = () => {
   const navigate = useNavigate()
@@ -16,6 +17,43 @@ const Navbar = () => {
     dispatch(logout())
     dispatch(clearCart())
     navigate('/')
+  }
+
+  // Mark pending bookings as Failed when cart icon is clicked
+  // This ensures bookings from failed payments are freed up when user tries to checkout again
+  const handleCartClick = async (e) => {
+    e.preventDefault()
+    
+    if (user?.userId && userType === 'traveler') {
+      try {
+        // Get user's pending bookings
+        const response = await api.get(`/api/bookings/user/${user.userId}`)
+        const bookings = response.data.data?.bookings || []
+        
+        const pendingBookings = bookings.filter(b => b.status === 'Pending')
+        
+        if (pendingBookings.length > 0) {
+          const bookingIds = pendingBookings.map(b => b.bookingId)
+          
+          console.log(`[Navbar] Found ${pendingBookings.length} pending booking(s), marking as Failed...`)
+          
+          // Mark as Failed in background (don't wait for it)
+          api.post('/api/bookings/fail', { bookingIds }, {
+            timeout: 5000
+          }).then(() => {
+            console.log(`[Navbar] Successfully marked ${pendingBookings.length} booking(s) as Failed`)
+          }).catch(err => {
+            console.error('[Navbar] Error marking bookings as Failed:', err)
+          })
+        }
+      } catch (err) {
+        console.error('[Navbar] Error checking bookings:', err)
+        // Continue to navigate even if this fails
+      }
+    }
+    
+    // Navigate to checkout
+    navigate('/checkout')
   }
 
   const cartCount = items.reduce((sum, item) => sum + item.quantity, 0)
@@ -87,6 +125,7 @@ const Navbar = () => {
                     </Link>
                     <Link
                       to="/checkout"
+                      onClick={handleCartClick}
                       className="relative text-gray-700 hover:text-primary-600 transition-colors"
                     >
                       <ShoppingCart className="w-6 h-6" />
@@ -164,7 +203,11 @@ const Navbar = () => {
                     <Link to="/my-bookings" className="block text-gray-700 hover:text-primary-600">
                       My Bookings
                     </Link>
-                    <Link to="/checkout" className="block text-gray-700 hover:text-primary-600">
+                    <Link 
+                      to="/checkout" 
+                      onClick={handleCartClick}
+                      className="block text-gray-700 hover:text-primary-600"
+                    >
                       Cart ({cartCount})
                     </Link>
                   </>

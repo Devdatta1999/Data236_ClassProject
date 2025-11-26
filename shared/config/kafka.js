@@ -14,8 +14,12 @@ const kafka = new Kafka({
   brokers: KAFKA_BROKERS,
   retry: {
     initialRetryTime: 100,
-    retries: 8
-  }
+    retries: 3, // Reduced retries for faster failure
+    maxRetryTime: 1000 // Max 1 second retry delay
+  },
+  // Optimize for low latency
+  requestTimeout: 5000, // 5 second request timeout
+  connectionTimeout: 3000 // 3 second connection timeout
 });
 
 let producer = null;
@@ -30,7 +34,12 @@ async function getProducer() {
   }
 
   try {
-    producer = kafka.producer();
+    producer = kafka.producer({
+      // Optimize for low latency
+      maxInFlightRequests: 1, // Process one request at a time for ordering
+      idempotent: false, // Disable idempotence for lower latency
+      transactionTimeout: 30000
+    });
     await producer.connect();
     logger.info('Kafka producer connected');
     return producer;
@@ -66,7 +75,15 @@ async function sendMessage(topic, message) {
  */
 async function createConsumer(groupId, topics, messageHandler) {
   try {
-    const consumer = kafka.consumer({ groupId });
+    const consumer = kafka.consumer({ 
+      groupId,
+      sessionTimeout: 10000,
+      heartbeatInterval: 3000,
+      maxBytesPerPartition: 1048576,
+      minBytes: 1,
+      maxBytes: 10485760,
+      maxWaitTimeInMs: 50 // Poll every 50ms for faster response
+    });
     await consumer.connect();
     
     for (const topic of topics) {
@@ -74,6 +91,9 @@ async function createConsumer(groupId, topics, messageHandler) {
     }
     
     await consumer.run({
+      autoCommit: true,
+      autoCommitInterval: 100,
+      autoCommitThreshold: 1,
       eachMessage: async ({ topic, partition, message }) => {
         try {
           const value = JSON.parse(message.value.toString());

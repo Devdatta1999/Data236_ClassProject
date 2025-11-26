@@ -1,11 +1,14 @@
 import { useState, useEffect } from 'react'
 import { Plane, Hotel, Car, Trash2, AlertCircle } from 'lucide-react'
 import api from '../../services/apiService'
+import Notification from '../common/Notification'
 
 const MyListingsTab = ({ onRefresh }) => {
   const [listings, setListings] = useState([])
   const [loading, setLoading] = useState(false)
   const [deleting, setDeleting] = useState({})
+  const [notification, setNotification] = useState(null)
+  const [confirmDelete, setConfirmDelete] = useState(null) // { listingId, listingType }
 
   useEffect(() => {
     fetchListings()
@@ -25,10 +28,14 @@ const MyListingsTab = ({ onRefresh }) => {
   }
 
   const handleDelete = async (listingId, listingType) => {
-    if (!window.confirm(`Are you sure you want to delete this ${listingType.toLowerCase()} listing? This action cannot be undone.`)) {
-      return
-    }
+    setConfirmDelete({ listingId, listingType })
+  }
 
+  const handleConfirmDelete = async () => {
+    if (!confirmDelete) return
+    
+    const { listingId, listingType } = confirmDelete
+    setConfirmDelete(null)
     setDeleting({ [listingId]: true })
     try {
       await api.delete('/api/providers/listings', {
@@ -37,10 +44,11 @@ const MyListingsTab = ({ onRefresh }) => {
       // Remove from local state
       setListings(listings.filter(l => l.listingId !== listingId))
       if (onRefresh) onRefresh()
-      alert('Listing deleted successfully!')
+      setNotification({ type: 'success', message: 'Listing deleted successfully!' })
     } catch (err) {
       console.error('Error deleting listing:', err)
-      alert('Failed to delete listing: ' + (err.response?.data?.error?.message || err.message))
+      const errorMessage = err.response?.data?.error?.message || err.message || 'Failed to delete listing'
+      setNotification({ type: 'error', message: errorMessage })
     } finally {
       setDeleting({})
     }
@@ -132,6 +140,40 @@ const MyListingsTab = ({ onRefresh }) => {
 
   return (
     <div className="space-y-6">
+      {notification && (
+        <Notification
+          type={notification.type}
+          message={notification.message}
+          onClose={() => setNotification(null)}
+        />
+      )}
+
+      {/* Delete Confirmation Dialog */}
+      {confirmDelete && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
+            <h3 className="text-lg font-semibold mb-4">Delete Listing</h3>
+            <p className="text-gray-600 mb-6">
+              Are you sure you want to delete this {confirmDelete.listingType.toLowerCase()} listing? This action cannot be undone.
+            </p>
+            <div className="flex justify-end space-x-3">
+              <button
+                onClick={handleCancelDelete}
+                className="btn-secondary"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleConfirmDelete}
+                className="btn-primary bg-red-600 hover:bg-red-700"
+              >
+                Yes, Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="flex justify-between items-center">
         <h2 className="text-2xl font-bold">My Listings</h2>
         <button

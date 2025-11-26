@@ -21,6 +21,10 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// Serve uploaded images statically
+const path = require('path');
+app.use('/api/listings/images', express.static(path.join(__dirname, '../uploads/images')));
+
 // Health check
 app.get('/health', (req, res) => {
   res.json({ status: 'ok', service: 'listing-service' });

@@ -3,11 +3,13 @@ import { useSelector, useDispatch } from 'react-redux'
 import { removePendingListing } from '../../store/slices/adminSlice'
 import api from '../../services/apiService'
 import { CheckCircle, XCircle, Plane, Hotel, Car } from 'lucide-react'
+import Notification from '../common/Notification'
 
 const PendingRequestsTab = ({ onRefresh }) => {
   const dispatch = useDispatch()
   const { pendingListings } = useSelector((state) => state.admin)
   const [processing, setProcessing] = useState({})
+  const [notification, setNotification] = useState(null)
 
   const handleApprove = async (listingId, listingType) => {
     setProcessing({ [listingId]: 'approving' })
@@ -15,9 +17,10 @@ const PendingRequestsTab = ({ onRefresh }) => {
       await api.put(`/api/admin/listings/${listingId}/approve`, { listingType })
       dispatch(removePendingListing({ listingId, listingType }))
       if (onRefresh) onRefresh() // Refresh the list
-      alert('Listing approved successfully!')
+      setNotification({ type: 'success', message: 'Listing approved successfully!' })
     } catch (err) {
-      alert('Failed to approve listing: ' + (err.response?.data?.error?.message || err.message))
+      const errorMessage = err.response?.data?.error?.message || err.message || 'Failed to approve listing'
+      setNotification({ type: 'error', message: errorMessage })
     } finally {
       setProcessing({})
     }
@@ -29,9 +32,10 @@ const PendingRequestsTab = ({ onRefresh }) => {
       await api.put(`/api/admin/listings/${listingId}/reject`, { listingType })
       dispatch(removePendingListing({ listingId, listingType }))
       if (onRefresh) onRefresh() // Refresh the list
-      alert('Listing rejected')
+      setNotification({ type: 'success', message: 'Listing rejected successfully.' })
     } catch (err) {
-      alert('Failed to reject listing: ' + (err.response?.data?.error?.message || err.message))
+      const errorMessage = err.response?.data?.error?.message || err.message || 'Failed to reject listing'
+      setNotification({ type: 'error', message: errorMessage })
     } finally {
       setProcessing({})
     }
@@ -53,6 +57,13 @@ const PendingRequestsTab = ({ onRefresh }) => {
 
   return (
     <div className="space-y-4">
+      {notification && (
+        <Notification
+          type={notification.type}
+          message={notification.message}
+          onClose={() => setNotification(null)}
+        />
+      )}
       {allListings.map((listing) => {
         const Icon = listing.icon
         const listingId = listing.flightId || listing.hotelId || listing.carId
@@ -113,6 +124,15 @@ const PendingRequestsTab = ({ onRefresh }) => {
                       <p><strong>Price:</strong> ${listing.dailyRentalPrice}/day</p>
                       <p><strong>Available From:</strong> {listing.availableFrom ? new Date(listing.availableFrom).toLocaleDateString() : 'N/A'}</p>
                       <p><strong>Available To:</strong> {listing.availableTo ? new Date(listing.availableTo).toLocaleDateString() : 'N/A'}</p>
+                      <div className="mt-2 pt-2 border-t border-gray-200">
+                        <p><strong>Location:</strong></p>
+                        {listing.neighbourhood && (
+                          <p className="ml-4"><strong>Neighbourhood:</strong> {listing.neighbourhood}</p>
+                        )}
+                        <p className="ml-4"><strong>City:</strong> {listing.city || 'N/A'}</p>
+                        <p className="ml-4"><strong>State:</strong> {listing.state || 'N/A'}</p>
+                        <p className="ml-4"><strong>Country:</strong> {listing.country || 'USA'}</p>
+                      </div>
                     </div>
                   )}
                   

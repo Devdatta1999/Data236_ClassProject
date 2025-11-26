@@ -4,7 +4,8 @@ import { useSelector, useDispatch } from 'react-redux'
 import { updateUser } from '../../store/slices/authSlice'
 import { setProfile, updateProfile as updateUserProfile } from '../../store/slices/userSlice'
 import api from '../../services/apiService'
-import { User, Mail, Phone, MapPin, CreditCard, ArrowLeft, Save } from 'lucide-react'
+import { US_STATES } from '../../utils/usStates'
+import { User, Mail, Phone, MapPin, CreditCard, ArrowLeft, Save, Plus, Trash2 } from 'lucide-react'
 
 const ProfilePage = () => {
   const navigate = useNavigate()
@@ -12,6 +13,7 @@ const ProfilePage = () => {
   const { user } = useSelector((state) => state.auth)
   const { profile } = useSelector((state) => state.user)
   const [formData, setFormData] = useState({
+    userId: '',
     firstName: '',
     lastName: '',
     email: '',
@@ -24,6 +26,18 @@ const ProfilePage = () => {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
+  const [savedCards, setSavedCards] = useState([])
+  const [showAddCard, setShowAddCard] = useState(false)
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
+  const [cardToDelete, setCardToDelete] = useState(null)
+  const [editingCard, setEditingCard] = useState(null)
+  const [cardFormData, setCardFormData] = useState({
+    cardNumber: '',
+    cardHolderName: '',
+    expiryDate: '',
+    zipCode: formData.zipCode || '', // Initialize with user's zipCode
+  })
+  const [cardLoading, setCardLoading] = useState(false)
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -34,6 +48,7 @@ const ProfilePage = () => {
         const userData = response.data.data?.user
         dispatch(setProfile(userData))
         setFormData({
+          userId: userData?.userId || '',
           firstName: userData?.firstName || '',
           lastName: userData?.lastName || '',
           email: userData?.email || '',
@@ -49,7 +64,192 @@ const ProfilePage = () => {
     }
 
     fetchProfile()
+    fetchSavedCards()
   }, [user, dispatch])
+
+  const fetchSavedCards = async () => {
+    if (!user?.userId) return
+    try {
+      const response = await api.get(`/api/users/${user.userId}/cards`)
+      setSavedCards(response.data.data?.cards || [])
+    } catch (err) {
+      console.error('Error fetching saved cards:', err)
+    }
+  }
+
+  const formatCardNumber = (value) => {
+    const v = value.replace(/\s+/g, '').replace(/[^0-9]/gi, '')
+    const matches = v.match(/\d{4,16}/g)
+    const match = (matches && matches[0]) || ''
+    const parts = []
+    for (let i = 0, len = match.length; i < len; i += 4) {
+      parts.push(match.substring(i, i + 4))
+    }
+    if (parts.length) {
+      return parts.join(' ')
+    } else {
+      return v
+    }
+  }
+
+  const formatExpiryDate = (value) => {
+    const v = value.replace(/\s+/g, '').replace(/[^0-9]/gi, '')
+    if (v.length >= 2) {
+      return v.substring(0, 2) + '/' + v.substring(2, 4)
+    }
+    return v
+  }
+
+  const handleAddCard = async (e) => {
+    e.preventDefault()
+    setCardLoading(true)
+    setError('')
+    setSuccess('')
+
+    // Client-side validation
+    if (!cardFormData.cardNumber || !cardFormData.cardHolderName || !cardFormData.expiryDate || !cardFormData.zipCode) {
+      setError('Please fill in all required fields (including ZIP code)')
+      setCardLoading(false)
+      return
+    }
+
+    // Validate expiry date format
+    if (!/^(0[1-9]|1[0-2])\/\d{2}$/.test(cardFormData.expiryDate)) {
+      setError('Expiry date must be in MM/YY format (e.g., 12/25)')
+      setCardLoading(false)
+      return
+    }
+
+    // Check if expiry date is in the past
+    const [month, year] = cardFormData.expiryDate.split('/')
+    const expiryYear = 2000 + parseInt(year)
+    const expiryDateObj = new Date(expiryYear, parseInt(month) - 1)
+    const now = new Date()
+    if (expiryDateObj < now) {
+      setError('Card expiry date cannot be in the past')
+      setCardLoading(false)
+      return
+    }
+
+    try {
+      const response = await api.post(`/api/users/${user.userId}/cards`, cardFormData)
+      setShowAddCard(false)
+      setCardFormData({ cardNumber: '', cardHolderName: '', expiryDate: '', zipCode: formData.zipCode || '' })
+      setSuccess('Credit card saved successfully!')
+      setError('') // Clear any previous errors
+      fetchSavedCards()
+    } catch (err) {
+      const errorMessage = err.response?.data?.error?.message || 
+                          err.response?.data?.message || 
+                          err.message || 
+                          'Failed to save credit card. Please try again.'
+      setError(errorMessage)
+      console.error('Error saving card:', err)
+    } finally {
+      setCardLoading(false)
+    }
+  }
+
+  const handleEditCard = (card) => {
+    setEditingCard(card.cardId)
+    setCardFormData({
+      cardNumber: '', // User needs to re-enter for security
+      cardHolderName: card.cardHolderName || '',
+      expiryDate: card.expiryDate || '',
+      zipCode: card.zipCode || formData.zipCode || '',
+    })
+    setShowAddCard(false) // Hide add card form if open
+  }
+
+  const handleCancelEdit = () => {
+    setEditingCard(null)
+    setCardFormData({ cardNumber: '', cardHolderName: '', expiryDate: '', zipCode: formData.zipCode || '' })
+  }
+
+  const handleUpdateCard = async (e) => {
+    e.preventDefault()
+    if (!editingCard) return
+
+    setCardLoading(true)
+    setError('')
+    setSuccess('')
+
+    // Client-side validation
+    if (!cardFormData.cardNumber || !cardFormData.cardHolderName || !cardFormData.expiryDate || !cardFormData.zipCode) {
+      setError('Please fill in all required fields (including ZIP code)')
+      setCardLoading(false)
+      return
+    }
+
+    // Validate expiry date format
+    if (!/^(0[1-9]|1[0-2])\/\d{2}$/.test(cardFormData.expiryDate)) {
+      setError('Expiry date must be in MM/YY format (e.g., 12/25)')
+      setCardLoading(false)
+      return
+    }
+
+    // Check if expiry date is in the past
+    const [month, year] = cardFormData.expiryDate.split('/')
+    const expiryYear = 2000 + parseInt(year)
+    const expiryDateObj = new Date(expiryYear, parseInt(month) - 1)
+    const now = new Date()
+    if (expiryDateObj < now) {
+      setError('Card expiry date cannot be in the past')
+      setCardLoading(false)
+      return
+    }
+
+    try {
+      const response = await api.put(`/api/users/${user.userId}/cards`, {
+        cardId: editingCard,
+        ...cardFormData
+      })
+      setEditingCard(null)
+      setCardFormData({ cardNumber: '', cardHolderName: '', expiryDate: '', zipCode: formData.zipCode || '' })
+      setSuccess('Credit card updated successfully!')
+      setError('') // Clear any previous errors
+      fetchSavedCards()
+    } catch (err) {
+      const errorResponse = err.response?.data?.error
+      const errorMessage = typeof errorResponse === 'string' 
+        ? errorResponse 
+        : errorResponse?.message 
+        || err.response?.data?.message 
+        || err.message 
+        || 'Failed to update credit card. Please try again.'
+      setError(errorMessage)
+      console.error('Error updating card:', err)
+    } finally {
+      setCardLoading(false)
+    }
+  }
+
+  const handleDeleteCard = (cardId) => {
+    setCardToDelete(cardId)
+    setShowDeleteConfirm(true)
+  }
+
+  const confirmDeleteCard = async () => {
+    if (!cardToDelete) return
+
+    try {
+      await api.delete(`/api/users/${user.userId}/cards`, { data: { cardId: cardToDelete } })
+      setSuccess('Credit card deleted successfully!')
+      setError('') // Clear any previous errors
+      setShowDeleteConfirm(false)
+      setCardToDelete(null)
+      fetchSavedCards()
+    } catch (err) {
+      setError(err.response?.data?.error?.message || 'Failed to delete credit card')
+      setShowDeleteConfirm(false)
+      setCardToDelete(null)
+    }
+  }
+
+  const cancelDeleteCard = () => {
+    setShowDeleteConfirm(false)
+    setCardToDelete(null)
+  }
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -64,8 +264,18 @@ const ProfilePage = () => {
       dispatch(updateUser(updatedUser))
       dispatch(updateUserProfile(updatedUser))
       setSuccess('Profile updated successfully!')
+      // Clear error on success
+      setError('')
     } catch (err) {
-      setError(err.response?.data?.error || 'Failed to update profile')
+      const errorResponse = err.response?.data?.error
+      const errorMessage = typeof errorResponse === 'string'
+        ? errorResponse
+        : errorResponse?.message
+        || err.response?.data?.message
+        || err.message
+        || 'Failed to update profile'
+      setError(errorMessage)
+      console.error('Error updating profile:', err)
     } finally {
       setLoading(false)
     }
@@ -87,17 +297,44 @@ const ProfilePage = () => {
         <form onSubmit={handleSubmit} className="card space-y-6">
           {error && (
             <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
-              {error}
+              {typeof error === 'string' ? error : error?.message || error?.error?.message || 'An error occurred'}
             </div>
           )}
 
           {success && (
             <div className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded">
-              {success}
+              {typeof success === 'string' ? success : success?.message || 'Success'}
             </div>
           )}
 
           <div className="grid md:grid-cols-2 gap-6">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                <User className="w-4 h-4 inline mr-2" />
+                User ID (SSN)
+              </label>
+              <input
+                type="text"
+                value={formData.userId}
+                onChange={(e) => {
+                  // Format as XXX-XX-XXXX
+                  const value = e.target.value.replace(/\D/g, '');
+                  let formatted = value;
+                  if (value.length > 3) {
+                    formatted = value.slice(0, 3) + '-' + value.slice(3);
+                  }
+                  if (value.length > 5) {
+                    formatted = value.slice(0, 3) + '-' + value.slice(3, 5) + '-' + value.slice(5, 9);
+                  }
+                  setFormData({ ...formData, userId: formatted })
+                }}
+                className="input-field"
+                placeholder="XXX-XX-XXXX"
+                maxLength="11"
+                required
+              />
+              <p className="text-xs text-gray-500 mt-1">Format: XXX-XX-XXXX</p>
+            </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 <User className="w-4 h-4 inline mr-2" />
@@ -178,14 +415,19 @@ const ProfilePage = () => {
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 State
               </label>
-              <input
-                type="text"
-                maxLength="2"
+              <select
                 value={formData.state}
-                onChange={(e) => setFormData({ ...formData, state: e.target.value.toUpperCase() })}
+                onChange={(e) => setFormData({ ...formData, state: e.target.value })}
                 className="input-field"
                 required
-              />
+              >
+                <option value="">Select a state</option>
+                {US_STATES.map((state) => (
+                  <option key={state.code} value={state.code}>
+                    {state.code} - {state.name}
+                  </option>
+                ))}
+              </select>
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -219,6 +461,300 @@ const ProfilePage = () => {
             </button>
           </div>
         </form>
+
+        {/* Saved Credit Cards Section */}
+        <div className="card mt-8">
+          <div className="flex items-center justify-between mb-6">
+            <h3 className="text-xl font-semibold flex items-center space-x-2">
+              <CreditCard className="w-5 h-5" />
+              <span>Saved Credit Cards</span>
+            </h3>
+            <button
+              onClick={() => setShowAddCard(!showAddCard)}
+              className="btn-primary flex items-center space-x-2"
+            >
+              <Plus className="w-4 h-4" />
+              <span>Add Card</span>
+            </button>
+          </div>
+
+          {showAddCard && (
+            <form onSubmit={handleAddCard} className="mb-6 p-4 bg-gray-50 rounded-lg space-y-4">
+              <div className="bg-blue-50 border border-blue-200 text-blue-700 px-4 py-3 rounded text-sm">
+                <strong>Note:</strong> For security, CVV is not stored. You'll be asked for CVV when making a payment.
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Card Number
+                </label>
+                <input
+                  type="text"
+                  maxLength="19"
+                  value={cardFormData.cardNumber}
+                  onChange={(e) => setCardFormData({
+                    ...cardFormData,
+                    cardNumber: formatCardNumber(e.target.value),
+                  })}
+                  className="input-field text-gray-900"
+                  placeholder="1234 5678 9012 3456"
+                  required
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Card Holder Name
+                </label>
+                <input
+                  type="text"
+                  value={cardFormData.cardHolderName}
+                  onChange={(e) => setCardFormData({
+                    ...cardFormData,
+                    cardHolderName: e.target.value,
+                  })}
+                  className="input-field text-gray-900"
+                  placeholder="John Doe"
+                  required
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Expiry Date (MM/YY)
+                </label>
+                <input
+                  type="text"
+                  maxLength="5"
+                  value={cardFormData.expiryDate}
+                  onChange={(e) => setCardFormData({
+                    ...cardFormData,
+                    expiryDate: formatExpiryDate(e.target.value),
+                  })}
+                  className="input-field text-gray-900"
+                  placeholder="MM/YY (e.g., 12/25)"
+                  required
+                />
+                <p className="text-xs text-gray-500 mt-1">
+                  Format: MM/YY (e.g., 12/25 for December 2025)
+                </p>
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  ZIP Code <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  value={cardFormData.zipCode}
+                  onChange={(e) => setCardFormData({
+                    ...cardFormData,
+                    zipCode: e.target.value,
+                  })}
+                  className="input-field text-gray-900"
+                  placeholder="12345 or 12345-6789"
+                  required
+                />
+                <p className="text-xs text-gray-500 mt-1">
+                  ZIP code for payment verification
+                </p>
+              </div>
+              
+              <div className="flex space-x-2">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowAddCard(false)
+                    setCardFormData({ cardNumber: '', cardHolderName: '', expiryDate: '', zipCode: formData.zipCode || '' })
+                  }}
+                  className="btn-secondary"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={cardLoading}
+                  className="btn-primary disabled:opacity-50"
+                >
+                  {cardLoading ? 'Saving...' : 'Save Card'}
+                </button>
+              </div>
+            </form>
+          )}
+
+          {/* Edit Card Form */}
+          {editingCard && (
+            <form onSubmit={handleUpdateCard} className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg space-y-4">
+              <div className="bg-blue-100 border border-blue-300 text-blue-800 px-4 py-3 rounded text-sm">
+                <strong>Editing Card:</strong> Please update the card details below. You'll need to re-enter the full card number for security.
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Card Number
+                </label>
+                <input
+                  type="text"
+                  maxLength="19"
+                  value={cardFormData.cardNumber}
+                  onChange={(e) => setCardFormData({
+                    ...cardFormData,
+                    cardNumber: formatCardNumber(e.target.value),
+                  })}
+                  className="input-field text-gray-900"
+                  placeholder="1234 5678 9012 3456"
+                  required
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Card Holder Name
+                </label>
+                <input
+                  type="text"
+                  value={cardFormData.cardHolderName}
+                  onChange={(e) => setCardFormData({
+                    ...cardFormData,
+                    cardHolderName: e.target.value,
+                  })}
+                  className="input-field text-gray-900"
+                  placeholder="John Doe"
+                  required
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Expiry Date (MM/YY)
+                </label>
+                <input
+                  type="text"
+                  maxLength="5"
+                  value={cardFormData.expiryDate}
+                  onChange={(e) => setCardFormData({
+                    ...cardFormData,
+                    expiryDate: formatExpiryDate(e.target.value),
+                  })}
+                  className="input-field text-gray-900"
+                  placeholder="MM/YY (e.g., 12/25)"
+                  required
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  ZIP Code <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  value={cardFormData.zipCode}
+                  onChange={(e) => setCardFormData({
+                    ...cardFormData,
+                    zipCode: e.target.value,
+                  })}
+                  className="input-field text-gray-900"
+                  placeholder="12345 or 12345-6789"
+                  required
+                />
+              </div>
+              
+              <div className="flex space-x-2">
+                <button
+                  type="button"
+                  onClick={handleCancelEdit}
+                  className="btn-secondary"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={cardLoading}
+                  className="btn-primary disabled:opacity-50"
+                >
+                  {cardLoading ? 'Updating...' : 'Save Changes'}
+                </button>
+              </div>
+            </form>
+          )}
+
+          {savedCards.length === 0 && !showAddCard && !editingCard ? (
+            <p className="text-gray-500 text-center py-8">No saved credit cards</p>
+          ) : (
+            <div className="space-y-3">
+              {savedCards.map((card) => (
+                <div
+                  key={card.cardId}
+                  className={`flex items-center justify-between p-4 border rounded-lg ${
+                    editingCard === card.cardId 
+                      ? 'border-blue-300 bg-blue-50' 
+                      : 'border-gray-200 hover:border-gray-300 cursor-pointer'
+                  }`}
+                  onClick={() => !editingCard && handleEditCard(card)}
+                >
+                  <div className="flex items-center space-x-4 flex-1">
+                    <CreditCard className="w-5 h-5 text-gray-400" />
+                    <div>
+                      <p className="font-medium">{card.cardHolderName}</p>
+                      <p className="text-sm text-gray-600">{card.cardNumber}</p>
+                      <p className="text-xs text-gray-500">Expires: {card.expiryDate}</p>
+                      {editingCard === card.cardId && (
+                        <p className="text-xs text-blue-600 mt-1">Editing... Click Cancel to stop</p>
+                      )}
+                    </div>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    {editingCard !== card.cardId && (
+                      <>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            handleEditCard(card)
+                          }}
+                          className="text-blue-600 hover:text-blue-700 flex items-center space-x-1 px-3 py-1 rounded hover:bg-blue-50"
+                        >
+                          <span>Edit</span>
+                        </button>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            handleDeleteCard(card.cardId)
+                          }}
+                          className="text-red-600 hover:text-red-700 flex items-center space-x-1 px-3 py-1 rounded hover:bg-red-50"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                          <span>Delete</span>
+                        </button>
+                      </>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* Delete Confirmation Dialog */}
+          {showDeleteConfirm && (
+            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+              <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
+                <h3 className="text-lg font-semibold mb-4">Delete Credit Card</h3>
+                <p className="text-gray-600 mb-6">
+                  Are you sure you want to delete this credit card? This action cannot be undone.
+                </p>
+                <div className="flex justify-end space-x-3">
+                  <button
+                    onClick={cancelDeleteCard}
+                    className="btn-secondary"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={confirmDeleteCard}
+                    className="btn-primary bg-red-600 hover:bg-red-700"
+                  >
+                    Yes, Delete
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   )

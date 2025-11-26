@@ -1,15 +1,35 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react'
 import api from '../../services/apiService'
-import { Plane, Hotel, Car, ChevronDown } from 'lucide-react'
+import { Plane, Hotel, Car, ChevronDown, Plus, X } from 'lucide-react'
+import { US_STATES } from '../../utils/usStates'
+import Notification from '../common/Notification'
+
+const API_BASE_URL = import.meta.env.VITE_API_GATEWAY_URL || 'http://localhost:8080'
+
+const HOTEL_AMENITIES = [
+  'WiFi', 'Pool', 'Gym', 'Spa', 'Restaurant', 'Bar', 'Room Service', 
+  'Parking', 'Airport Shuttle', 'Business Center', 'Pet Friendly', 
+  'Breakfast Included', 'Laundry', 'Concierge', 'Beach Access'
+]
 
 const CreateListingTab = () => {
   const [listingType, setListingType] = useState('Flight')
   const [loading, setLoading] = useState(false)
-  const [formData, setFormData] = useState({})
+  const [formData, setFormData] = useState({ country: 'USA' }) // Always default to USA
   const [providerSuggestions, setProviderSuggestions] = useState([])
   const [showProviderDropdown, setShowProviderDropdown] = useState(false)
   const [providerSearchQuery, setProviderSearchQuery] = useState('')
   const providerDropdownRef = useRef(null)
+  const [notification, setNotification] = useState(null)
+  const [hotelRoomTypes, setHotelRoomTypes] = useState([
+    { type: 'Standard', availableCount: 0, pricePerNight: 0 },
+    { type: 'Suite', availableCount: 0, pricePerNight: 0 },
+    { type: 'Deluxe', availableCount: 0, pricePerNight: 0 }
+  ])
+  const [selectedAmenities, setSelectedAmenities] = useState([])
+  const [customAmenity, setCustomAmenity] = useState('')
+  const [hotelImages, setHotelImages] = useState([]) // Array of image URLs (from uploads)
+  const [uploadingImages, setUploadingImages] = useState(false)
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -44,10 +64,9 @@ const CreateListingTab = () => {
           // Car model doesn't have availableCars, remove it
           delete listingData.availableCars
         }
-        if (listingData.location) {
-          // Car model doesn't have location field, remove it
-          delete listingData.location
-        }
+        // Location fields (neighbourhood, city, state, country) are now part of the Car model
+        // Always set country to 'USA' (fixed for this app)
+        listingData.country = 'USA'
         // Add required fields
         if (!listingData.year) {
           listingData.year = new Date().getFullYear()
@@ -79,22 +98,32 @@ const CreateListingTab = () => {
       
       // Fix field names for Hotel
       if (listingType === 'Hotel') {
-        // Hotel requires roomTypes array with valid enum values: 'Single', 'Double', 'Suite', 'Deluxe', 'Presidential'
-        if (!listingData.roomTypes || listingData.roomTypes.length === 0) {
-          const pricePerNight = listingData.pricePerNight || 100
-          const availableCount = listingData.availableRooms || listingData.totalRooms || 1
-          const roomType = listingData.roomType || 'Double' // Use selected room type or default to Double
-          listingData.roomTypes = [{
-            type: roomType, // Valid enum value
-            pricePerNight: pricePerNight,
-            availableCount: availableCount
-          }]
-          delete listingData.pricePerNight
-          delete listingData.roomType // Remove the form field, we've converted it to roomTypes
+        // Calculate total rooms from room types
+        const totalRooms = hotelRoomTypes.reduce((sum, rt) => sum + (rt.availableCount || 0), 0)
+        const availableRooms = totalRooms
+        
+        listingData.roomTypes = hotelRoomTypes.filter(rt => rt.availableCount > 0)
+        listingData.totalRooms = totalRooms
+        listingData.availableRooms = availableRooms
+        listingData.amenities = selectedAmenities
+        listingData.images = hotelImages.filter(img => img && img.trim() !== '')
+        
+        // Validate hotel data
+        if (totalRooms === 0) {
+          setNotification({ type: 'error', message: 'Please add at least one room type with availability' })
+          setLoading(false)
+          return
         }
-        if (listingData.availableRooms && !listingData.totalRooms) {
-          listingData.totalRooms = listingData.availableRooms
+        
+        if (!listingData.availableFrom || !listingData.availableTo) {
+          setNotification({ type: 'error', message: 'Please select available from and to dates' })
+          setLoading(false)
+          return
         }
+        
+        // Remove old fields
+        delete listingData.roomType
+        delete listingData.pricePerNight
         if (!listingData.zipCode) {
           listingData.zipCode = '00000' // Default if not provided
         }
@@ -136,12 +165,13 @@ const CreateListingTab = () => {
       listingData.status = 'Active'
       
       await api.post(endpoint, listingData)
-      alert('Listing created successfully!')
-      setFormData({})
+      setNotification({ type: 'success', message: 'Listing created successfully!' })
+      setFormData({ country: 'USA' }) // Reset form but keep country as USA
       setProviderSearchQuery('') // Clear provider search query
     } catch (err) {
       console.error('Create listing error:', err)
-      alert('Failed to create listing: ' + (err.response?.data?.error?.message || err.message))
+      const errorMessage = err.response?.data?.error?.message || err.message || 'Failed to create listing'
+      setNotification({ type: 'error', message: errorMessage })
     } finally {
       setLoading(false)
     }
@@ -278,6 +308,14 @@ const CreateListingTab = () => {
     <div className="max-w-2xl">
       <div className="card">
         <h2 className="text-2xl font-bold mb-6">Create New Listing</h2>
+        
+        {notification && (
+          <Notification
+            type={notification.type}
+            message={notification.message}
+            onClose={() => setNotification(null)}
+          />
+        )}
 
         <div className="mb-6">
           <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -385,113 +423,252 @@ const CreateListingTab = () => {
           )}
 
           {listingType === 'Hotel' && (
-            <>
-              <div className="grid md:grid-cols-2 gap-4">
-                <input
-                  type="text"
-                  placeholder="Hotel Name"
-                  value={formData.hotelName || ''}
-                  onChange={(e) => setFormData({ ...formData, hotelName: e.target.value })}
-                  className="input-field"
-                  required
-                />
-                {renderProviderAutocomplete("Provider Name (type to search)")}
-                <input
-                  type="text"
-                  placeholder="Street Address"
-                  value={formData.address || ''}
-                  onChange={(e) => setFormData({ ...formData, address: e.target.value })}
-                  className="input-field"
-                  required
-                />
-                <input
-                  type="text"
-                  placeholder="City"
-                  value={formData.city || ''}
-                  onChange={(e) => setFormData({ ...formData, city: e.target.value })}
-                  className="input-field"
-                  required
-                />
-                <input
-                  type="text"
-                  placeholder="State (e.g., CA)"
-                  value={formData.state || ''}
-                  onChange={(e) => setFormData({ ...formData, state: e.target.value.toUpperCase() })}
-                  className="input-field"
-                  maxLength="2"
-                  required
-                />
-                <input
-                  type="text"
-                  placeholder="ZIP Code"
-                  value={formData.zipCode || ''}
-                  onChange={(e) => setFormData({ ...formData, zipCode: e.target.value })}
-                  className="input-field"
-                  required
-                />
-                <input
-                  type="number"
-                  placeholder="Star Rating (1-5)"
-                  value={formData.starRating || ''}
-                  onChange={(e) => setFormData({ ...formData, starRating: parseInt(e.target.value) })}
-                  className="input-field"
-                  min="1"
-                  max="5"
-                  required
-                />
-                <input
-                  type="number"
-                  placeholder="Total Rooms"
-                  value={formData.totalRooms || ''}
-                  onChange={(e) => {
-                    const total = parseInt(e.target.value);
-                    setFormData({ 
-                      ...formData, 
-                      totalRooms: total,
-                      availableRooms: total // Initially all rooms are available
-                    });
-                  }}
-                  className="input-field"
-                  min="1"
-                  required
-                />
-                <select
-                  value={formData.roomType || 'Double'}
-                  onChange={(e) => setFormData({ ...formData, roomType: e.target.value })}
-                  className="input-field"
-                  required
-                >
-                  <option value="Single">Single</option>
-                  <option value="Double">Double</option>
-                  <option value="Suite">Suite</option>
-                  <option value="Deluxe">Deluxe</option>
-                  <option value="Presidential">Presidential</option>
-                </select>
-                <input
-                  type="number"
-                  placeholder="Price Per Night ($)"
-                  value={formData.pricePerNight || ''}
-                  onChange={(e) => setFormData({ ...formData, pricePerNight: parseFloat(e.target.value) })}
-                  className="input-field"
-                  min="0"
-                  step="0.01"
-                  required
-                />
-                <input
-                  type="text"
-                  placeholder="Amenities (comma-separated, e.g., WiFi, Pool, Gym)"
-                  value={formData.amenities || ''}
-                  onChange={(e) => {
-                    const amenityString = e.target.value
-                    setFormData({ 
-                      ...formData, 
-                      amenities: amenityString ? amenityString.split(',').map(a => a.trim()).filter(a => a) : []
-                    })
-                  }}
-                  className="input-field md:col-span-2"
-                />
+            <div className="space-y-6">
+              {/* Basic Information */}
+              <div>
+                <h3 className="text-lg font-semibold mb-4">Basic Information</h3>
+                <div className="grid md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Hotel Name *</label>
+                    <input
+                      type="text"
+                      placeholder="Hotel Name"
+                      value={formData.hotelName || ''}
+                      onChange={(e) => setFormData({ ...formData, hotelName: e.target.value })}
+                      className="input-field"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Provider Name *</label>
+                    {renderProviderAutocomplete("Provider Name (type to search)")}
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Star Rating *</label>
+                    <select
+                      value={formData.starRating || ''}
+                      onChange={(e) => setFormData({ ...formData, starRating: parseInt(e.target.value) })}
+                      className="input-field"
+                      required
+                    >
+                      <option value="">Select Rating</option>
+                      {[1, 2, 3, 4, 5].map(rating => (
+                        <option key={rating} value={rating}>
+                          {rating} {rating === 1 ? 'Star' : 'Stars'}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Street Address *</label>
+                    <input
+                      type="text"
+                      placeholder="Street Address"
+                      value={formData.address || ''}
+                      onChange={(e) => setFormData({ ...formData, address: e.target.value })}
+                      className="input-field"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">City *</label>
+                    <input
+                      type="text"
+                      placeholder="City"
+                      value={formData.city || ''}
+                      onChange={(e) => setFormData({ ...formData, city: e.target.value })}
+                      className="input-field"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">State *</label>
+                    <select
+                      value={formData.state || ''}
+                      onChange={(e) => setFormData({ ...formData, state: e.target.value })}
+                      className="input-field"
+                      required
+                    >
+                      <option value="">Select State</option>
+                      {US_STATES.map((state) => (
+                        <option key={state.code} value={state.code}>
+                          {state.code} - {state.name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">ZIP Code *</label>
+                    <input
+                      type="text"
+                      placeholder="ZIP Code"
+                      value={formData.zipCode || ''}
+                      onChange={(e) => setFormData({ ...formData, zipCode: e.target.value })}
+                      className="input-field"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Country</label>
+                    <input
+                      type="text"
+                      value="USA"
+                      readOnly
+                      className="input-field bg-gray-50 cursor-not-allowed"
+                      required
+                    />
+                  </div>
+                </div>
               </div>
-            </>
+
+              {/* Availability Dates */}
+              <div>
+                <h3 className="text-lg font-semibold mb-4">Availability</h3>
+                <div className="grid md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Available From *</label>
+                    <input
+                      type="date"
+                      value={formData.availableFrom || ''}
+                      onChange={(e) => setFormData({ ...formData, availableFrom: e.target.value })}
+                      className="input-field"
+                      required
+                      min={new Date().toISOString().split('T')[0]}
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Available To *</label>
+                    <input
+                      type="date"
+                      value={formData.availableTo || ''}
+                      onChange={(e) => setFormData({ ...formData, availableTo: e.target.value })}
+                      className="input-field"
+                      required
+                      min={formData.availableFrom || new Date().toISOString().split('T')[0]}
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Room Types */}
+              <div>
+                <h3 className="text-lg font-semibold mb-4">
+                  Room Types & Pricing
+                  <span className="text-sm font-normal text-gray-500 ml-2">
+                    (Total Rooms: {hotelRoomTypes.reduce((sum, rt) => sum + (rt.availableCount || 0), 0)})
+                  </span>
+                </h3>
+                <div className="space-y-4">
+                  {hotelRoomTypes.map((roomType, index) => (
+                    <div key={index} className="grid md:grid-cols-3 gap-4 p-4 border border-gray-200 rounded-lg">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Room Type</label>
+                        <input
+                          type="text"
+                          value={roomType.type}
+                          readOnly
+                          className="input-field bg-gray-50 cursor-not-allowed"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Available Count</label>
+                        <input
+                          type="number"
+                          placeholder="0"
+                          value={roomType.availableCount || ''}
+                          onChange={(e) => {
+                            const updated = [...hotelRoomTypes]
+                            updated[index].availableCount = parseInt(e.target.value) || 0
+                            setHotelRoomTypes(updated)
+                          }}
+                          className="input-field"
+                          min="0"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Price Per Night ($)</label>
+                        <input
+                          type="number"
+                          placeholder="0.00"
+                          value={roomType.pricePerNight || ''}
+                          onChange={(e) => {
+                            const updated = [...hotelRoomTypes]
+                            updated[index].pricePerNight = parseFloat(e.target.value) || 0
+                            setHotelRoomTypes(updated)
+                          }}
+                          className="input-field"
+                          min="0"
+                          step="0.01"
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Amenities */}
+              <div>
+                <h3 className="text-lg font-semibold mb-4">Amenities</h3>
+                <div className="grid md:grid-cols-3 gap-3">
+                  {HOTEL_AMENITIES.map((amenity) => (
+                    <label key={amenity} className="flex items-center space-x-2 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={selectedAmenities.includes(amenity)}
+                        onChange={(e) => {
+                          if (e.target.checked) {
+                            setSelectedAmenities([...selectedAmenities, amenity])
+                          } else {
+                            setSelectedAmenities(selectedAmenities.filter(a => a !== amenity))
+                          }
+                        }}
+                        className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                      />
+                      <span className="text-sm text-gray-700">{amenity}</span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+
+              {/* Images */}
+              <div>
+                <h3 className="text-lg font-semibold mb-4">Hotel Images (URLs)</h3>
+                <div className="space-y-2">
+                  {hotelImages.map((image, index) => (
+                    <div key={index} className="flex gap-2">
+                      <input
+                        type="url"
+                        placeholder="https://example.com/image.jpg"
+                        value={image}
+                        onChange={(e) => {
+                          const updated = [...hotelImages]
+                          updated[index] = e.target.value
+                          setHotelImages(updated)
+                        }}
+                        className="input-field flex-1"
+                      />
+                      {hotelImages.length > 1 && (
+                        <button
+                          type="button"
+                          onClick={() => setHotelImages(hotelImages.filter((_, i) => i !== index))}
+                          className="px-3 py-2 text-red-600 hover:bg-red-50 rounded"
+                        >
+                          <X className="w-5 h-5" />
+                        </button>
+                      )}
+                    </div>
+                  ))}
+                  <button
+                    type="button"
+                    onClick={() => setHotelImages([...hotelImages, ''])}
+                    className="flex items-center space-x-2 text-blue-600 hover:text-blue-700"
+                  >
+                    <Plus className="w-4 h-4" />
+                    <span>Add Image URL</span>
+                  </button>
+                </div>
+              </div>
+            </div>
           )}
 
           {listingType === 'Car' && (
@@ -577,6 +754,42 @@ const CreateListingTab = () => {
                   onChange={(e) => setFormData({ ...formData, availableTo: e.target.value })}
                   className="input-field"
                   min={formData.availableFrom || new Date().toISOString().split('T')[0]}
+                  required
+                />
+                <input
+                  type="text"
+                  placeholder="Neighbourhood (e.g., Manhattan)"
+                  value={formData.neighbourhood || ''}
+                  onChange={(e) => setFormData({ ...formData, neighbourhood: e.target.value })}
+                  className="input-field"
+                />
+                <input
+                  type="text"
+                  placeholder="City (e.g., New York)"
+                  value={formData.city || ''}
+                  onChange={(e) => setFormData({ ...formData, city: e.target.value })}
+                  className="input-field"
+                  required
+                />
+                <select
+                  value={formData.state || ''}
+                  onChange={(e) => setFormData({ ...formData, state: e.target.value })}
+                  className="input-field"
+                  required
+                >
+                  <option value="">Select State</option>
+                  {US_STATES.map((state) => (
+                    <option key={state.code} value={state.code}>
+                      {state.code} - {state.name}
+                    </option>
+                  ))}
+                </select>
+                <input
+                  type="text"
+                  placeholder="Country"
+                  value="USA"
+                  readOnly
+                  className="input-field bg-gray-50 cursor-not-allowed"
                   required
                 />
               </div>

@@ -1,8 +1,9 @@
 /**
  * Booking Model
+ * CRITICAL: Use mongoose from shared/config/database.js to ensure same instance
  */
 
-const mongoose = require('mongoose');
+const { mongoose } = require('../../../shared/config/database');
 
 const bookingSchema = new mongoose.Schema({
   bookingId: {
@@ -49,6 +50,11 @@ const bookingSchema = new mongoose.Schema({
     required: true,
     min: 1
   },
+  roomType: {
+    type: String,
+    enum: ['Standard', 'Suite', 'Deluxe', 'Single', 'Double', 'Presidential'],
+    default: null // For hotels only
+  },
   totalAmount: {
     type: Number,
     required: true,
@@ -56,7 +62,7 @@ const bookingSchema = new mongoose.Schema({
   },
   status: {
     type: String,
-    enum: ['Confirmed', 'Pending', 'Cancelled'],
+    enum: ['Confirmed', 'Pending', 'Cancelled', 'Failed'],
     default: 'Pending',
     index: true
   },
@@ -81,6 +87,7 @@ const bookingSchema = new mongoose.Schema({
 bookingSchema.index({ userId: 1, status: 1 });
 bookingSchema.index({ listingId: 1, listingType: 1 });
 bookingSchema.index({ bookingDate: 1 });
+bookingSchema.index({ listingId: 1, listingType: 1, roomType: 1, checkInDate: 1, checkOutDate: 1, status: 1 });
 
 const Booking = mongoose.model('Booking', bookingSchema);
 

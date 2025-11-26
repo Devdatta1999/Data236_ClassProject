@@ -43,12 +43,23 @@ app.use('/api/users', createProxyMiddleware({
   pathRewrite: {
     '^/api/users': '/api/users'
   },
+  buffer: false, // Don't buffer - forward body directly
   onProxyReq: (proxyReq, req, res) => {
     logger.info(`Proxying to User Service: ${req.method} ${req.path}`);
+    // If body was parsed by express.json(), we need to re-stringify it
+    if (req.body && typeof req.body === 'object') {
+      const bodyData = JSON.stringify(req.body);
+      proxyReq.setHeader('Content-Type', 'application/json');
+      proxyReq.setHeader('Content-Length', Buffer.byteLength(bodyData));
+      proxyReq.write(bodyData);
+      proxyReq.end();
+    }
   },
   onError: (err, req, res) => {
     logger.error('User Service proxy error:', err);
-    res.status(500).json({ error: 'User service unavailable' });
+    if (!res.headersSent) {
+      res.status(502).json({ error: 'User service unavailable', details: err.message });
+    }
   }
 }));
 

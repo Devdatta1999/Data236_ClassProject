@@ -5,6 +5,7 @@
 const Flight = require('../models/Flight');
 const Hotel = require('../models/Hotel');
 const Car = require('../models/Car');
+const { mongoose } = require('../../../shared/config/database');
 const { getCache, setCache, deleteCachePattern } = require('../../../shared/config/redis');
 const { sendMessage } = require('../../../shared/config/kafka');
 const logger = require('../../../shared/utils/logger');
@@ -80,10 +81,75 @@ async function handleFlightSearch(event) {
 }
 
 /**
+ * Calculate room availability for a hotel based on bookings
+ * Returns availability for each room type for the given date range
+ */
+async function calculateHotelRoomAvailability(hotelId, checkInDate, checkOutDate) {
+  // Define booking schema inline for availability calculation (similar to billing service)
+  // Use existing model if available, otherwise create inline schema
+  let Booking;
+  if (mongoose.models.Booking) {
+    Booking = mongoose.models.Booking;
+  } else {
+    const bookingSchema = new mongoose.Schema({
+      listingId: { type: String, required: true, index: true },
+      listingType: { type: String, enum: ['Flight', 'Hotel', 'Car'], required: true, index: true },
+      roomType: { type: String, default: null },
+      quantity: { type: Number, required: true, min: 1 },
+      checkInDate: { type: Date, default: null },
+      checkOutDate: { type: Date, default: null },
+      status: { type: String, enum: ['Confirmed', 'Pending', 'Cancelled', 'Failed'], default: 'Pending', index: true }
+    }, { collection: 'bookings', strict: false });
+    Booking = mongoose.model('Booking', bookingSchema, 'bookings');
+  }
+  
+  const checkIn = new Date(checkInDate);
+  const checkOut = new Date(checkOutDate);
+  
+  // Find all bookings that overlap with the requested date range
+  // A booking overlaps if: booking.checkInDate < checkOutDate AND booking.checkOutDate > checkInDate
+  const overlappingBookings = await Booking.find({
+    listingId: hotelId,
+    listingType: 'Hotel',
+    status: { $in: ['Confirmed', 'Pending'] },
+    $or: [
+      {
+        // Booking starts before requested checkout and ends after requested checkin
+        checkInDate: { $lt: checkOut },
+        checkOutDate: { $gt: checkIn }
+      }
+    ]
+  });
+  
+  // Group bookings by room type and sum quantities
+  const bookedByRoomType = {};
+  overlappingBookings.forEach(booking => {
+    if (booking.roomType) {
+      bookedByRoomType[booking.roomType] = (bookedByRoomType[booking.roomType] || 0) + booking.quantity;
+    }
+  });
+  
+  return bookedByRoomType;
+}
+
+/**
  * Handle hotel search event
  */
 async function handleHotelSearch(event) {
-  const { requestId, city, state, starRating, minPrice, maxPrice, amenities, sortBy } = event;
+  const { 
+    requestId, 
+    city, 
+    state, 
+    starRating, 
+    minPrice, 
+    maxPrice, 
+    amenities, 
+    sortBy,
+    checkInDate,
+    checkOutDate,
+    numberOfRooms,
+    numberOfAdults
+  } = event;
 
   try {
     const query = { status: 'Active' };
@@ -95,7 +161,14 @@ async function handleHotelSearch(event) {
       const amenityList = Array.isArray(amenities) ? amenities : [amenities];
       query.amenities = { $in: amenityList };
     }
-    query.availableRooms = { $gt: 0 };
+
+    // Filter by availability dates if provided
+    if (checkInDate && checkOutDate) {
+      const checkIn = new Date(checkInDate);
+      const checkOut = new Date(checkOutDate);
+      query.availableFrom = { $lte: checkIn };
+      query.availableTo = { $gte: checkOut };
+    }
 
     const cacheKey = `search:hotel:${crypto.createHash('md5').update(JSON.stringify(query)).digest('hex')}`;
     
@@ -118,18 +191,72 @@ async function handleHotelSearch(event) {
       await setCache(cacheKey, hotels, 900);
     }
 
-    await sendMessage('search-events-response', {
-      key: requestId,
-      value: {
-        requestId,
-        success: true,
-        eventType: 'search.hotels',
-        data: {
-          hotels,
-          count: hotels.length
+    // Calculate availability for each hotel if dates are provided
+    if (checkInDate && checkOutDate && (numberOfRooms || numberOfAdults)) {
+      const requiredRooms = numberOfRooms || Math.ceil((numberOfAdults || 1) / 2); // Assume 2 adults per room
+      
+      const hotelsWithAvailability = await Promise.all(
+        hotels.map(async (hotel) => {
+          const bookedByRoomType = await calculateHotelRoomAvailability(
+            hotel.hotelId,
+            checkInDate,
+            checkOutDate
+          );
+          
+          // Calculate available rooms for each room type
+          const roomAvailability = hotel.roomTypes.map(roomType => {
+            const booked = bookedByRoomType[roomType.type] || 0;
+            const available = Math.max(0, roomType.availableCount - booked);
+            return {
+              ...roomType.toObject(),
+              available,
+              booked
+            };
+          });
+          
+          // Check if hotel has enough rooms to satisfy the request
+          const totalAvailable = roomAvailability.reduce((sum, rt) => sum + rt.available, 0);
+          const hasEnoughRooms = totalAvailable >= requiredRooms;
+          
+          return {
+            ...hotel.toObject(),
+            roomAvailability,
+            totalAvailableRooms: totalAvailable,
+            hasEnoughRooms
+          };
+        })
+      );
+      
+      // Filter hotels that have enough rooms
+      const availableHotels = hotelsWithAvailability.filter(h => h.hasEnoughRooms);
+      
+      await sendMessage('search-events-response', {
+        key: requestId,
+        value: {
+          requestId,
+          success: true,
+          eventType: 'search.hotels',
+          data: {
+            hotels: availableHotels,
+            count: availableHotels.length
+          }
         }
-      }
-    });
+      });
+    } else {
+      // No date/room filtering, return all hotels
+      await sendMessage('search-events-response', {
+        key: requestId,
+        value: {
+          requestId,
+          success: true,
+          eventType: 'search.hotels',
+          data: {
+            hotels,
+            count: hotels.length
+          }
+        }
+      });
+    }
 
   } catch (error) {
     logger.error(`Error handling hotel search: ${error.message}`);
@@ -153,7 +280,7 @@ async function handleHotelSearch(event) {
  * Handle car search event
  */
 async function handleCarSearch(event) {
-  const { requestId, carType, minPrice, maxPrice, transmissionType, minSeats, sortBy, pickupDate, dropoffDate } = event;
+  const { requestId, carType, minPrice, maxPrice, transmissionType, minSeats, sortBy, pickupDate, dropoffDate, location } = event;
 
   try {
     const query = { 
@@ -173,6 +300,35 @@ async function handleCarSearch(event) {
       query.dailyRentalPrice = {};
       if (minPrice) query.dailyRentalPrice.$gte = parseFloat(minPrice);
       if (maxPrice) query.dailyRentalPrice.$lte = parseFloat(maxPrice);
+    }
+    
+    // Location filtering with hierarchical matching
+    // If location is provided, match hierarchically:
+    // - If neighbourhood matches, show only that neighbourhood
+    // - If city matches, show all cars in that city
+    // - If state matches, show all cars in that state
+    // - If country matches, show all cars in that country
+    if (location) {
+      const locationLower = location.toLowerCase().trim();
+      const locationQuery = {
+        $or: [
+          // Match neighbourhood (exact or partial)
+          { neighbourhood: { $regex: locationLower, $options: 'i' } },
+          // Match city (exact or partial)
+          { city: { $regex: locationLower, $options: 'i' } },
+          // Match state (exact or partial, case-insensitive)
+          { state: { $regex: locationLower, $options: 'i' } },
+          // Match country (exact or partial)
+          { country: { $regex: locationLower, $options: 'i' } }
+        ]
+      };
+      
+      // If we have existing $and conditions, merge them
+      if (query.$and) {
+        query.$and.push(locationQuery);
+      } else {
+        query.$and = [locationQuery];
+      }
     }
     
     // Filter by availability dates if provided
@@ -225,10 +381,11 @@ async function handleCarSearch(event) {
           // Filter out cars with conflicting bookings
           const availableCars = [];
           for (const car of cars) {
+            // Exclude 'Failed' bookings as they don't hold inventory
             const conflictingBookings = await Booking.find({
               listingId: car.carId,
               listingType: 'Car',
-              status: { $in: ['Confirmed', 'Pending'] },
+              status: { $in: ['Confirmed', 'Pending'] }, // Exclude 'Failed' and 'Cancelled'
               $or: [
                 {
                   checkInDate: { $lte: dropoff },

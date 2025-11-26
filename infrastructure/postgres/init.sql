@@ -4,6 +4,7 @@ CREATE TABLE IF NOT EXISTS bills (
   user_id VARCHAR(255) NOT NULL,
   booking_type VARCHAR(50) NOT NULL,
   booking_id VARCHAR(255) NOT NULL UNIQUE,
+  checkout_id VARCHAR(255) NOT NULL,
   transaction_date TIMESTAMP NOT NULL,
   total_amount DECIMAL(10, 2) NOT NULL,
   payment_method VARCHAR(50) NOT NULL,
@@ -18,6 +19,7 @@ CREATE INDEX IF NOT EXISTS idx_bills_user_id ON bills(user_id);
 CREATE INDEX IF NOT EXISTS idx_bills_transaction_date ON bills(transaction_date);
 CREATE INDEX IF NOT EXISTS idx_bills_booking_id ON bills(booking_id);
 CREATE INDEX IF NOT EXISTS idx_bills_transaction_status ON bills(transaction_status);
+CREATE INDEX IF NOT EXISTS idx_bills_checkout_id ON bills(checkout_id);
 
 -- Function to update updated_at timestamp
 CREATE OR REPLACE FUNCTION update_updated_at_column()

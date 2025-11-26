@@ -2,11 +2,11 @@
  * Booking Event Consumer - Handles frontend booking events via Kafka
  */
 
+const { mongoose, waitForMongoDBReady } = require('../../../shared/config/database');
 const Booking = require('../models/Booking');
 const { ValidationError, TransactionError, NotFoundError } = require('../../../shared/utils/errors');
 const { sendMessage } = require('../../../shared/config/kafka');
 const logger = require('../../../shared/utils/logger');
-const mongoose = require('mongoose');
 const axios = require('axios');
 
 const LISTING_SERVICE_URL = process.env.LISTING_SERVICE_URL || 'http://localhost:3002';
@@ -24,9 +24,49 @@ async function handleBookingCreate(event) {
     checkInDate,
     checkOutDate,
     travelDate,
+    roomType, // For hotels: 'Standard', 'Suite', 'Deluxe', etc.
     checkoutId, // Optional: if part of checkout
     parentRequestId // Optional: parent checkout request ID
   } = event;
+
+  // CRITICAL: Ensure MongoDB is ready before starting transaction
+  if (mongoose.connection.readyState === 0) {
+    logger.warn('MongoDB disconnected, waiting for connection...');
+    await waitForMongoDBReady(5000); // 5 second timeout
+  }
+
+  // Verify connection is ready
+  if (mongoose.connection.readyState !== 1) {
+    throw new Error(`MongoDB not ready for booking creation. State: ${mongoose.connection.readyState}`);
+  }
+
+  // Before creating new booking, expire old Pending bookings for this user/listing
+  // This prevents abandoned checkouts from blocking new bookings
+  try {
+    const Booking = require('../models/Booking');
+    const expiryTime = new Date(Date.now() - 15 * 60 * 1000); // 15 minutes ago
+    
+    const oldPendingBookings = await Booking.find({
+      userId,
+      listingId,
+      listingType,
+      status: 'Pending',
+      createdAt: { $lt: expiryTime }
+    });
+
+    if (oldPendingBookings.length > 0) {
+      logger.info(`Expiring ${oldPendingBookings.length} old Pending booking(s) for user ${userId}, listing ${listingId}`);
+      for (const oldBooking of oldPendingBookings) {
+        oldBooking.status = 'Failed';
+        oldBooking.updatedAt = new Date();
+        await oldBooking.save();
+        logger.info(`Expired old booking: ${oldBooking.bookingId}`);
+      }
+    }
+  } catch (expiryError) {
+    logger.warn(`Failed to expire old pending bookings: ${expiryError.message}`);
+    // Continue with booking creation even if expiry check fails
+  }
 
   const session = await mongoose.startSession();
   session.startTransaction();
@@ -56,11 +96,54 @@ async function handleBookingCreate(event) {
         throw new ValidationError('Not enough seats available');
       }
     } else if (listingType === 'Hotel') {
-      if (listing.availableRooms < quantity) {
-        throw new ValidationError('Not enough rooms available');
-      }
       if (!checkInDate || !checkOutDate) {
         throw new ValidationError('Check-in and check-out dates are required for hotels');
+      }
+      
+      if (!roomType) {
+        throw new ValidationError('Room type is required for hotel bookings');
+      }
+      
+      // Validate dates
+      const checkIn = new Date(checkInDate);
+      const checkOut = new Date(checkOutDate);
+      const availableFrom = new Date(listing.availableFrom);
+      const availableTo = new Date(listing.availableTo);
+      
+      if (checkIn < availableFrom || checkOut > availableTo) {
+        throw new ValidationError('Selected dates are outside the hotel\'s availability period');
+      }
+      
+      if (checkIn >= checkOut) {
+        throw new ValidationError('Check-out date must be after check-in date');
+      }
+      
+      // Find the room type in the hotel
+      const selectedRoomType = listing.roomTypes.find(rt => rt.type === roomType);
+      if (!selectedRoomType) {
+        throw new ValidationError(`Room type '${roomType}' is not available at this hotel`);
+      }
+      
+      // Calculate availability for this room type for the date range
+      const conflictingBookings = await Booking.find({
+        listingId,
+        listingType: 'Hotel',
+        roomType: roomType,
+        status: { $in: ['Confirmed', 'Pending'] }, // Exclude 'Failed' and 'Cancelled'
+        $or: [
+          {
+            checkInDate: { $lt: checkOut },
+            checkOutDate: { $gt: checkIn }
+          }
+        ]
+      });
+      
+      // Sum up booked quantities
+      const bookedQuantity = conflictingBookings.reduce((sum, booking) => sum + booking.quantity, 0);
+      const availableQuantity = selectedRoomType.availableCount - bookedQuantity;
+      
+      if (availableQuantity < quantity) {
+        throw new ValidationError(`Not enough ${roomType} rooms available. Only ${availableQuantity} room(s) available for the selected dates.`);
       }
     } else if (listingType === 'Car') {
       if (listing.availabilityStatus !== 'Available') {
@@ -85,11 +168,12 @@ async function handleBookingCreate(event) {
       }
       
       // Check for date conflicts with existing bookings
+      // Exclude 'Failed' bookings as they don't hold inventory
       const Booking = require('../models/Booking');
       const conflictingBookings = await Booking.find({
         listingId,
         listingType: 'Car',
-        status: { $in: ['Confirmed', 'Pending'] },
+        status: { $in: ['Confirmed', 'Pending'] }, // Exclude 'Failed' and 'Cancelled'
         $or: [
           {
             checkInDate: { $lte: dropoffDate },
@@ -109,10 +193,15 @@ async function handleBookingCreate(event) {
       totalAmount = listing.ticketPrice * quantity;
     } else if (listingType === 'Hotel') {
       const nights = Math.ceil((new Date(checkOutDate) - new Date(checkInDate)) / (1000 * 60 * 60 * 24));
-      const roomPrice = listing.roomTypes && listing.roomTypes.length > 0 
-        ? listing.roomTypes[0].pricePerNight 
-        : listing.pricePerNight || 0;
-      totalAmount = roomPrice * nights * quantity;
+      if (nights < 1) {
+        throw new ValidationError('Stay period must be at least 1 night');
+      }
+      // Get price for the selected room type
+      const selectedRoomType = listing.roomTypes.find(rt => rt.type === roomType);
+      if (!selectedRoomType) {
+        throw new ValidationError(`Room type '${roomType}' not found`);
+      }
+      totalAmount = selectedRoomType.pricePerNight * nights * quantity;
     } else if (listingType === 'Car') {
       const days = Math.ceil((new Date(checkOutDate) - new Date(checkInDate)) / (1000 * 60 * 60 * 24));
       if (days < 1) {
@@ -129,6 +218,7 @@ async function handleBookingCreate(event) {
       listingId,
       listingType,
       quantity,
+      roomType: listingType === 'Hotel' ? roomType : null,
       totalAmount,
       checkInDate: listingType === 'Hotel' || listingType === 'Car' ? checkInDate : null,
       checkOutDate: listingType === 'Hotel' || listingType === 'Car' ? checkOutDate : null,
@@ -147,9 +237,9 @@ async function handleBookingCreate(event) {
           availableSeats: listing.availableSeats - quantity
         });
       } else if (listingType === 'Hotel') {
-        await axios.put(`${LISTING_SERVICE_URL}/api/listings/hotels/${listingId}`, {
-          availableRooms: listing.availableRooms - quantity
-        });
+        // For hotels, availability is calculated dynamically based on bookings
+        // No need to update availableRooms - it's calculated from bookings
+        logger.info(`Hotel booking created: ${listingId} for ${roomType} room(s) from ${checkInDate} to ${checkOutDate}`);
       } else if (listingType === 'Car') {
         // For cars, availability is managed by date-based booking conflicts
         // No need to update availabilityStatus - conflicts are checked during booking
@@ -189,6 +279,13 @@ async function handleBookingCreate(event) {
         error: {
           code: error.code || 'BOOKING_ERROR',
           message: error.message
+        },
+        // Include checkout info even on failure so billing service can aggregate
+        checkoutId: event.checkoutId || null,
+        parentRequestId: event.parentRequestId || null,
+        data: {
+          listingId: event.listingId,
+          listingType: event.listingType
         }
       }
     });

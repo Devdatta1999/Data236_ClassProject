@@ -14,5 +14,9 @@ router.get('/:bookingId', authenticate, bookingController.getBooking);
 router.put('/:bookingId', authenticate, bookingController.updateBooking);
 router.get('/user/:userId', authenticate, bookingController.getUserBookings);
 
+// Booking management endpoints
+router.post('/fail', bookingController.markBookingsAsFailed); // No auth needed for internal service calls
+router.post('/expire', bookingController.expirePendingBookings); // No auth needed for internal service calls
+
 module.exports = router;
 

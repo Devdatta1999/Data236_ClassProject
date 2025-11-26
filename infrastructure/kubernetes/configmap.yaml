@@ -5,13 +5,8 @@ metadata:
   namespace: aerive
 data:
   # MongoDB URI is in Secrets (aerive-secrets)
-  # Supabase PostgreSQL Configuration (Option 1: Use connection string)
-  # SUPABASE_DB_URL: "postgresql://postgres.[PROJECT_REF]:[PASSWORD]@aws-0-[REGION].pooler.supabase.com:6543/postgres"
-  # Or use individual parameters (Option 2)
-  POSTGRES_HOST: "db.eihqtmiwyqspaxqrovul.supabase.co"
-  POSTGRES_PORT: "5432"
-  POSTGRES_DB: "postgres"
-  POSTGRES_USER: "postgres"
+  # Supabase PostgreSQL Configuration
+  # Connection string is in Secrets (SUPABASE_DB_URL)
   # Enable SSL for Supabase
   SUPABASE_SSL: "true"
   REDIS_HOST: "aerive-redis-service"

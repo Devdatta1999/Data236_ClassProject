@@ -13,13 +13,26 @@ const cartSlice = createSlice({
   reducers: {
     addToCart: (state, action) => {
       const item = action.payload
-      // Check if item already exists
-      const existingIndex = state.items.findIndex(
-        (i) => i.listingId === item.listingId && i.listingType === item.listingType
-      )
+      // For cars, check if item with same dates already exists
+      // For other types, check if item already exists
+      let existingIndex = -1
+      
+      if (item.listingType === 'Car' && item.pickupDate && item.returnDate) {
+        existingIndex = state.items.findIndex(
+          (i) => 
+            i.listingId === item.listingId && 
+            i.listingType === item.listingType &&
+            i.pickupDate === item.pickupDate &&
+            i.returnDate === item.returnDate
+        )
+      } else {
+        existingIndex = state.items.findIndex(
+          (i) => i.listingId === item.listingId && i.listingType === item.listingType
+        )
+      }
       
       if (existingIndex >= 0) {
-        // Update quantity if exists
+        // Update quantity if exists (for non-car items or same dates)
         state.items[existingIndex].quantity += item.quantity || 1
       } else {
         // Add new item
@@ -33,10 +46,23 @@ const cartSlice = createSlice({
       localStorage.setItem('cart', JSON.stringify(state.items))
     },
     removeFromCart: (state, action) => {
-      const { listingId, listingType } = action.payload
-      state.items = state.items.filter(
-        (item) => !(item.listingId === listingId && item.listingType === listingType)
-      )
+      const { listingId, listingType, pickupDate, returnDate } = action.payload
+      if (listingType === 'Car' && pickupDate && returnDate) {
+        // For cars, remove specific item with matching dates
+        state.items = state.items.filter(
+          (item) => !(
+            item.listingId === listingId && 
+            item.listingType === listingType &&
+            item.pickupDate === pickupDate &&
+            item.returnDate === returnDate
+          )
+        )
+      } else {
+        // For other types, remove by listingId and listingType
+        state.items = state.items.filter(
+          (item) => !(item.listingId === listingId && item.listingType === listingType)
+        )
+      }
       localStorage.setItem('cart', JSON.stringify(state.items))
     },
     updateQuantity: (state, action) => {

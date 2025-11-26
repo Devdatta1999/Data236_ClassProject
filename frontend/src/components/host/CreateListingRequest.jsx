@@ -1,30 +1,95 @@
 import { useState } from 'react'
 import api from '../../services/apiService'
-import { Plane, Hotel, Car } from 'lucide-react'
+import { Plane, Hotel, Car, Plus, X, Star } from 'lucide-react'
+import { US_STATES } from '../../utils/usStates'
+import Notification from '../common/Notification'
+
+const API_BASE_URL = import.meta.env.VITE_API_GATEWAY_URL || 'http://localhost:8080'
+
+const HOTEL_AMENITIES = [
+  'WiFi', 'Pool', 'Gym', 'Spa', 'Restaurant', 'Bar', 'Room Service', 
+  'Parking', 'Airport Shuttle', 'Business Center', 'Pet Friendly', 
+  'Breakfast Included', 'Laundry', 'Concierge', 'Beach Access'
+]
 
 const CreateListingRequest = ({ onSuccess }) => {
   const [listingType, setListingType] = useState('Flight')
   const [loading, setLoading] = useState(false)
-  const [formData, setFormData] = useState({})
+  const [formData, setFormData] = useState({ country: 'USA' }) // Always default to USA
+  const [notification, setNotification] = useState(null)
+  const [hotelRoomTypes, setHotelRoomTypes] = useState([
+    { type: 'Standard', availableCount: 0, pricePerNight: 0 },
+    { type: 'Suite', availableCount: 0, pricePerNight: 0 },
+    { type: 'Deluxe', availableCount: 0, pricePerNight: 0 }
+  ])
+  const [selectedAmenities, setSelectedAmenities] = useState([])
+  const [customAmenity, setCustomAmenity] = useState('')
+  const [hotelImages, setHotelImages] = useState([]) // Array of image URLs (from uploads)
+  const [uploadingImages, setUploadingImages] = useState(false)
 
   const handleSubmit = async (e) => {
     e.preventDefault()
     setLoading(true)
 
     try {
+      // Ensure country is always set to USA
+      let submitData = {
+        ...formData,
+        country: 'USA'
+      }
+      
+      // For hotels, process room types and calculate total rooms
+      if (listingType === 'Hotel') {
+        // Calculate total rooms from room types
+        const totalRooms = hotelRoomTypes.reduce((sum, rt) => sum + (rt.availableCount || 0), 0)
+        const availableRooms = totalRooms
+        
+        submitData = {
+          ...submitData,
+          roomTypes: hotelRoomTypes.filter(rt => rt.availableCount > 0),
+          totalRooms,
+          availableRooms,
+          amenities: selectedAmenities,
+          images: hotelImages.filter(img => img.trim() !== '')
+        }
+        
+        // Validate hotel data
+        if (totalRooms === 0) {
+          setNotification({ type: 'error', message: 'Please add at least one room type with availability' })
+          setLoading(false)
+          return
+        }
+        
+        if (!submitData.availableFrom || !submitData.availableTo) {
+          setNotification({ type: 'error', message: 'Please select available from and to dates' })
+          setLoading(false)
+          return
+        }
+      }
+      
       // Submit listing request to provider service
       // This will create a listing with status 'Pending' for admin approval
       // Backend expects: { listingType, listingData: { ...formData } }
       const response = await api.post('/api/providers/listings', {
         listingType,
-        listingData: formData
+        listingData: submitData
       })
       
-      alert('Listing request submitted! It will be reviewed by admin.')
-      setFormData({})
+      setNotification({ type: 'success', message: 'Listing request submitted! It will be reviewed by admin.' })
+      setFormData({ country: 'USA' }) // Reset form but keep country as USA
+      if (listingType === 'Hotel') {
+        setHotelRoomTypes([
+          { type: 'Standard', availableCount: 0, pricePerNight: 0 },
+          { type: 'Suite', availableCount: 0, pricePerNight: 0 },
+          { type: 'Deluxe', availableCount: 0, pricePerNight: 0 }
+        ])
+        setSelectedAmenities([])
+        setHotelImages([''])
+      }
       if (onSuccess) onSuccess()
     } catch (err) {
-      alert('Failed to submit listing request: ' + err.message)
+      const errorMessage = err.message || err.response?.data?.error?.message || 'Failed to submit listing request'
+      setNotification({ type: 'error', message: errorMessage })
     } finally {
       setLoading(false)
     }
@@ -34,6 +99,15 @@ const CreateListingRequest = ({ onSuccess }) => {
     <div className="max-w-2xl">
       <div className="card">
         <h2 className="text-2xl font-bold mb-6">Create Listing Request</h2>
+        
+        {notification && (
+          <Notification
+            type={notification.type}
+            message={notification.message}
+            onClose={() => setNotification(null)}
+          />
+        )}
+        
         <p className="text-gray-600 mb-6">
           Submit a listing request. It will be reviewed and approved by an admin.
         </p>
@@ -149,74 +223,342 @@ const CreateListingRequest = ({ onSuccess }) => {
           )}
 
           {listingType === 'Hotel' && (
-            <div className="grid md:grid-cols-2 gap-4">
-              <input
-                type="text"
-                placeholder="Hotel Name"
-                value={formData.hotelName || ''}
-                onChange={(e) => setFormData({ ...formData, hotelName: e.target.value })}
-                className="input-field"
-                required
-              />
-              <input
-                type="text"
-                placeholder="Street Address"
-                value={formData.address || ''}
-                onChange={(e) => setFormData({ ...formData, address: e.target.value })}
-                className="input-field"
-                required
-              />
-              <input
-                type="text"
-                placeholder="City"
-                value={formData.city || ''}
-                onChange={(e) => setFormData({ ...formData, city: e.target.value })}
-                className="input-field"
-                required
-              />
-              <input
-                type="text"
-                placeholder="State (e.g., CA)"
-                value={formData.state || ''}
-                onChange={(e) => setFormData({ ...formData, state: e.target.value.toUpperCase() })}
-                className="input-field"
-                maxLength="2"
-                required
-              />
-              <input
-                type="text"
-                placeholder="ZIP Code"
-                value={formData.zipCode || ''}
-                onChange={(e) => setFormData({ ...formData, zipCode: e.target.value })}
-                className="input-field"
-                required
-              />
-              <input
-                type="number"
-                placeholder="Star Rating (1-5)"
-                value={formData.starRating || ''}
-                onChange={(e) => setFormData({ ...formData, starRating: parseInt(e.target.value) })}
-                className="input-field"
-                min="1"
-                max="5"
-                required
-              />
-              <input
-                type="number"
-                placeholder="Total Rooms"
-                value={formData.totalRooms || ''}
-                onChange={(e) => {
-                  const total = parseInt(e.target.value);
-                  setFormData({ 
-                    ...formData, 
-                    totalRooms: total,
-                    availableRooms: total // Initially all rooms are available
-                  });
-                }}
-                className="input-field"
-                min="1"
-                required
-              />
+            <div className="space-y-6">
+              {/* Basic Information */}
+              <div>
+                <h3 className="text-lg font-semibold mb-4">Basic Information</h3>
+                <div className="grid md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Hotel Name *</label>
+                    <input
+                      type="text"
+                      placeholder="Hotel Name"
+                      value={formData.hotelName || ''}
+                      onChange={(e) => setFormData({ ...formData, hotelName: e.target.value })}
+                      className="input-field"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Star Rating *</label>
+                    <select
+                      value={formData.starRating || ''}
+                      onChange={(e) => setFormData({ ...formData, starRating: parseInt(e.target.value) })}
+                      className="input-field"
+                      required
+                    >
+                      <option value="">Select Rating</option>
+                      {[1, 2, 3, 4, 5].map(rating => (
+                        <option key={rating} value={rating}>
+                          {rating} {rating === 1 ? 'Star' : 'Stars'}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Street Address *</label>
+                    <input
+                      type="text"
+                      placeholder="Street Address"
+                      value={formData.address || ''}
+                      onChange={(e) => setFormData({ ...formData, address: e.target.value })}
+                      className="input-field"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">City *</label>
+                    <input
+                      type="text"
+                      placeholder="City"
+                      value={formData.city || ''}
+                      onChange={(e) => setFormData({ ...formData, city: e.target.value })}
+                      className="input-field"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">State *</label>
+                    <select
+                      value={formData.state || ''}
+                      onChange={(e) => setFormData({ ...formData, state: e.target.value })}
+                      className="input-field"
+                      required
+                    >
+                      <option value="">Select State</option>
+                      {US_STATES.map((state) => (
+                        <option key={state.code} value={state.code}>
+                          {state.code} - {state.name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">ZIP Code *</label>
+                    <input
+                      type="text"
+                      placeholder="ZIP Code"
+                      value={formData.zipCode || ''}
+                      onChange={(e) => setFormData({ ...formData, zipCode: e.target.value })}
+                      className="input-field"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Country</label>
+                    <input
+                      type="text"
+                      value="USA"
+                      readOnly
+                      className="input-field bg-gray-50 cursor-not-allowed"
+                      required
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Availability Dates */}
+              <div>
+                <h3 className="text-lg font-semibold mb-4">Availability</h3>
+                <div className="grid md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Available From *</label>
+                    <input
+                      type="date"
+                      value={formData.availableFrom || ''}
+                      onChange={(e) => setFormData({ ...formData, availableFrom: e.target.value })}
+                      className="input-field"
+                      required
+                      min={new Date().toISOString().split('T')[0]}
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Available To *</label>
+                    <input
+                      type="date"
+                      value={formData.availableTo || ''}
+                      onChange={(e) => setFormData({ ...formData, availableTo: e.target.value })}
+                      className="input-field"
+                      required
+                      min={formData.availableFrom || new Date().toISOString().split('T')[0]}
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Room Types */}
+              <div>
+                <h3 className="text-lg font-semibold mb-4">
+                  Room Types & Pricing
+                  <span className="text-sm font-normal text-gray-500 ml-2">
+                    (Total Rooms: {hotelRoomTypes.reduce((sum, rt) => sum + (rt.availableCount || 0), 0)})
+                  </span>
+                </h3>
+                <div className="space-y-4">
+                  {hotelRoomTypes.map((roomType, index) => (
+                    <div key={index} className="grid md:grid-cols-3 gap-4 p-4 border border-gray-200 rounded-lg">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Room Type</label>
+                        <input
+                          type="text"
+                          value={roomType.type}
+                          readOnly
+                          className="input-field bg-gray-50 cursor-not-allowed"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Available Count</label>
+                        <input
+                          type="number"
+                          placeholder="0"
+                          value={roomType.availableCount || ''}
+                          onChange={(e) => {
+                            const updated = [...hotelRoomTypes]
+                            updated[index].availableCount = parseInt(e.target.value) || 0
+                            setHotelRoomTypes(updated)
+                          }}
+                          className="input-field"
+                          min="0"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Price Per Night ($)</label>
+                        <input
+                          type="number"
+                          placeholder="0.00"
+                          value={roomType.pricePerNight || ''}
+                          onChange={(e) => {
+                            const updated = [...hotelRoomTypes]
+                            updated[index].pricePerNight = parseFloat(e.target.value) || 0
+                            setHotelRoomTypes(updated)
+                          }}
+                          className="input-field"
+                          min="0"
+                          step="0.01"
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Amenities */}
+              <div>
+                <h3 className="text-lg font-semibold mb-4">Amenities</h3>
+                <div className="grid md:grid-cols-3 gap-3 mb-4">
+                  {HOTEL_AMENITIES.map((amenity) => (
+                    <label key={amenity} className="flex items-center space-x-2 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={selectedAmenities.includes(amenity)}
+                        onChange={(e) => {
+                          if (e.target.checked) {
+                            setSelectedAmenities([...selectedAmenities, amenity])
+                          } else {
+                            setSelectedAmenities(selectedAmenities.filter(a => a !== amenity))
+                          }
+                        }}
+                        className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                      />
+                      <span className="text-sm text-gray-700">{amenity}</span>
+                    </label>
+                  ))}
+                </div>
+                {/* Custom Amenity Input */}
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    placeholder="Add custom amenity (e.g., Rooftop Bar)"
+                    value={customAmenity}
+                    onChange={(e) => setCustomAmenity(e.target.value)}
+                    onKeyPress={(e) => {
+                      if (e.key === 'Enter' && customAmenity.trim()) {
+                        e.preventDefault()
+                        if (!selectedAmenities.includes(customAmenity.trim())) {
+                          setSelectedAmenities([...selectedAmenities, customAmenity.trim()])
+                        }
+                        setCustomAmenity('')
+                      }
+                    }}
+                    className="input-field flex-1"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (customAmenity.trim() && !selectedAmenities.includes(customAmenity.trim())) {
+                        setSelectedAmenities([...selectedAmenities, customAmenity.trim()])
+                        setCustomAmenity('')
+                      }
+                    }}
+                    className="btn-primary flex items-center space-x-2"
+                  >
+                    <Plus className="w-4 h-4" />
+                    <span>Add</span>
+                  </button>
+                </div>
+                {/* Selected Custom Amenities */}
+                {selectedAmenities.filter(a => !HOTEL_AMENITIES.includes(a)).length > 0 && (
+                  <div className="mt-3 flex flex-wrap gap-2">
+                    {selectedAmenities.filter(a => !HOTEL_AMENITIES.includes(a)).map((amenity, idx) => (
+                      <span key={idx} className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-blue-100 text-blue-800">
+                        {amenity}
+                        <button
+                          type="button"
+                          onClick={() => setSelectedAmenities(selectedAmenities.filter(a => a !== amenity))}
+                          className="ml-2 text-blue-600 hover:text-blue-800"
+                        >
+                          <X className="w-3 h-3" />
+                        </button>
+                      </span>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Images */}
+              <div>
+                <h3 className="text-lg font-semibold mb-4">Hotel Images</h3>
+                <div className="space-y-4">
+                  {/* Image Upload */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Upload Images (JPG, PNG, GIF, WebP - Max 5MB each)
+                    </label>
+                    <input
+                      type="file"
+                      accept="image/jpeg,image/jpg,image/png,image/gif,image/webp"
+                      multiple
+                      onChange={async (e) => {
+                        const files = Array.from(e.target.files)
+                        if (files.length === 0) return
+
+                        setUploadingImages(true)
+                        try {
+                          const formData = new FormData()
+                          files.forEach(file => {
+                            formData.append('images', file)
+                          })
+
+                          const response = await api.post('/api/listings/upload/images', formData, {
+                            headers: {
+                              'Content-Type': 'multipart/form-data',
+                            },
+                          })
+
+                          const uploadedUrls = response.data.data.images.map(img => img.imageUrl)
+                          setHotelImages([...hotelImages, ...uploadedUrls])
+                          setNotification({ type: 'success', message: `Successfully uploaded ${files.length} image(s)` })
+                        } catch (err) {
+                          console.error('Image upload error:', err)
+                          setNotification({ 
+                            type: 'error', 
+                            message: err.response?.data?.error?.message || 'Failed to upload images' 
+                          })
+                        } finally {
+                          setUploadingImages(false)
+                          // Reset file input
+                          e.target.value = ''
+                        }
+                      }}
+                      className="input-field"
+                      disabled={uploadingImages}
+                    />
+                    {uploadingImages && (
+                      <p className="text-sm text-gray-500 mt-2">Uploading images...</p>
+                    )}
+                  </div>
+
+                  {/* Image Preview Gallery */}
+                  {hotelImages.length > 0 && (
+                    <div>
+                      <p className="text-sm font-medium text-gray-700 mb-2">
+                        Uploaded Images ({hotelImages.length})
+                      </p>
+                      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        {hotelImages.map((imageUrl, index) => (
+                          <div key={index} className="relative group">
+                            <img
+                              src={imageUrl.startsWith('http') ? imageUrl : `${API_BASE_URL}${imageUrl}`}
+                              alt={`Hotel image ${index + 1}`}
+                              className="w-full h-32 object-cover rounded-lg border border-gray-200"
+                              onError={(e) => {
+                                e.target.src = 'https://via.placeholder.com/300x200?text=Image+Error'
+                              }}
+                            />
+                            <button
+                              type="button"
+                              onClick={() => setHotelImages(hotelImages.filter((_, i) => i !== index))}
+                              className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                            >
+                              <X className="w-4 h-4" />
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
             </div>
           )}
 
@@ -302,6 +644,42 @@ const CreateListingRequest = ({ onSuccess }) => {
                 className="input-field"
                 required
                 min={formData.availableFrom || new Date().toISOString().split('T')[0]}
+              />
+              <input
+                type="text"
+                placeholder="Neighbourhood (e.g., Manhattan)"
+                value={formData.neighbourhood || ''}
+                onChange={(e) => setFormData({ ...formData, neighbourhood: e.target.value })}
+                className="input-field"
+              />
+              <input
+                type="text"
+                placeholder="City (e.g., New York)"
+                value={formData.city || ''}
+                onChange={(e) => setFormData({ ...formData, city: e.target.value })}
+                className="input-field"
+                required
+              />
+              <select
+                value={formData.state || ''}
+                onChange={(e) => setFormData({ ...formData, state: e.target.value })}
+                className="input-field"
+                required
+              >
+                <option value="">Select State</option>
+                {US_STATES.map((state) => (
+                  <option key={state.code} value={state.code}>
+                    {state.code} - {state.name}
+                  </option>
+                ))}
+              </select>
+              <input
+                type="text"
+                placeholder="Country"
+                value="USA"
+                readOnly
+                className="input-field bg-gray-50 cursor-not-allowed"
+                required
               />
             </div>
           )}

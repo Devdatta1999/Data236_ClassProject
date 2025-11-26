@@ -16,5 +16,12 @@ router.delete('/:userId', authenticate, userController.deleteUser);
 router.get('/:userId/bookings', authenticate, userController.getBookingHistory);
 router.get('/:userId/reviews', authenticate, userController.getUserReviews);
 
+// Credit card routes
+router.post('/:userId/cards', authenticate, userController.addSavedCard);
+router.get('/:userId/cards', authenticate, userController.getSavedCards);
+router.get('/:userId/cards/decrypt', authenticate, userController.getDecryptedCard);
+router.put('/:userId/cards', authenticate, userController.updateSavedCard);
+router.delete('/:userId/cards', authenticate, userController.deleteSavedCard);
+
 module.exports = router;
 

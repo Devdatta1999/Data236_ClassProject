@@ -1,16 +1,19 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
 import { setSelectedBooking, setLoading, setError } from '../../store/slices/bookingSlice'
 import api from '../../services/apiService'
 import { Calendar, MapPin, ArrowLeft, XCircle } from 'lucide-react'
 import { format } from 'date-fns'
+import Notification from '../../components/common/Notification'
 
 const BookingDetails = () => {
   const { bookingId } = useParams()
   const navigate = useNavigate()
   const dispatch = useDispatch()
   const { selectedBooking, loading } = useSelector((state) => state.bookings)
+  const [notification, setNotification] = useState(null)
+  const [showConfirmDialog, setShowConfirmDialog] = useState(false)
 
   useEffect(() => {
     const fetchBooking = async () => {
@@ -30,18 +33,30 @@ const BookingDetails = () => {
   }, [bookingId, dispatch])
 
   const handleCancel = async () => {
-    if (!window.confirm('Are you sure you want to cancel this booking?')) {
-      return
-    }
-
     try {
       // This would use Kafka booking.cancel event
       // For now, using HTTP
       await api.delete(`/api/bookings/${bookingId}`)
-      navigate('/my-bookings')
+      setNotification({ 
+        type: 'success', 
+        message: 'Booking cancelled successfully.' 
+      })
+      setTimeout(() => {
+        navigate('/my-bookings')
+      }, 1500)
     } catch (err) {
-      alert('Failed to cancel booking: ' + err.message)
+      const errorMessage = err.message || 'Failed to cancel booking. Please try again.'
+      setNotification({ type: 'error', message: errorMessage })
     }
+  }
+
+  const handleCancelClick = () => {
+    setShowConfirmDialog(true)
+  }
+
+  const confirmCancel = () => {
+    setShowConfirmDialog(false)
+    handleCancel()
   }
 
   if (loading) {
@@ -93,7 +108,7 @@ const BookingDetails = () => {
             </div>
             {selectedBooking.status !== 'Cancelled' && (
               <button
-                onClick={handleCancel}
+                onClick={handleCancelClick}
                 className="btn-secondary flex items-center space-x-2 text-red-600 hover:bg-red-50"
               >
                 <XCircle className="w-4 h-4" />
@@ -101,6 +116,40 @@ const BookingDetails = () => {
               </button>
             )}
           </div>
+
+          {notification && (
+            <Notification
+              type={notification.type}
+              message={notification.message}
+              onClose={() => setNotification(null)}
+            />
+          )}
+
+          {/* Confirmation Dialog */}
+          {showConfirmDialog && (
+            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+              <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
+                <h3 className="text-lg font-semibold mb-4">Confirm Cancellation</h3>
+                <p className="text-gray-600 mb-6">
+                  Are you sure you want to cancel this booking? This action cannot be undone.
+                </p>
+                <div className="flex justify-end space-x-3">
+                  <button
+                    onClick={() => setShowConfirmDialog(false)}
+                    className="btn-secondary"
+                  >
+                    No, Keep Booking
+                  </button>
+                  <button
+                    onClick={confirmCancel}
+                    className="btn-primary bg-red-600 hover:bg-red-700"
+                  >
+                    Yes, Cancel Booking
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
 
           <div className="space-y-4">
             <div>

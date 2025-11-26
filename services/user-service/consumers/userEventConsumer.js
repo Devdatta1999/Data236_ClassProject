@@ -46,17 +46,15 @@ async function handleUserSignup(event) {
     validateEmail(email);
     validatePhoneNumber(phoneNumber);
 
-    // Ensure MongoDB connection is ready before querying
-    const { mongoose, waitForMongoDBReady } = require('../../../shared/config/database');
-    if (mongoose.connection.readyState !== 1) {
-      logger.warn('MongoDB connection not ready, waiting...', {
-        readyState: mongoose.connection.readyState
-      });
-      await waitForMongoDBReady(15000);
+    // Quick check: only wait if connection is explicitly disconnected
+    const { mongoose } = require('../../../shared/config/database');
+    if (mongoose.connection.readyState === 0) {
+      const { waitForMongoDBReady } = require('../../../shared/config/database');
+      await waitForMongoDBReady(2000); // Reduced timeout
     }
     
     // Check if user already exists
-    const existingUser = await User.findOne({ $or: [{ userId }, { email }] }).maxTimeMS(15000);
+    const existingUser = await User.findOne({ $or: [{ userId }, { email }] }).maxTimeMS(2000);
     if (existingUser) {
       throw new ConflictError('User with this ID or email already exists');
     }
@@ -133,17 +131,17 @@ async function handleUserLogin(event) {
 
     // Always fetch from database for login to get password hash
     // Cache is not used for login since we need the password field
-    // Ensure MongoDB connection is ready before querying
-    const { mongoose, waitForMongoDBReady } = require('../../../shared/config/database');
-    if (mongoose.connection.readyState !== 1) {
-      logger.warn('MongoDB connection not ready, waiting...', {
-        readyState: mongoose.connection.readyState
-      });
-      await waitForMongoDBReady(15000);
+    // Quick check: only wait if connection is explicitly disconnected
+    const { mongoose } = require('../../../shared/config/database');
+    if (mongoose.connection.readyState === 0) {
+      // Only wait if explicitly disconnected, otherwise proceed (connection might be connecting/connected)
+      const { waitForMongoDBReady } = require('../../../shared/config/database');
+      await waitForMongoDBReady(2000); // Reduced timeout to 2s
     }
     
     // Fetch user with password field included (select('+password'))
-    const user = await User.findOne({ email: email.toLowerCase() }).select('+password').maxTimeMS(15000);
+    // Reduced timeout from 15s to 2s for faster failure detection
+    const user = await User.findOne({ email: email.toLowerCase() }).select('+password').maxTimeMS(2000);
     if (!user) {
       throw new ValidationError('Invalid credentials');
     }
@@ -153,10 +151,6 @@ async function handleUserLogin(event) {
     if (!isMatch) {
       throw new ValidationError('Invalid credentials');
     }
-    
-    // Update cache after successful login (without password)
-    const cacheKey = `user:email:${email.toLowerCase()}`;
-    await setCache(cacheKey, user.toSafeObject(), 900);
 
     const token = generateToken({
       userId: user.userId,
@@ -164,9 +158,15 @@ async function handleUserLogin(event) {
       role: 'user'
     });
 
+    // Update cache asynchronously (fire-and-forget) to not block response
+    const cacheKey = `user:email:${email.toLowerCase()}`;
+    setCache(cacheKey, user.toSafeObject(), 900).catch(err => {
+      logger.warn('Cache update failed (non-critical):', err.message);
+    });
+
     logger.info(`User logged in via Kafka: ${user.userId}`);
 
-    // Send response
+    // Send response immediately (don't wait for cache)
     await sendMessage('user-events-response', {
       key: requestId,
       value: {
