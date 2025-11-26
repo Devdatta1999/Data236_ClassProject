@@ -64,7 +64,7 @@ const getBilling = asyncHandler(async (req, res) => {
 
   const pool = getPostgresPool();
   const result = await pool.query(
-    'SELECT * FROM bills WHERE billing_id = $1',
+    `SELECT * FROM bills WHERE billing_id = $1 ORDER BY transaction_date ASC`,
     [billingId]
   );
 
@@ -72,9 +72,35 @@ const getBilling = asyncHandler(async (req, res) => {
     throw new NotFoundError('Billing record');
   }
 
+  // Aggregate multiple rows into a single bill object
+  const firstRow = result.rows[0];
+  const totalAmount = result.rows.reduce((sum, row) => sum + parseFloat(row.total_amount), 0);
+  const bookingIds = result.rows.map(row => row.booking_id);
+  
+  // Combine invoice_details from all rows
+  const allBookings = result.rows.map(row => 
+    row.invoice_details?.booking || {
+      bookingId: row.booking_id,
+      listingType: row.booking_type
+    }
+  );
+
+  const bill = {
+    billing_id: firstRow.billing_id,
+    user_id: firstRow.user_id,
+    checkout_id: firstRow.checkout_id,
+    transaction_date: firstRow.transaction_date,
+    total_amount: totalAmount,
+    payment_method: firstRow.payment_method,
+    transaction_status: firstRow.transaction_status,
+    booking_ids: bookingIds,  // Array of booking IDs
+    bookings: allBookings,    // Array of booking details
+    invoice_details: firstRow.invoice_details  // Shared details
+  };
+
   res.json({
     success: true,
-    data: { bill: result.rows[0] }
+    data: { bill }
   });
 });
 
@@ -86,14 +112,40 @@ const getUserBillingHistory = asyncHandler(async (req, res) => {
 
   const pool = getPostgresPool();
   const result = await pool.query(
-    'SELECT * FROM bills WHERE user_id = $1 ORDER BY transaction_date DESC',
+    `SELECT * FROM bills WHERE user_id = $1 ORDER BY transaction_date DESC`,
     [userId]
   );
 
+  // Group by billing_id to create distinct bills
+  const billsMap = new Map();
+  
+  for (const row of result.rows) {
+    if (!billsMap.has(row.billing_id)) {
+      billsMap.set(row.billing_id, {
+        billing_id: row.billing_id,
+        user_id: row.user_id,
+        checkout_id: row.checkout_id,
+        transaction_date: row.transaction_date,
+        payment_method: row.payment_method,
+        transaction_status: row.transaction_status,
+        total_amount: 0,
+        booking_ids: [],
+        booking_count: 0
+      });
+    }
+    
+    const bill = billsMap.get(row.billing_id);
+    bill.total_amount += parseFloat(row.total_amount);
+    bill.booking_ids.push(row.booking_id);
+    bill.booking_count++;
+  }
+
+  const bills = Array.from(billsMap.values());
+
   res.json({
     success: true,
-    count: result.rows.length,
-    data: { bills: result.rows }
+    count: bills.length,
+    data: { bills }
   });
 });
 
@@ -140,10 +192,36 @@ const searchBills = asyncHandler(async (req, res) => {
   const pool = getPostgresPool();
   const result = await pool.query(query, params);
 
+  // Group by billing_id to create distinct bills
+  const billsMap = new Map();
+  
+  for (const row of result.rows) {
+    if (!billsMap.has(row.billing_id)) {
+      billsMap.set(row.billing_id, {
+        billing_id: row.billing_id,
+        user_id: row.user_id,
+        checkout_id: row.checkout_id,
+        transaction_date: row.transaction_date,
+        payment_method: row.payment_method,
+        transaction_status: row.transaction_status,
+        total_amount: 0,
+        booking_ids: [],
+        booking_count: 0
+      });
+    }
+    
+    const bill = billsMap.get(row.billing_id);
+    bill.total_amount += parseFloat(row.total_amount);
+    bill.booking_ids.push(row.booking_id);
+    bill.booking_count++;
+  }
+
+  const bills = Array.from(billsMap.values());
+
   res.json({
     success: true,
-    count: result.rows.length,
-    data: { bills: result.rows }
+    count: bills.length,
+    data: { bills }
   });
 });
 
@@ -155,7 +233,7 @@ const getInvoice = asyncHandler(async (req, res) => {
 
   const pool = getPostgresPool();
   const result = await pool.query(
-    'SELECT * FROM bills WHERE billing_id = $1',
+    `SELECT * FROM bills WHERE billing_id = $1 ORDER BY transaction_date ASC`,
     [billingId]
   );
 
@@ -163,26 +241,28 @@ const getInvoice = asyncHandler(async (req, res) => {
     throw new NotFoundError('Billing record');
   }
 
-  const bill = result.rows[0];
-
-  // Format invoice
+  const firstRow = result.rows[0];
+  const totalAmount = result.rows.reduce((sum, row) => sum + parseFloat(row.total_amount), 0);
+  
+  // Format invoice with all bookings
   const invoice = {
-    billingId: bill.billing_id,
-    invoiceNumber: `INV-${bill.billing_id}`,
-    transactionDate: bill.transaction_date,
+    billingId: firstRow.billing_id,
+    invoiceNumber: `INV-${firstRow.billing_id}`,
+    transactionDate: firstRow.transaction_date,
     user: {
-      userId: bill.user_id
+      userId: firstRow.user_id
     },
-    booking: {
-      bookingId: bill.booking_id,
-      type: bill.booking_type
-    },
+    bookings: result.rows.map(row => ({
+      bookingId: row.booking_id,
+      type: row.booking_type,
+      amount: parseFloat(row.total_amount)
+    })),
     payment: {
-      method: bill.payment_method,
-      amount: bill.total_amount,
-      status: bill.transaction_status
+      method: firstRow.payment_method,
+      amount: totalAmount,
+      status: firstRow.transaction_status
     },
-    details: bill.invoice_details
+    details: firstRow.invoice_details
   };
 
   res.json({
@@ -567,63 +647,43 @@ const processPayment = asyncHandler(async (req, res) => {
       throw validationError;
     }
 
-    // Group bookings by listing (hotels grouped, others separate)
-    const groupedBookings = new Map();
-    for (const booking of bookings) {
-      if (booking.listingType === 'Hotel') {
-        const key = booking.listingId;
-        if (!groupedBookings.has(key)) {
-          groupedBookings.set(key, []);
-        }
-        groupedBookings.get(key).push(booking);
-      } else {
-        groupedBookings.set(booking.bookingId, [booking]);
-      }
-    }
-
-    // Create billing records
-    const bills = [];
+    // Generate a single billing_id for all bookings in this checkout
     const finalBillingId = `BILL-${Date.now()}-${Math.random().toString(36).substr(2, 9).toUpperCase()}`;
 
-    for (const [groupKey, groupBookings] of groupedBookings.entries()) {
-      const groupTotalAmount = groupBookings.reduce((sum, b) => sum + b.totalAmount, 0);
-      const primaryBooking = groupBookings[0];
+    // Create shared invoice details (common to all bookings in this bill)
+    const sharedInvoiceDetails = {
+      checkoutId,
+      cardHolderName,
+      last4Digits: decryptedCardNumber.slice(-4),
+      expiryDate,
+      zipCode,
+      bookingCount: bookings.length,
+      totalAmount: bookings.reduce((sum, b) => sum + b.totalAmount, 0)
+    };
 
+    // Create ONE billing record per booking (not grouped)
+    // All bookings share the same billing_id
+    const bills = [];
+    
+    for (const booking of bookings) {
+      // Individual booking invoice details
       const invoiceDetails = {
-        bookings: groupBookings.map(b => ({
-          bookingId: b.bookingId,
-          listingId: b.listingId,
-          listingType: b.listingType,
-          quantity: b.quantity,
-          roomType: b.roomType || null,
-          checkInDate: b.checkInDate || null,
-          checkOutDate: b.checkOutDate || null,
-          travelDate: b.travelDate || null,
-          totalAmount: b.totalAmount,
-          bookingDate: b.bookingDate
-        })),
-        listingId: primaryBooking.listingId,
-        listingType: primaryBooking.listingType,
-        checkoutId,
-        cardHolderName,
-        last4Digits: decryptedCardNumber.slice(-4),
-        expiryDate,
-        zipCode,
-        ...(primaryBooking.listingType === 'Hotel' && {
-          roomTypes: groupBookings.map(b => ({
-            type: b.roomType,
-            quantity: b.quantity,
-            pricePerNight: b.totalAmount / (b.quantity * Math.ceil((new Date(b.checkOutDate) - new Date(b.checkInDate)) / (1000 * 60 * 60 * 24)))
-          }))
-        })
+        ...sharedInvoiceDetails,
+        booking: {
+          bookingId: booking.bookingId,
+          listingId: booking.listingId,
+          listingType: booking.listingType,
+          quantity: booking.quantity,
+          roomType: booking.roomType || null,
+          checkInDate: booking.checkInDate || null,
+          checkOutDate: booking.checkOutDate || null,
+          travelDate: booking.travelDate || null,
+          totalAmount: booking.totalAmount,
+          bookingDate: booking.bookingDate
+        }
       };
 
-      const billingIdForGroup = primaryBooking.listingType === 'Hotel' 
-        ? `${finalBillingId}-${primaryBooking.listingId}`
-        : `${finalBillingId}-${primaryBooking.bookingId}`;
-
-      const bookingIdsForBill = groupBookings.map(b => b.bookingId).join(',');
-
+      // Insert one row per booking with same billing_id
       const result = await client.query(
         `INSERT INTO bills (
           billing_id, user_id, booking_type, booking_id, checkout_id,
@@ -632,13 +692,13 @@ const processPayment = asyncHandler(async (req, res) => {
         ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
         RETURNING *`,
         [
-          billingIdForGroup,
+          finalBillingId,  // Same billing_id for all bookings
           userId,
-          primaryBooking.listingType,
-          bookingIdsForBill,
+          booking.listingType,
+          booking.bookingId,  // Individual booking_id (no comma separation)
           checkoutId,
           new Date(),
-          groupTotalAmount,
+          booking.totalAmount,  // Individual booking amount
           paymentMethod || 'Credit Card',
           'Completed',
           JSON.stringify(invoiceDetails)
@@ -646,10 +706,7 @@ const processPayment = asyncHandler(async (req, res) => {
       );
 
       bills.push(result.rows[0]);
-
-      for (const booking of groupBookings) {
-        booking.billingId = billingIdForGroup;
-      }
+      booking.billingId = finalBillingId;  // Set billingId on booking
     }
 
     await client.query('COMMIT');
