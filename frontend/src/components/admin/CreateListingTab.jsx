@@ -166,8 +166,19 @@ const CreateListingTab = () => {
       
       await api.post(endpoint, listingData)
       setNotification({ type: 'success', message: 'Listing created successfully!' })
+      // Reset all form data
       setFormData({ country: 'USA' }) // Reset form but keep country as USA
       setProviderSearchQuery('') // Clear provider search query
+      if (listingType === 'Hotel') {
+        setHotelRoomTypes([
+          { type: 'Standard', availableCount: 0, pricePerNight: 0 },
+          { type: 'Suite', availableCount: 0, pricePerNight: 0 },
+          { type: 'Deluxe', availableCount: 0, pricePerNight: 0 }
+        ])
+        setSelectedAmenities([])
+        setCustomAmenity('')
+        setHotelImages([]) // Reset to empty array
+      }
     } catch (err) {
       console.error('Create listing error:', err)
       const errorMessage = err.response?.data?.error?.message || err.message || 'Failed to create listing'
@@ -609,7 +620,7 @@ const CreateListingTab = () => {
               {/* Amenities */}
               <div>
                 <h3 className="text-lg font-semibold mb-4">Amenities</h3>
-                <div className="grid md:grid-cols-3 gap-3">
+                <div className="grid md:grid-cols-3 gap-3 mb-4">
                   {HOTEL_AMENITIES.map((amenity) => (
                     <label key={amenity} className="flex items-center space-x-2 cursor-pointer">
                       <input
@@ -628,44 +639,143 @@ const CreateListingTab = () => {
                     </label>
                   ))}
                 </div>
+                {/* Custom Amenity Input */}
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    placeholder="Add custom amenity (e.g., Rooftop Bar)"
+                    value={customAmenity}
+                    onChange={(e) => setCustomAmenity(e.target.value)}
+                    onKeyPress={(e) => {
+                      if (e.key === 'Enter' && customAmenity.trim()) {
+                        e.preventDefault()
+                        if (!selectedAmenities.includes(customAmenity.trim())) {
+                          setSelectedAmenities([...selectedAmenities, customAmenity.trim()])
+                        }
+                        setCustomAmenity('')
+                      }
+                    }}
+                    className="input-field flex-1"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (customAmenity.trim() && !selectedAmenities.includes(customAmenity.trim())) {
+                        setSelectedAmenities([...selectedAmenities, customAmenity.trim()])
+                        setCustomAmenity('')
+                      }
+                    }}
+                    className="btn-primary flex items-center space-x-2"
+                  >
+                    <Plus className="w-4 h-4" />
+                    <span>Add</span>
+                  </button>
+                </div>
+                {/* Selected Custom Amenities */}
+                {selectedAmenities.filter(a => !HOTEL_AMENITIES.includes(a)).length > 0 && (
+                  <div className="mt-3 flex flex-wrap gap-2">
+                    {selectedAmenities.filter(a => !HOTEL_AMENITIES.includes(a)).map((amenity, idx) => (
+                      <span key={idx} className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-blue-100 text-blue-800">
+                        {amenity}
+                        <button
+                          type="button"
+                          onClick={() => setSelectedAmenities(selectedAmenities.filter(a => a !== amenity))}
+                          className="ml-2 text-blue-600 hover:text-blue-800"
+                        >
+                          <X className="w-3 h-3" />
+                        </button>
+                      </span>
+                    ))}
+                  </div>
+                )}
               </div>
 
               {/* Images */}
               <div>
-                <h3 className="text-lg font-semibold mb-4">Hotel Images (URLs)</h3>
-                <div className="space-y-2">
-                  {hotelImages.map((image, index) => (
-                    <div key={index} className="flex gap-2">
-                      <input
-                        type="url"
-                        placeholder="https://example.com/image.jpg"
-                        value={image}
-                        onChange={(e) => {
-                          const updated = [...hotelImages]
-                          updated[index] = e.target.value
-                          setHotelImages(updated)
-                        }}
-                        className="input-field flex-1"
-                      />
-                      {hotelImages.length > 1 && (
-                        <button
-                          type="button"
-                          onClick={() => setHotelImages(hotelImages.filter((_, i) => i !== index))}
-                          className="px-3 py-2 text-red-600 hover:bg-red-50 rounded"
-                        >
-                          <X className="w-5 h-5" />
-                        </button>
-                      )}
+                <h3 className="text-lg font-semibold mb-4">Hotel Images</h3>
+                <div className="space-y-4">
+                  {/* Image Upload */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Upload Images (JPG, PNG, GIF, WebP - Max 5MB each)
+                    </label>
+                    <input
+                      type="file"
+                      accept="image/jpeg,image/jpg,image/png,image/gif,image/webp"
+                      multiple
+                      onChange={async (e) => {
+                        const files = Array.from(e.target.files)
+                        if (files.length === 0) return
+
+                        setUploadingImages(true)
+                        try {
+                          const formData = new FormData()
+                          files.forEach(file => {
+                            formData.append('images', file)
+                          })
+
+                          const response = await api.post('/api/listings/upload/images', formData, {
+                            headers: {
+                              'Content-Type': 'multipart/form-data',
+                            },
+                          })
+
+                          const uploadedUrls = response.data.data.images.map(img => img.imageUrl)
+                          setHotelImages([...hotelImages, ...uploadedUrls])
+                          setNotification({ type: 'success', message: `Successfully uploaded ${files.length} image(s)` })
+                        } catch (err) {
+                          console.error('Image upload error:', err)
+                          const errorMessage = err.response?.data?.error?.message 
+                            || err.response?.data?.message 
+                            || err.message 
+                            || 'Failed to upload images. Please check file size (max 5MB) and format (JPG, PNG, GIF, WebP).'
+                          setNotification({ 
+                            type: 'error', 
+                            message: errorMessage
+                          })
+                        } finally {
+                          setUploadingImages(false)
+                          // Reset file input
+                          e.target.value = ''
+                        }
+                      }}
+                      className="input-field"
+                      disabled={uploadingImages}
+                    />
+                    {uploadingImages && (
+                      <p className="text-sm text-gray-500 mt-2">Uploading images...</p>
+                    )}
+                  </div>
+
+                  {/* Image Preview Gallery */}
+                  {hotelImages.length > 0 && (
+                    <div>
+                      <p className="text-sm font-medium text-gray-700 mb-2">
+                        Uploaded Images ({hotelImages.length})
+                      </p>
+                      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        {hotelImages.map((imageUrl, index) => (
+                          <div key={index} className="relative group">
+                            <img
+                              src={imageUrl.startsWith('http') ? imageUrl : `${API_BASE_URL}${imageUrl}`}
+                              alt={`Hotel image ${index + 1}`}
+                              className="w-full h-32 object-cover rounded-lg border border-gray-200"
+                              onError={(e) => {
+                                e.target.src = 'https://via.placeholder.com/300x200?text=Image+Error'
+                              }}
+                            />
+                            <button
+                              type="button"
+                              onClick={() => setHotelImages(hotelImages.filter((_, i) => i !== index))}
+                              className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                            >
+                              <X className="w-4 h-4" />
+                            </button>
+                          </div>
+                        ))}
+                      </div>
                     </div>
-                  ))}
-                  <button
-                    type="button"
-                    onClick={() => setHotelImages([...hotelImages, ''])}
-                    className="flex items-center space-x-2 text-blue-600 hover:text-blue-700"
-                  >
-                    <Plus className="w-4 h-4" />
-                    <span>Add Image URL</span>
-                  </button>
+                  )}
                 </div>
               </div>
             </div>

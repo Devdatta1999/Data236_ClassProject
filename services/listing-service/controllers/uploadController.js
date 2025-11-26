@@ -112,9 +112,55 @@ const uploadImages = asyncHandler(async (req, res) => {
   });
 });
 
+/**
+ * Error handler for multer errors
+ */
+const handleUploadError = (err, req, res, next) => {
+  if (err instanceof multer.MulterError) {
+    if (err.code === 'LIMIT_FILE_SIZE') {
+      return res.status(400).json({
+        success: false,
+        error: {
+          code: 'FILE_TOO_LARGE',
+          message: 'File size exceeds 5MB limit'
+        }
+      });
+    }
+    if (err.code === 'LIMIT_FILE_COUNT') {
+      return res.status(400).json({
+        success: false,
+        error: {
+          code: 'TOO_MANY_FILES',
+          message: 'Too many files. Maximum 10 files allowed'
+        }
+      });
+    }
+    return res.status(400).json({
+      success: false,
+      error: {
+        code: 'UPLOAD_ERROR',
+        message: err.message
+      }
+    });
+  }
+  
+  if (err) {
+    return res.status(400).json({
+      success: false,
+      error: {
+        code: 'UPLOAD_ERROR',
+        message: err.message || 'File upload failed'
+      }
+    });
+  }
+  
+  next();
+};
+
 module.exports = {
   upload,
   uploadImage,
-  uploadImages
+  uploadImages,
+  handleUploadError
 };
 

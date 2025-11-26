@@ -7,7 +7,7 @@ const router = express.Router();
 const flightController = require('../controllers/flightController');
 const hotelController = require('../controllers/hotelController');
 const carController = require('../controllers/carController');
-const { upload, uploadImage, uploadImages } = require('../controllers/uploadController');
+const { upload, uploadImage, uploadImages, handleUploadError } = require('../controllers/uploadController');
 const { authenticate, requireAdmin, requireProvider } = require('../../../shared/middleware/auth');
 
 // Flight routes
@@ -41,8 +41,8 @@ router.post('/cars/:carId/reviews', authenticate, carController.addReview);
 router.get('/cars/:carId/reviews', carController.getReviews);
 
 // Image upload routes
-router.post('/upload/image', authenticate, upload.single('image'), uploadImage);
-router.post('/upload/images', authenticate, upload.array('images', 10), uploadImages);
+router.post('/upload/image', authenticate, upload.single('image'), handleUploadError, uploadImage);
+router.post('/upload/images', authenticate, upload.array('images', 10), handleUploadError, uploadImages);
 
 module.exports = router;
 

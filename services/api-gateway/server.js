@@ -22,10 +22,25 @@ const PROVIDER_SERVICE = process.env.PROVIDER_SERVICE_URL || 'http://localhost:3
 const ADMIN_SERVICE = process.env.ADMIN_SERVICE_URL || 'http://localhost:3006';
 
 app.use(cors());
-// Don't parse JSON globally - let proxy middleware handle it for proxied routes
-// We'll add json parser selectively for non-proxied routes if needed
-app.use(express.json({ limit: '10mb' }));
-app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+
+// Parse JSON and URL-encoded bodies, but skip for multipart/form-data
+app.use((req, res, next) => {
+  const contentType = req.headers['content-type'] || '';
+  if (contentType.includes('multipart/form-data')) {
+    // Skip body parsing for multipart requests - they need to stream directly
+    return next();
+  }
+  // Apply JSON parser for JSON requests
+  if (contentType.includes('application/json')) {
+    return express.json({ limit: '10mb' })(req, res, next);
+  }
+  // Apply URL-encoded parser for form-urlencoded requests
+  if (contentType.includes('application/x-www-form-urlencoded')) {
+    return express.urlencoded({ extended: true, limit: '10mb' })(req, res, next);
+  }
+  // For other content types or no content type, continue without parsing
+  next();
+});
 
 // Health check
 app.get('/health', (req, res) => {
@@ -70,15 +85,27 @@ app.use('/api/listings', createProxyMiddleware({
   pathRewrite: {
     '^/api/listings': '/api/listings'
   },
+  // For multipart/form-data (file uploads), stream directly without buffering
   buffer: false,
   onProxyReq: (proxyReq, req, res) => {
-    logger.info(`Proxying to Listing Service: ${req.method} ${req.path}`);
-    if (req.body && typeof req.body === 'object') {
+    logger.info(`Proxying to Listing Service: ${req.method} ${req.path}`, {
+      contentType: req.headers['content-type']
+    });
+    
+    // Only rewrite body for JSON requests (skip for multipart/form-data)
+    if (req.body && typeof req.body === 'object' && !req.headers['content-type']?.includes('multipart/form-data')) {
       const bodyData = JSON.stringify(req.body);
       proxyReq.setHeader('Content-Type', 'application/json');
       proxyReq.setHeader('Content-Length', Buffer.byteLength(bodyData));
       proxyReq.write(bodyData);
       proxyReq.end();
+    }
+    // For multipart/form-data, the body streams automatically - don't interfere
+  },
+  onError: (err, req, res) => {
+    logger.error('Listing Service proxy error:', err);
+    if (!res.headersSent) {
+      res.status(502).json({ error: 'Listing service unavailable', details: err.message });
     }
   }
 }));

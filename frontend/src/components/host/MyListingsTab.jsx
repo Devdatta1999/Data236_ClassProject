@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react'
-import { Plane, Hotel, Car, Trash2, AlertCircle } from 'lucide-react'
+import { Plane, Hotel, Car, Trash2, AlertCircle, Star, MapPin, Calendar, Users } from 'lucide-react'
 import api from '../../services/apiService'
 import Notification from '../common/Notification'
+
+const API_BASE_URL = import.meta.env.VITE_API_GATEWAY_URL || 'http://localhost:8080'
 
 const MyListingsTab = ({ onRefresh }) => {
   const [listings, setListings] = useState([])
@@ -29,6 +31,10 @@ const MyListingsTab = ({ onRefresh }) => {
 
   const handleDelete = async (listingId, listingType) => {
     setConfirmDelete({ listingId, listingType })
+  }
+
+  const handleCancelDelete = () => {
+    setConfirmDelete(null)
   }
 
   const handleConfirmDelete = async () => {
@@ -102,7 +108,7 @@ const MyListingsTab = ({ onRefresh }) => {
       return [
         `${listing.city}, ${listing.state}`,
         `Rating: ${'⭐'.repeat(listing.starRating)}`,
-        `Rooms: ${listing.availableRooms}/${listing.totalRooms}`
+        `Rooms: ${listing.availableRooms || 0}/${listing.totalRooms || 0}`
       ]
     } else if (listing.listingType === 'Car') {
       return [
@@ -201,28 +207,45 @@ const MyListingsTab = ({ onRefresh }) => {
       </div>
 
       {/* All Listings */}
-      <div className="space-y-4">
+      <div className="space-y-6">
         {listings.map((listing) => {
           const Icon = getListingIcon(listing.listingType)
           const isDeleting = deleting[listing.listingId]
+          const isHotel = listing.listingType === 'Hotel'
 
           return (
-            <div key={listing.listingId} className="card">
-              <div className="flex items-start justify-between">
-                <div className="flex items-start space-x-4 flex-1">
-                  <div className={`p-3 rounded-lg ${
-                    listing.status === 'Active' ? 'bg-green-100' :
-                    listing.status === 'Pending' ? 'bg-yellow-100' :
-                    'bg-gray-100'
-                  }`}>
-                    <Icon className={`w-6 h-6 ${
-                      listing.status === 'Active' ? 'text-green-600' :
-                      listing.status === 'Pending' ? 'text-yellow-600' :
-                      'text-gray-600'
-                    }`} />
+            <div key={listing.listingId} className="card overflow-hidden">
+              <div className={`flex ${isHotel ? 'flex-col md:flex-row' : 'items-start'} justify-between gap-4`}>
+                {/* Hotel Image (if available) */}
+                {isHotel && listing.images && listing.images.length > 0 && (
+                  <div className="md:w-64 h-48 md:h-auto flex-shrink-0">
+                    <img
+                      src={listing.images[0]?.startsWith('http') ? listing.images[0] : `${API_BASE_URL}${listing.images[0]}`}
+                      alt={listing.hotelName || 'Hotel'}
+                      className="w-full h-full object-cover rounded-lg"
+                      onError={(e) => {
+                        e.target.src = 'https://via.placeholder.com/400x300?text=Hotel+Image'
+                      }}
+                    />
                   </div>
+                )}
+
+                <div className="flex items-start space-x-4 flex-1">
+                  {!isHotel && (
+                    <div className={`p-3 rounded-lg ${
+                      listing.status === 'Active' ? 'bg-green-100' :
+                      listing.status === 'Pending' ? 'bg-yellow-100' :
+                      'bg-gray-100'
+                    }`}>
+                      <Icon className={`w-6 h-6 ${
+                        listing.status === 'Active' ? 'text-green-600' :
+                        listing.status === 'Pending' ? 'text-yellow-600' :
+                        'text-gray-600'
+                      }`} />
+                    </div>
+                  )}
                   <div className="flex-1">
-                    <div className="flex items-center space-x-3 mb-2">
+                    <div className="flex items-center space-x-3 mb-3">
                       <h3 className="text-xl font-semibold">
                         {getListingTitle(listing)}
                       </h3>
@@ -230,21 +253,100 @@ const MyListingsTab = ({ onRefresh }) => {
                         {listing.status}
                       </span>
                     </div>
-                    <p className="text-gray-600 mb-2">Type: {listing.listingType}</p>
-                    <p className="text-sm text-gray-500 mb-2">
-                      ID: {listing.listingId}
-                    </p>
-                    <div className="text-sm text-gray-600 space-y-1">
-                      {getListingDetails(listing).map((detail, idx) => (
-                        <p key={idx}>{detail}</p>
-                      ))}
-                    </div>
+                    
+                    {isHotel ? (
+                      <>
+                        {/* Hotel-specific details */}
+                        <div className="space-y-2 mb-4">
+                          <div className="flex items-center space-x-2 text-gray-600">
+                            <MapPin className="w-4 h-4" />
+                            <span>{listing.address}, {listing.city}, {listing.state} {listing.zipCode}</span>
+                          </div>
+                          <div className="flex items-center space-x-4">
+                            {listing.starRating && (
+                              <div className="flex items-center space-x-1">
+                                {Array.from({ length: listing.starRating }).map((_, i) => (
+                                  <Star key={i} className="w-4 h-4 text-yellow-400 fill-current" />
+                                ))}
+                                <span className="text-sm text-gray-600 ml-1">{listing.starRating} stars</span>
+                              </div>
+                            )}
+                            {listing.hotelRating && (
+                              <div className="flex items-center space-x-1 bg-green-100 text-green-800 px-2 py-1 rounded text-sm">
+                                <Star className="w-3 h-3 fill-current" />
+                                <span>{listing.hotelRating.toFixed(1)}</span>
+                              </div>
+                            )}
+                          </div>
+                          {listing.amenities && listing.amenities.length > 0 && (
+                            <div className="flex flex-wrap gap-2 mt-2">
+                              {listing.amenities.slice(0, 6).map((amenity, idx) => (
+                                <span key={idx} className="text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded">
+                                  {amenity}
+                                </span>
+                              ))}
+                              {listing.amenities.length > 6 && (
+                                <span className="text-xs text-gray-500">+{listing.amenities.length - 6} more</span>
+                              )}
+                            </div>
+                          )}
+                        </div>
+
+                        {/* Room Types */}
+                        {listing.roomTypes && listing.roomTypes.length > 0 && (
+                          <div className="mt-4 pt-4 border-t border-gray-200">
+                            <h4 className="text-sm font-semibold text-gray-700 mb-3">Room Types & Availability</h4>
+                            <div className="grid md:grid-cols-3 gap-4">
+                              {listing.roomTypes.map((roomType, idx) => (
+                                <div key={idx} className="bg-gray-50 rounded-lg p-3">
+                                  <div className="flex justify-between items-start mb-2">
+                                    <span className="font-medium text-gray-900">{roomType.type}</span>
+                                    <span className="text-primary-600 font-semibold">${roomType.pricePerNight}/night</span>
+                                  </div>
+                                  <div className="text-sm text-gray-600">
+                                    Available: {roomType.availableCount || 0} rooms
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                            <div className="mt-3 text-sm text-gray-600">
+                              Total Rooms: <span className="font-semibold">{listing.totalRooms || 0}</span> | 
+                              Available: <span className="font-semibold">{listing.availableRooms || 0}</span>
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Availability Dates */}
+                        {(listing.availableFrom || listing.availableTo) && (
+                          <div className="flex items-center space-x-2 text-sm text-gray-600 mt-3">
+                            <Calendar className="w-4 h-4" />
+                            <span>
+                              Available from {listing.availableFrom ? new Date(listing.availableFrom).toLocaleDateString() : 'N/A'} 
+                              {' '}to {listing.availableTo ? new Date(listing.availableTo).toLocaleDateString() : 'N/A'}
+                            </span>
+                          </div>
+                        )}
+                      </>
+                    ) : (
+                      <>
+                        {/* Non-hotel listing details */}
+                        <p className="text-gray-600 mb-2">Type: {listing.listingType}</p>
+                        <p className="text-sm text-gray-500 mb-2">
+                          ID: {listing.listingId}
+                        </p>
+                        <div className="text-sm text-gray-600 space-y-1">
+                          {getListingDetails(listing).map((detail, idx) => (
+                            <p key={idx}>{detail}</p>
+                          ))}
+                        </div>
+                      </>
+                    )}
                   </div>
                 </div>
                 <button
                   onClick={() => handleDelete(listing.listingId, listing.listingType)}
                   disabled={isDeleting}
-                  className="btn-secondary text-red-600 hover:bg-red-50 disabled:opacity-50 flex items-center space-x-2"
+                  className="btn-secondary text-red-600 hover:bg-red-50 disabled:opacity-50 flex items-center space-x-2 self-start"
                 >
                   <Trash2 className="w-4 h-4" />
                   <span>{isDeleting ? 'Deleting...' : 'Delete'}</span>

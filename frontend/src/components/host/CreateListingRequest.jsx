@@ -76,6 +76,7 @@ const CreateListingRequest = ({ onSuccess }) => {
       })
       
       setNotification({ type: 'success', message: 'Listing request submitted! It will be reviewed by admin.' })
+      // Reset all form data
       setFormData({ country: 'USA' }) // Reset form but keep country as USA
       if (listingType === 'Hotel') {
         setHotelRoomTypes([
@@ -84,9 +85,13 @@ const CreateListingRequest = ({ onSuccess }) => {
           { type: 'Deluxe', availableCount: 0, pricePerNight: 0 }
         ])
         setSelectedAmenities([])
-        setHotelImages([''])
+        setCustomAmenity('')
+        setHotelImages([]) // Reset to empty array, not ['']
       }
-      if (onSuccess) onSuccess()
+      // Small delay to show success message before callback
+      setTimeout(() => {
+        if (onSuccess) onSuccess()
+      }, 1500)
     } catch (err) {
       const errorMessage = err.message || err.response?.data?.error?.message || 'Failed to submit listing request'
       setNotification({ type: 'error', message: errorMessage })
@@ -510,9 +515,13 @@ const CreateListingRequest = ({ onSuccess }) => {
                           setNotification({ type: 'success', message: `Successfully uploaded ${files.length} image(s)` })
                         } catch (err) {
                           console.error('Image upload error:', err)
+                          const errorMessage = err.response?.data?.error?.message 
+                            || err.response?.data?.message 
+                            || err.message 
+                            || 'Failed to upload images. Please check file size (max 5MB) and format (JPG, PNG, GIF, WebP).'
                           setNotification({ 
                             type: 'error', 
-                            message: err.response?.data?.error?.message || 'Failed to upload images' 
+                            message: errorMessage
                           })
                         } finally {
                           setUploadingImages(false)
