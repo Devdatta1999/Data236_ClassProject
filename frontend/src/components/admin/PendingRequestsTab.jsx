@@ -2,10 +2,25 @@ import { useState } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { removePendingListing } from '../../store/slices/adminSlice'
 import api from '../../services/apiService'
-import { CheckCircle, XCircle, Plane, Hotel, Car, Star, MapPin, Calendar, Clock } from 'lucide-react'
+import { CheckCircle, XCircle, Plane, Hotel, Car, Star, MapPin, Calendar, Clock, Building2 } from 'lucide-react'
 import Notification from '../common/Notification'
 
 const API_BASE_URL = import.meta.env.VITE_API_GATEWAY_URL || 'http://localhost:8080'
+
+// Helper function to get image source
+const getImageSrc = (imagePath) => {
+  if (!imagePath) return ''
+  // If it's already a full URL (http/https), return as is
+  if (imagePath.startsWith('http')) return imagePath
+  // If it already starts with /api/, prepend API_BASE_URL (handles both listings/images and providers/profile-pictures)
+  if (imagePath.startsWith('/api/')) {
+    return `${API_BASE_URL}${imagePath}`
+  }
+  // Otherwise, extract filename and construct the path (assume listings/images)
+  const filename = imagePath.split('/').pop()
+  const encodedFilename = encodeURIComponent(filename)
+  return `${API_BASE_URL}/api/listings/images/${encodedFilename}`
+}
 
 const PendingRequestsTab = ({ onRefresh }) => {
   const dispatch = useDispatch()
@@ -75,34 +90,56 @@ const PendingRequestsTab = ({ onRefresh }) => {
         return (
           <div key={listingId} className="card overflow-hidden">
             <div className={`flex ${isHotel ? 'flex-col md:flex-row' : 'items-start'} justify-between gap-4`}>
-              {/* Hotel Image (if available) */}
-              {isHotel && listing.images && listing.images.length > 0 && (
-                <div className="md:w-64 h-48 md:h-auto flex-shrink-0">
-                  <img
-                    src={(() => {
-                      const imagePath = listing.images[0]
-                      if (!imagePath) return ''
-                      if (imagePath.startsWith('http')) return imagePath
-                      // Extract filename and encode it to handle spaces
-                      const filename = imagePath.split('/').pop()
-                      const encodedFilename = encodeURIComponent(filename)
-                      return `${API_BASE_URL}/api/listings/images/${encodedFilename}`
-                    })()}
-                    alt={listing.hotelName || 'Hotel'}
-                    className="w-full h-full object-cover rounded-lg"
-                    onError={(e) => {
-                      e.target.style.display = 'none'
-                    }}
-                  />
-                </div>
-              )}
+              {/* Listing Image */}
+              {(() => {
+                let imageSrc = null
+                let imageAlt = ''
+                
+                // Check for hotel images
+                if (isHotel && listing.images && listing.images.length > 0 && listing.images[0]) {
+                  imageSrc = getImageSrc(listing.images[0])
+                  imageAlt = listing.hotelName || 'Hotel'
+                } 
+                // Check for flight image (can be null, empty string, or URL)
+                else if (listing.type === 'Flight' && listing.image && listing.image.trim()) {
+                  imageSrc = getImageSrc(listing.image)
+                  imageAlt = listing.flightId || 'Flight'
+                } 
+                // Check for car image
+                else if (listing.type === 'Car' && listing.image && listing.image.trim()) {
+                  imageSrc = getImageSrc(listing.image)
+                  imageAlt = listing.model || listing.carModel || 'Car'
+                }
+                
+                if (imageSrc) {
+                  return (
+                    <div className="md:w-64 h-48 md:h-auto flex-shrink-0 rounded-lg overflow-hidden bg-gray-200 flex items-center justify-center">
+                      <img
+                        src={imageSrc}
+                        alt={imageAlt}
+                        className="w-full h-full object-cover"
+                        onError={(e) => {
+                          console.error('Image failed to load:', imageSrc)
+                          e.target.style.display = 'none'
+                          if (e.target.nextSibling) e.target.nextSibling.classList.remove('hidden')
+                        }}
+                      />
+                      <div className="hidden w-full h-full flex items-center justify-center text-gray-400">
+                        <Icon className="w-12 h-12" />
+                      </div>
+                    </div>
+                  )
+                }
+                
+                // Show placeholder icon if no image
+                return (
+                  <div className="md:w-64 h-48 md:h-auto flex-shrink-0 bg-purple-100 rounded-lg flex items-center justify-center">
+                    <Icon className="w-12 h-12 text-purple-600" />
+                  </div>
+                )
+              })()}
 
               <div className="flex items-start space-x-4 flex-1">
-                {!isHotel && (
-                  <div className="bg-purple-100 p-3 rounded-lg">
-                    <Icon className="w-6 h-6 text-purple-600" />
-                  </div>
-                )}
                 <div className="flex-1">
                   <div className="flex items-center space-x-3 mb-3">
                     <h3 className="text-xl font-semibold">
