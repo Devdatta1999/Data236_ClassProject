@@ -3,9 +3,10 @@ import { useNavigate, useLocation } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
 import { setBookings, setLoading, setError } from '../../store/slices/bookingSlice'
 import api from '../../services/apiService'
-import { Calendar, MapPin, CheckCircle, Clock, XCircle, ArrowLeft, Car, Building2 } from 'lucide-react'
+import { Calendar, MapPin, CheckCircle, Clock, XCircle, ArrowLeft, Car, Building2, Star, Plane, Hotel } from 'lucide-react'
 import { format } from 'date-fns'
 import Notification from '../../components/common/Notification'
+import ReviewModal from '../../components/common/ReviewModal'
 
 const MyBookings = () => {
   const navigate = useNavigate()
@@ -15,6 +16,9 @@ const MyBookings = () => {
   const { user } = useSelector((state) => state.auth)
   const [bookingsWithDetails, setBookingsWithDetails] = useState([])
   const [notification, setNotification] = useState(null)
+  const [reviewModal, setReviewModal] = useState({ isOpen: false, booking: null, listing: null, listingType: null })
+  const [userReviews, setUserReviews] = useState([]) // Store user's reviews to check if already reviewed
+  const [activeTab, setActiveTab] = useState('flights') // 'flights', 'hotels', 'cars'
 
   useEffect(() => {
     // Show payment success notification only once and clear state immediately
@@ -33,59 +37,36 @@ const MyBookings = () => {
     }
   }, [location.state?.paymentSuccess, location.pathname])
 
-  useEffect(() => {
-    const fetchBookings = async () => {
-      if (!user?.userId) return
+  const fetchBookings = async () => {
+    if (!user?.userId) return
 
-      dispatch(setLoading(true))
+    dispatch(setLoading(true))
+    try {
+      // Fetch user reviews to check if already reviewed
       try {
-        // Only fetch confirmed bookings - add timestamp to bypass cache
-        const response = await api.get(`/api/bookings/user/${user.userId}?status=Confirmed&_t=${Date.now()}`)
-        const bookingsData = response.data.data?.bookings || []
-        dispatch(setBookings(bookingsData))
-
-        // Fetch listing details for each booking
-        const bookingsWithListingDetails = await Promise.all(
-          bookingsData.map(async (booking) => {
-            try {
-              const listingTypeLower = booking.listingType.toLowerCase() + 's'
-              const listingResponse = await api.get(
-                `/api/listings/${listingTypeLower}/${booking.listingId}`
-              )
-              const listing = listingResponse.data.data?.[listingTypeLower.slice(0, -1)]
-              
-              // Fetch provider details if providerId exists
-              let provider = null
-              if (listing?.providerId) {
-                try {
-                  const providerResponse = await api.get(`/api/providers/${listing.providerId}`)
-                  provider = providerResponse.data.data?.provider
-                } catch (err) {
-                  console.error('Error fetching provider:', err)
-                }
-              }
-
-              return {
-                ...booking,
-                listing,
-                provider
-              }
-            } catch (err) {
-              console.error(`Error fetching listing details for ${booking.listingId}:`, err)
-              return booking
-            }
-          })
-        )
-
-        setBookingsWithDetails(bookingsWithListingDetails)
+        const reviewsResponse = await api.get(`/api/users/${user.userId}/reviews`)
+        setUserReviews(reviewsResponse.data.data?.reviews || [])
       } catch (err) {
-        dispatch(setError(err.message))
-        console.error('Error fetching bookings:', err)
-      } finally {
-        dispatch(setLoading(false))
+        console.error('Error fetching user reviews:', err)
+        setUserReviews([])
       }
-    }
 
+      // Fetch all bookings with listing and provider details included (backend handles this now)
+      const response = await api.get(`/api/bookings/user/${user.userId}?_t=${Date.now()}`)
+      const bookingsData = response.data.data?.bookings || []
+      dispatch(setBookings(bookingsData))
+
+      // Backend now includes listing and provider details, so we can use bookings directly
+      setBookingsWithDetails(bookingsData)
+    } catch (err) {
+      dispatch(setError(err.message))
+      console.error('Error fetching bookings:', err)
+    } finally {
+      dispatch(setLoading(false))
+    }
+  }
+
+  useEffect(() => {
     fetchBookings()
     
     // If payment was just successful, refetch after a delay to ensure new bookings are visible
@@ -124,6 +105,83 @@ const MyBookings = () => {
     }
   }
 
+  const handleSubmitReview = async ({ rating, review }) => {
+    if (!reviewModal.booking || !reviewModal.listing || !user?.userId) return
+
+    try {
+      const listingTypeLower = reviewModal.listingType.toLowerCase() + 's'
+      const listingId = reviewModal.listing.hotelId || reviewModal.listing.carId || reviewModal.listing.flightId
+      
+      await api.post(`/api/listings/${listingTypeLower}/${listingId}/reviews`, {
+        userId: user.userId,
+        bookingId: reviewModal.booking.bookingId, // Add bookingId to the review submission
+        rating,
+        comment: review
+      })
+
+      setNotification({ 
+        type: 'success', 
+        message: 'Review submitted successfully!' 
+      })
+
+      // Refresh bookings (backend already includes listing and provider details)
+      const response = await api.get(`/api/bookings/user/${user.userId}?_t=${Date.now()}`)
+      const bookingsData = response.data.data?.bookings || []
+      dispatch(setBookings(bookingsData))
+
+      // Backend now includes listing and provider details, so we can use bookings directly
+      setBookingsWithDetails(bookingsData)
+
+      // Refresh user reviews
+      try {
+        const reviewsResponse = await api.get(`/api/users/${user.userId}/reviews`)
+        setUserReviews(reviewsResponse.data.data?.reviews || [])
+      } catch (err) {
+        console.error('Error fetching user reviews:', err)
+      }
+    } catch (error) {
+      console.error('Error submitting review:', error)
+      throw error
+    }
+  }
+
+  const openReviewModal = (booking, listing, listingType) => {
+    setReviewModal({ isOpen: true, booking, listing, listingType })
+  }
+
+  const closeReviewModal = () => {
+    setReviewModal({ isOpen: false, booking: null, listing: null, listingType: null })
+  }
+
+  const getListingName = (booking, listing) => {
+    if (booking.listingType === 'Car' && listing) {
+      return `${listing.model || listing.carModel || 'Car'} ${listing.year ? `(${listing.year})` : ''}`
+    } else if (booking.listingType === 'Flight' && listing) {
+      return `${listing.departureAirport || ''} → ${listing.arrivalAirport || ''}`
+    } else if (booking.listingType === 'Hotel' && listing) {
+      return listing.hotelName || 'Hotel'
+    }
+    return 'Listing'
+  }
+
+  const hasUserReviewedBooking = (bookingId) => {
+    if (!user?.userId || !userReviews || userReviews.length === 0) return false
+    return userReviews.some(
+      review => review.bookingId === bookingId
+    )
+  }
+
+  const hasUserReviewedBillingId = (billingId) => {
+    if (!user?.userId || !userReviews || userReviews.length === 0) return false
+    // Check if any review has a bookingId that belongs to bookings with this billingId
+    // We need to check bookingsWithDetails to find bookings with this billingId
+    const bookingsForBilling = bookingsWithDetails.filter(b => b.billingId === billingId)
+    const bookingIdsForBilling = bookingsForBilling.map(b => b.bookingId)
+    return userReviews.some(
+      review => bookingIdsForBilling.includes(review.bookingId)
+    )
+  }
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -156,6 +214,44 @@ const MyBookings = () => {
           />
         )}
 
+        {/* Tabs */}
+        {bookingsWithDetails.length > 0 && (
+          <div className="mb-6 bg-white rounded-lg shadow-sm border border-gray-200 p-2">
+            <div className="flex space-x-2">
+              {[
+                { id: 'flights', label: 'Flights', icon: Plane, count: bookingsWithDetails.filter(b => b.listingType === 'Flight').length },
+                { id: 'hotels', label: 'Hotels', icon: Hotel, count: bookingsWithDetails.filter(b => b.listingType === 'Hotel').length },
+                { id: 'cars', label: 'Cars', icon: Car, count: bookingsWithDetails.filter(b => b.listingType === 'Car').length },
+              ].map((tab) => {
+                const Icon = tab.icon
+                return (
+                  <button
+                    key={tab.id}
+                    onClick={() => setActiveTab(tab.id)}
+                    className={`flex-1 flex items-center justify-center space-x-2 py-3 px-4 rounded-lg transition-all ${
+                      activeTab === tab.id
+                        ? 'bg-primary-600 text-white font-semibold'
+                        : 'text-gray-600 hover:bg-gray-100'
+                    }`}
+                  >
+                    {Icon && <Icon className="w-5 h-5" />}
+                    <span>{tab.label}</span>
+                    {tab.count > 0 && (
+                      <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${
+                        activeTab === tab.id
+                          ? 'bg-white/20 text-white'
+                          : 'bg-gray-200 text-gray-700'
+                      }`}>
+                        {tab.count}
+                      </span>
+                    )}
+                  </button>
+                )
+              })}
+            </div>
+          </div>
+        )}
+
         {bookingsWithDetails.length === 0 && !loading ? (
           <div className="text-center py-12">
             <p className="text-gray-600 text-lg mb-4">You don't have any bookings yet.</p>
@@ -169,11 +265,41 @@ const MyBookings = () => {
         ) : (
           <div className="space-y-4">
             {(() => {
+              // Filter bookings by active tab
+              const typeMap = {
+                flights: 'Flight',
+                hotels: 'Hotel',
+                cars: 'Car'
+              }
+              const filteredBookings = bookingsWithDetails.filter(b => b.listingType === typeMap[activeTab])
+
+              // Show empty state for filtered tab
+              if (filteredBookings.length === 0 && !loading) {
+                const tabLabels = {
+                  flights: 'flight',
+                  hotels: 'hotel',
+                  cars: 'car'
+                }
+                return (
+                  <div className="text-center py-12">
+                    <p className="text-gray-600 text-lg mb-4">
+                      You don't have any {tabLabels[activeTab]} bookings yet.
+                    </p>
+                    <button
+                      onClick={() => navigate('/dashboard')}
+                      className="btn-primary"
+                    >
+                      Start Searching
+                    </button>
+                  </div>
+                )
+              }
+
               // Group hotel bookings by listingId and billingId (same hotel, same checkout = one bill)
               const grouped = {}
               const ungrouped = []
               
-              bookingsWithDetails.forEach((booking) => {
+              filteredBookings.forEach((booking) => {
                 if (booking.listingType === 'Hotel' && booking.billingId) {
                   // Group by billingId (same bill = same checkout)
                   const key = booking.billingId
@@ -196,15 +322,15 @@ const MyBookings = () => {
                   const totalAmount = groupBookings.reduce((sum, b) => sum + (b.totalAmount || 0), 0)
                   
                   return (
-                    <div key={billingId} className="card hover:shadow-lg transition-shadow">
+                    <div 
+                      key={billingId} 
+                      className="card hover:shadow-lg transition-shadow cursor-pointer"
+                      onClick={() => navigate(`/booking-group/${billingId}`)}
+                    >
                       <div className="flex justify-between items-start mb-4">
                         <div className="flex-1">
                           <div className="flex items-center space-x-3 mb-2">
                             <h3 className="text-xl font-semibold">{listingName}</h3>
-                            <span className={`px-3 py-1 rounded-full text-sm font-medium flex items-center space-x-1 ${getStatusColor(firstBooking.status)}`}>
-                              {getStatusIcon(firstBooking.status)}
-                              <span>{firstBooking.status}</span>
-                            </span>
                           </div>
                           
                           {billingId && (
@@ -253,12 +379,25 @@ const MyBookings = () => {
                       {/* List all room types */}
                       <div className="border-t pt-4 space-y-2">
                         {groupBookings.map((booking) => (
-                          <div key={booking.bookingId} className="bg-gray-50 p-3 rounded">
+                          <div 
+                            key={booking.bookingId} 
+                            className="bg-gray-50 p-3 rounded"
+                            onClick={(e) => {
+                              e.stopPropagation()
+                              navigate(`/booking/${booking.bookingId}`)
+                            }}
+                          >
                             <div className="flex justify-between items-center">
-                              <div>
-                                <p className="font-medium text-gray-900">
-                                  {booking.roomType} Room
-                                </p>
+                              <div className="flex-1">
+                                <div className="flex items-center space-x-2 mb-1">
+                                  <p className="font-medium text-gray-900">
+                                    {booking.roomType} Room
+                                  </p>
+                                  <span className={`px-2 py-0.5 rounded-full text-xs font-medium flex items-center space-x-1 ${getStatusColor(booking.status)}`}>
+                                    {getStatusIcon(booking.status)}
+                                    <span>{booking.status}</span>
+                                  </span>
+                                </div>
                                 <p className="text-sm text-gray-600">
                                   Quantity: {booking.quantity}
                                 </p>
@@ -275,6 +414,37 @@ const MyBookings = () => {
                           </div>
                         ))}
                       </div>
+                      {firstBooking.status === 'Confirmed' && (() => {
+                        // Check if this billing ID has been reviewed
+                        // For grouped bookings, we show one review button for the entire billing group
+                        const hasReviewed = hasUserReviewedBillingId(billingId)
+                        
+                        return (
+                          <div className="border-t pt-4 mt-4">
+                            {hasReviewed ? (
+                              <button
+                                disabled
+                                onClick={(e) => e.stopPropagation()}
+                                className="btn-secondary w-full flex items-center justify-center space-x-2 opacity-50 cursor-not-allowed"
+                              >
+                                <CheckCircle className="w-4 h-4" />
+                                <span>Review Submitted</span>
+                              </button>
+                            ) : (
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation()
+                                  openReviewModal(firstBooking, listing, 'Hotel')
+                                }}
+                                className="btn-primary w-full flex items-center justify-center space-x-2"
+                              >
+                                <Star className="w-4 h-4" />
+                                <span>Submit Review</span>
+                              </button>
+                            )}
+                          </div>
+                        )
+                      })()}
                     </div>
                   )
                 }),
@@ -396,6 +566,35 @@ const MyBookings = () => {
                       <p className="text-sm text-gray-500">
                         Quantity: {booking.quantity}
                       </p>
+                      {booking.status === 'Confirmed' && (() => {
+                        const hasReviewed = hasUserReviewedBooking(booking.bookingId)
+                        
+                        return (
+                          <div className="mt-4">
+                            {hasReviewed ? (
+                              <button
+                                disabled
+                                onClick={(e) => e.stopPropagation()}
+                                className="btn-secondary text-sm flex items-center justify-center space-x-2 opacity-50 cursor-not-allowed"
+                              >
+                                <CheckCircle className="w-4 h-4" />
+                                <span>Review Submitted</span>
+                              </button>
+                            ) : (
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation()
+                                  openReviewModal(booking, listing, booking.listingType)
+                                }}
+                                className="btn-primary text-sm flex items-center space-x-2"
+                              >
+                                <Star className="w-4 h-4" />
+                                <span>Submit Review</span>
+                              </button>
+                            )}
+                          </div>
+                        )
+                      })()}
                     </div>
                     <div className="text-right ml-6">
                       <p className="text-2xl font-bold text-primary-600">
@@ -413,6 +612,15 @@ const MyBookings = () => {
             })()}
           </div>
         )}
+
+        {/* Review Modal */}
+        <ReviewModal
+          isOpen={reviewModal.isOpen}
+          onClose={closeReviewModal}
+          onSubmit={handleSubmitReview}
+          bookingId={reviewModal.booking?.bookingId}
+          listingName={reviewModal.booking && reviewModal.listing ? getListingName(reviewModal.booking, reviewModal.listing) : ''}
+        />
       </div>
     </div>
   )

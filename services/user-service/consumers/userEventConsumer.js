@@ -53,8 +53,13 @@ async function handleUserSignup(event) {
       await waitForMongoDBReady(2000); // Reduced timeout
     }
     
-    // Check if user already exists
-    const existingUser = await User.findOne({ $or: [{ userId }, { email }] }).maxTimeMS(2000);
+    // Check if user already exists (excluding soft-deleted users)
+    const existingUser = await User.findOne({ 
+      $or: [
+        { userId, isDeleted: { $ne: true } },
+        { email: email.toLowerCase(), isDeleted: { $ne: true } }
+      ]
+    }).maxTimeMS(2000);
     if (existingUser) {
       throw new ConflictError('User with this ID or email already exists');
     }
@@ -141,7 +146,11 @@ async function handleUserLogin(event) {
     
     // Fetch user with password field included (select('+password'))
     // Reduced timeout from 15s to 2s for faster failure detection
-    const user = await User.findOne({ email: email.toLowerCase() }).select('+password').maxTimeMS(2000);
+    // Exclude soft-deleted users
+    const user = await User.findOne({ 
+      email: email.toLowerCase(),
+      isDeleted: { $ne: true }
+    }).select('+password').maxTimeMS(2000);
     if (!user) {
       throw new ValidationError('Invalid credentials');
     }

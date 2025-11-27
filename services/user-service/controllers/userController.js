@@ -17,7 +17,7 @@ const {
   validatePhoneNumber
 } = require('../../../shared/utils/validators');
 const { generateToken } = require('../../../shared/middleware/auth');
-const { getCache, setCache, deleteCache } = require('../../../shared/config/redis');
+const { getCache, setCache, deleteCache, deleteCachePattern } = require('../../../shared/config/redis');
 const logger = require('../../../shared/utils/logger');
 
 /**
@@ -40,8 +40,11 @@ const login = asyncHandler(async (req, res) => {
   const { waitForMongoDBReady } = require('../../../shared/config/database');
   await waitForMongoDBReady(2000);
 
-  // Fetch user with password field included
-  const user = await User.findOne({ email: email.toLowerCase() }).select('+password').maxTimeMS(5000);
+  // Fetch user with password field included, excluding soft-deleted users
+  const user = await User.findOne({ 
+    email: email.toLowerCase(),
+    isDeleted: { $ne: true }
+  }).select('+password').maxTimeMS(5000);
   if (!user) {
     throw new ValidationError('Invalid credentials');
   }
@@ -79,7 +82,7 @@ const login = asyncHandler(async (req, res) => {
  * User signup (HTTP endpoint)
  */
 const signup = asyncHandler(async (req, res) => {
-  const { email, password, firstName, lastName, userId, phoneNumber, address, city, state, zipCode, ssn } = req.body;
+  const { email, password, firstName, lastName, userId, phoneNumber, address, city, state, zipCode, ssn, profileImage } = req.body;
 
   // Validation
   if (!email || !password || !firstName || !lastName || !userId || !phoneNumber || !address || !city || !state || !zipCode || !ssn) {
@@ -92,11 +95,11 @@ const signup = asyncHandler(async (req, res) => {
   validateZipCode(zipCode);
   validateSSN(ssn);
 
-  // Check if user already exists
+  // Check if user already exists (excluding soft-deleted users)
   const existingUser = await User.findOne({
     $or: [
-      { email: email.toLowerCase() },
-      { userId }
+      { email: email.toLowerCase(), isDeleted: { $ne: true } },
+      { userId, isDeleted: { $ne: true } }
     ]
   });
 
@@ -121,7 +124,8 @@ const signup = asyncHandler(async (req, res) => {
     city,
     state,
     zipCode,
-    ssn
+    ssn,
+    profileImage: profileImage || null
   });
 
   await user.save();
@@ -154,7 +158,10 @@ const getUser = asyncHandler(async (req, res) => {
   let user = await getCache(cacheKey);
 
   if (!user) {
-    const userDoc = await User.findOne({ userId });
+    const userDoc = await User.findOne({ 
+      userId,
+      isDeleted: { $ne: true }
+    });
     if (!userDoc) {
       throw new NotFoundError('User');
     }
@@ -257,27 +264,42 @@ const updateUser = asyncHandler(async (req, res) => {
 });
 
 /**
- * Delete user
+ * Delete user (soft delete)
+ * Marks user as deleted but preserves all related data (bookings, reviews, etc.)
  */
 const deleteUser = asyncHandler(async (req, res) => {
   const { userId } = req.params;
+  const requestingUserId = req.user?.userId; // From authentication middleware
 
-  const user = await User.findOne({ userId });
+  // Verify user can only delete their own profile
+  if (requestingUserId !== userId) {
+    throw new ValidationError('You can only delete your own profile');
+  }
+
+  const user = await User.findOne({ userId, isDeleted: { $ne: true } });
   if (!user) {
     throw new NotFoundError('User');
   }
 
-  await User.deleteOne({ userId });
+  // Soft delete: Mark as deleted instead of removing from database
+  user.isDeleted = true;
+  user.deletedAt = new Date();
+  // Anonymize sensitive data while keeping referential integrity
+  user.email = `deleted_${Date.now()}_${user.userId}@deleted.local`;
+  user.password = `deleted_${Date.now()}`; // Invalidate password
+  user.savedCreditCards = []; // Clear credit cards for security
+  await user.save();
 
   // Invalidate cache
   await deleteCache(`user:${userId}`);
+  await deleteCachePattern(`user:${userId}:*`);
   await deleteCache(`user:email:${user.email}`);
 
-  logger.info(`User deleted: ${userId}`);
+  logger.info(`User soft-deleted: ${userId}`);
 
   res.json({
     success: true,
-    message: 'User deleted successfully'
+    message: 'Your profile has been deleted successfully'
   });
 });
 
@@ -318,6 +340,59 @@ const getUserReviews = asyncHandler(async (req, res) => {
   res.json({
     success: true,
     data: { reviews: user.reviews }
+  });
+});
+
+/**
+ * Add review to user document (called by listing service)
+ */
+const addUserReview = asyncHandler(async (req, res) => {
+  const { userId } = req.params;
+  const { reviewId, bookingId, listingId, listingType, rating, comment } = req.body;
+
+  if (!reviewId || !listingId || !listingType || !rating || rating < 1 || rating > 5) {
+    throw new ValidationError('reviewId, listingId, listingType, and valid rating (1-5) are required');
+  }
+
+  // bookingId is optional for backward compatibility with old reviews
+
+  const user = await User.findOne({ userId });
+  if (!user) {
+    throw new NotFoundError('User');
+  }
+
+  // Check if review already exists (prevent duplicates)
+  const existingReview = user.reviews.find(r => r.reviewId === reviewId);
+  if (existingReview) {
+    logger.warn(`Review ${reviewId} already exists for user ${userId}`);
+    return res.status(200).json({
+      success: true,
+      message: 'Review already exists',
+      data: { review: existingReview }
+    });
+  }
+
+  user.reviews.push({
+    reviewId,
+    bookingId: bookingId || null, // Allow null for backward compatibility
+    listingId,
+    listingType,
+    rating,
+    comment: comment || '',
+    date: new Date()
+  });
+
+  await user.save();
+
+  // Invalidate cache
+  await deleteCache(`user:${userId}`);
+
+  logger.info(`Review added to user document: ${userId}, booking: ${bookingId}, listing: ${listingId}`);
+
+  res.status(201).json({
+    success: true,
+    message: 'Review added to user document successfully',
+    data: { review: user.reviews[user.reviews.length - 1] }
   });
 });
 
@@ -712,6 +787,7 @@ module.exports = {
   deleteUser,
   getBookingHistory,
   getUserReviews,
+  addUserReview,
   addSavedCard,
   getSavedCards,
   getDecryptedCard,

@@ -217,25 +217,60 @@ const HotelDetailPage = () => {
           </button>
           <h1 className="text-3xl font-bold">{hotel.hotelName}</h1>
           <div className="flex items-center space-x-4 mt-2">
-            <div className="flex items-center space-x-1">
-              {Array.from({ length: hotel.starRating || 0 }).map((_, i) => (
-                <Star key={i} className="w-5 h-5 text-yellow-400 fill-current" />
-              ))}
-            </div>
-            {hotel.hotelRating > 0 && (
-              <div className="flex items-center bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-medium">
-                <Star className="w-4 h-4 fill-current mr-1" />
-                <span>{hotel.hotelRating.toFixed(1)} Excellent</span>
-                {hotel.reviews && hotel.reviews.length > 0 && (
-                  <span className="ml-2">({hotel.reviews.length} reviews)</span>
-                )}
-              </div>
-            )}
+            {(() => {
+              // Calculate average rating from reviews array only (not starRating from host/admin)
+              const avgRating = hotel.reviews && hotel.reviews.length > 0
+                ? (hotel.reviews.reduce((sum, review) => sum + (review.rating || 0), 0) / hotel.reviews.length).toFixed(1)
+                : hotel.hotelRating?.toFixed(1) || 0
+              
+              return avgRating > 0 && (
+                <div className="flex items-center space-x-2">
+                  <div className="flex items-center">
+                    {Array.from({ length: 5 }).map((_, i) => (
+                      <Star
+                        key={i}
+                        className={`w-5 h-5 ${i < Math.round(parseFloat(avgRating)) ? 'text-yellow-400 fill-current' : 'text-gray-300'}`}
+                      />
+                    ))}
+                  </div>
+                  <div className="flex items-center bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-medium">
+                    <span>{avgRating} {avgRating >= 4 ? 'Excellent' : avgRating >= 3 ? 'Good' : 'Average'}</span>
+                    {hotel.reviews && hotel.reviews.length > 0 && (
+                      <span className="ml-2">({hotel.reviews.length} review{hotel.reviews.length > 1 ? 's' : ''})</span>
+                    )}
+                  </div>
+                </div>
+              )
+            })()}
             <div className="flex items-center text-gray-600">
               <MapPin className="w-4 h-4 mr-1" />
               <span>{hotel.address}, {hotel.city}, {hotel.state} {hotel.zipCode}</span>
             </div>
           </div>
+          {/* Latest Review */}
+          {hotel.reviews && hotel.reviews.length > 0 && (() => {
+            // Sort reviews by date (newest first) and get the latest
+            const sortedReviews = [...hotel.reviews].sort((a, b) => new Date(b.date) - new Date(a.date))
+            const latestReview = sortedReviews[0]
+            
+            return latestReview && latestReview.comment && (
+              <div className="mt-4 p-4 bg-gray-50 rounded-lg border border-gray-200">
+                <div className="flex items-center space-x-2 mb-2">
+                  <div className="flex items-center">
+                    {Array.from({ length: 5 }).map((_, i) => (
+                      <Star
+                        key={i}
+                        className={`w-4 h-4 ${i < latestReview.rating ? 'text-yellow-400 fill-current' : 'text-gray-300'}`}
+                      />
+                    ))}
+                  </div>
+                  <span className="text-sm text-gray-600">
+                    {latestReview.comment}
+                  </span>
+                </div>
+              </div>
+            )
+          })()}
         </div>
       </div>
 

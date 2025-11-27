@@ -36,16 +36,27 @@ const BookingDetails = () => {
     try {
       // This would use Kafka booking.cancel event
       // For now, using HTTP
-      await api.delete(`/api/bookings/${bookingId}`)
+      const cancelResponse = await api.delete(`/api/bookings/${bookingId}`)
+      
+      // Refresh booking data to get updated status
+      const response = await api.get(`/api/bookings/${bookingId}`)
+      dispatch(setSelectedBooking(response.data.data?.booking))
+      
+      // Show success message with count if multiple bookings were cancelled
+      const cancelledCount = cancelResponse.data?.data?.count || 1
+      const successMessage = cancelledCount > 1
+        ? `Successfully cancelled ${cancelledCount} booking(s).`
+        : 'Booking cancelled successfully.'
+      
       setNotification({ 
         type: 'success', 
-        message: 'Booking cancelled successfully.' 
+        message: successMessage
       })
       setTimeout(() => {
         navigate('/my-bookings')
       }, 1500)
     } catch (err) {
-      const errorMessage = err.message || 'Failed to cancel booking. Please try again.'
+      const errorMessage = err.response?.data?.error?.message || err.message || 'Failed to cancel booking. Please try again.'
       setNotification({ type: 'error', message: errorMessage })
     }
   }
@@ -131,7 +142,10 @@ const BookingDetails = () => {
               <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
                 <h3 className="text-lg font-semibold mb-4">Confirm Cancellation</h3>
                 <p className="text-gray-600 mb-6">
-                  Are you sure you want to cancel this booking? This action cannot be undone.
+                  {selectedBooking.billingId 
+                    ? `Are you sure you want to cancel this booking? This will cancel all bookings in this reservation (all room types). This action cannot be undone.`
+                    : 'Are you sure you want to cancel this booking? This action cannot be undone.'
+                  }
                 </p>
                 <div className="flex justify-end space-x-3">
                   <button

@@ -157,6 +157,10 @@ const userSchema = new mongoose.Schema({
       type: String,
       required: true
     },
+    bookingId: {
+      type: String,
+      required: false // Optional for backward compatibility with old reviews
+    },
     listingId: {
       type: String,
       required: true
@@ -188,6 +192,15 @@ const userSchema = new mongoose.Schema({
   updatedAt: {
     type: Date,
     default: Date.now
+  },
+  isDeleted: {
+    type: Boolean,
+    default: false,
+    index: true
+  },
+  deletedAt: {
+    type: Date,
+    default: null
   }
 }, {
   timestamps: true

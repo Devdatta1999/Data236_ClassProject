@@ -31,6 +31,9 @@ RUN rm -rf node_modules/bcrypt && \
 
 WORKDIR /workspace/services/user-service
 
+# Create uploads directory for profile pictures
+RUN mkdir -p uploads/profile-pictures
+
 EXPOSE 3001
 
 CMD ["npm", "start"]

@@ -60,15 +60,18 @@ app.use('/api/users', createProxyMiddleware({
   },
   buffer: false, // Don't buffer - forward body directly
   onProxyReq: (proxyReq, req, res) => {
-    logger.info(`Proxying to User Service: ${req.method} ${req.path}`);
-    // If body was parsed by express.json(), we need to re-stringify it
-    if (req.body && typeof req.body === 'object') {
+    logger.info(`Proxying to User Service: ${req.method} ${req.path}`, {
+      contentType: req.headers['content-type']
+    });
+    // Only rewrite body for JSON requests (skip for multipart/form-data)
+    if (req.body && typeof req.body === 'object' && !req.headers['content-type']?.includes('multipart/form-data')) {
       const bodyData = JSON.stringify(req.body);
       proxyReq.setHeader('Content-Type', 'application/json');
       proxyReq.setHeader('Content-Length', Buffer.byteLength(bodyData));
       proxyReq.write(bodyData);
       proxyReq.end();
     }
+    // For multipart/form-data, the body streams automatically - don't interfere
   },
   onError: (err, req, res) => {
     logger.error('User Service proxy error:', err);
@@ -181,14 +184,15 @@ app.use('/api/providers', createProxyMiddleware({
       contentType: req.headers['content-type']
     });
     
-    // If body was parsed by express.json(), we need to re-stringify it
-    if (req.body && typeof req.body === 'object') {
+    // Only rewrite body for JSON requests (skip for multipart/form-data)
+    if (req.body && typeof req.body === 'object' && !req.headers['content-type']?.includes('multipart/form-data')) {
       const bodyData = JSON.stringify(req.body);
       proxyReq.setHeader('Content-Type', 'application/json');
       proxyReq.setHeader('Content-Length', Buffer.byteLength(bodyData));
       proxyReq.write(bodyData);
       proxyReq.end();
     }
+    // For multipart/form-data, the body streams automatically - don't interfere
   },
   onError: (err, req, res) => {
     logger.error('Provider Service proxy error:', {

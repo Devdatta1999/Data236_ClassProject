@@ -8,6 +8,9 @@ const Hotel = require('../models/Hotel');
 const { NotFoundError, ValidationError, AuthenticationError, asyncHandler } = require('../../../shared/utils/errors');
 const { getCache, setCache, deleteCache, deleteCachePattern } = require('../../../shared/config/redis');
 const logger = require('../../../shared/utils/logger');
+const axios = require('axios');
+
+const USER_SERVICE_URL = process.env.USER_SERVICE_URL || 'http://aerive-user-service:3001';
 
 /**
  * Get hotel by ID
@@ -139,7 +142,11 @@ const deleteHotel = asyncHandler(async (req, res) => {
  */
 const addReview = asyncHandler(async (req, res) => {
   const { hotelId } = req.params;
-  const { userId, rating, comment } = req.body;
+  const { userId, bookingId, rating, comment } = req.body;
+
+  if (!bookingId) {
+    throw new ValidationError('bookingId is required to submit a review');
+  }
 
   if (!rating || rating < 1 || rating > 5) {
     throw new ValidationError('Rating must be between 1 and 5');
@@ -152,16 +159,44 @@ const addReview = asyncHandler(async (req, res) => {
 
   const reviewId = `REV-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
   
-  hotel.reviews.push({
+  const reviewData = {
     reviewId,
     userId,
     rating,
     comment: comment || '',
     date: new Date()
-  });
-
+  };
+  
+  // Add review to hotel
+  hotel.reviews.push(reviewData);
   hotel.updateRating();
   await hotel.save();
+
+  // Also save review to user document via HTTP call to user service
+  try {
+    const userReviewResponse = await axios.post(`${USER_SERVICE_URL}/api/users/${userId}/reviews`, {
+      reviewId,
+      bookingId,
+      listingId: hotelId,
+      listingType: 'Hotel',
+      rating,
+      comment: comment || ''
+    }, {
+      timeout: 5000 // 5 second timeout
+    });
+    logger.info(`Review saved to user document: ${userId}, booking: ${bookingId || 'N/A'}, reviewId: ${reviewId}`);
+  } catch (userError) {
+    logger.error(`Error saving review to user document: ${userError.message}`, {
+      userId,
+      bookingId,
+      listingId: hotelId,
+      reviewId,
+      status: userError.response?.status,
+      data: userError.response?.data
+    });
+    // Don't fail the request if user save fails - listing review is already saved
+    // But log detailed error for debugging
+  }
 
   await deleteCache(`hotel:${hotelId}`);
   await deleteCachePattern('search:hotel:*');

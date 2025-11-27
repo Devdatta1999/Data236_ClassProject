@@ -18,8 +18,37 @@ const PORT = process.env.PORT || 3001;
 
 // Middleware
 app.use(cors());
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+
+// Body parsing middleware - skip for multipart/form-data (let multer handle it)
+app.use((req, res, next) => {
+  const contentType = req.headers['content-type'] || '';
+  if (contentType.includes('multipart/form-data')) {
+    // Skip body parsing for multipart requests - multer will handle it
+    return next();
+  }
+  // For non-multipart requests, apply JSON and URL-encoded parsers
+  express.json()(req, res, (err) => {
+    if (err) return next(err);
+    express.urlencoded({ extended: true })(req, res, next);
+  });
+});
+
+// Serve uploaded profile pictures statically
+const path = require('path');
+app.use('/api/users/profile-pictures', express.static(path.join(__dirname, '../uploads/profile-pictures'), {
+  setHeaders: (res, filePath) => {
+    // Set proper content type for images
+    if (filePath.endsWith('.webp')) {
+      res.setHeader('Content-Type', 'image/webp');
+    } else if (filePath.endsWith('.jpg') || filePath.endsWith('.jpeg')) {
+      res.setHeader('Content-Type', 'image/jpeg');
+    } else if (filePath.endsWith('.png')) {
+      res.setHeader('Content-Type', 'image/png');
+    } else if (filePath.endsWith('.gif')) {
+      res.setHeader('Content-Type', 'image/gif');
+    }
+  }
+}));
 
 // Health check
 app.get('/health', (req, res) => {

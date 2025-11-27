@@ -1,12 +1,15 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { setLoading, setError, loginSuccess } from '../store/slices/authSlice'
 import { sendEventAndWait } from '../services/kafkaService'
+import api from '../services/apiService'
+import { Camera, X } from 'lucide-react'
 
 const SignupPage = () => {
   const navigate = useNavigate()
   const dispatch = useDispatch()
+  const { loading } = useSelector((state) => state.auth)
   const [formData, setFormData] = useState({
     userId: '',
     firstName: '',
@@ -21,6 +24,41 @@ const SignupPage = () => {
     confirmPassword: '',
   })
   const [error, setError] = useState('')
+  const [profilePicture, setProfilePicture] = useState(null)
+  const [profilePicturePreview, setProfilePicturePreview] = useState(null)
+  const [uploadingPicture, setUploadingPicture] = useState(false)
+
+  const handleProfilePictureChange = (e) => {
+    const file = e.target.files[0]
+    if (!file) return
+
+    // Validate file type
+    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp']
+    if (!allowedTypes.includes(file.type)) {
+      setError('Please select a valid image file (JPG, PNG, GIF, or WebP)')
+      return
+    }
+
+    // Validate file size (5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      setError('Image size must be less than 5MB')
+      return
+    }
+
+    setProfilePicture(file)
+    
+    // Create preview
+    const reader = new FileReader()
+    reader.onloadend = () => {
+      setProfilePicturePreview(reader.result)
+    }
+    reader.readAsDataURL(file)
+  }
+
+  const removeProfilePicture = () => {
+    setProfilePicture(null)
+    setProfilePicturePreview(null)
+  }
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -70,6 +108,40 @@ const SignupPage = () => {
         user: response.user,
         userType: 'traveler',
       }))
+
+      // Upload profile picture after successful signup (now we have auth token)
+      if (profilePicture) {
+        try {
+          setUploadingPicture(true)
+          const uploadFormData = new FormData()
+          uploadFormData.append('profilePicture', profilePicture)
+
+          const uploadResponse = await api.post('/api/users/upload/profile-picture', uploadFormData, {
+            headers: {
+              'Content-Type': 'multipart/form-data',
+            },
+          })
+
+          // Update user profile with the uploaded image URL
+          await api.put(`/api/users/${response.user.userId}`, {
+            profileImage: uploadResponse.data.data.imageUrl
+          })
+
+          // Refresh user data in Redux store
+          const userResponse = await api.get(`/api/users/${response.user.userId}`)
+          dispatch(loginSuccess({
+            token: response.token,
+            user: userResponse.data.data.user,
+            userType: 'traveler',
+          }))
+        } catch (uploadErr) {
+          console.error('Error uploading profile picture:', uploadErr)
+          // Don't block navigation if upload fails - user can update it later
+        } finally {
+          setUploadingPicture(false)
+        }
+      }
+
       navigate('/dashboard')
     } catch (err) {
       const errorMessage = err.message || 'Signup failed'
@@ -98,6 +170,60 @@ const SignupPage = () => {
           </p>
         </div>
         <form className="mt-8 space-y-6 card" onSubmit={handleSubmit}>
+          {/* Profile Picture Upload Section */}
+          <div className="mb-6">
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Profile Picture (Optional)
+            </label>
+            <div className="flex items-center space-x-4">
+              <div className="relative">
+                {profilePicturePreview ? (
+                  <div className="relative">
+                    <img
+                      src={profilePicturePreview}
+                      alt="Profile preview"
+                      className="w-24 h-24 rounded-full object-cover border-2 border-gray-300"
+                    />
+                    <button
+                      type="button"
+                      onClick={removeProfilePicture}
+                      className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  </div>
+                ) : (
+                  <div className="w-24 h-24 rounded-full bg-gray-200 flex items-center justify-center border-2 border-dashed border-gray-300">
+                    <Camera className="w-8 h-8 text-gray-400" />
+                  </div>
+                )}
+              </div>
+              <div className="flex-1">
+                <label
+                  htmlFor="profilePicture"
+                  className="cursor-pointer inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {profilePicturePreview ? (
+                    'Change Picture'
+                  ) : (
+                    'Upload Picture'
+                  )}
+                </label>
+                <input
+                  id="profilePicture"
+                  type="file"
+                  accept="image/jpeg,image/jpg,image/png,image/gif,image/webp"
+                  onChange={handleProfilePictureChange}
+                  className="hidden"
+                  disabled={loading}
+                />
+                <p className="text-xs text-gray-500 mt-1">
+                  JPG, PNG, GIF, or WebP (max 5MB)
+                </p>
+              </div>
+            </div>
+          </div>
+
           <div className="grid md:grid-cols-2 gap-4">
             <div>
               <label htmlFor="userId" className="block text-sm font-medium text-gray-700">
@@ -280,8 +406,19 @@ const SignupPage = () => {
           )}
 
           <div>
-            <button type="submit" className="btn-primary w-full">
-              Create Account
+            <button 
+              type="submit" 
+              className="btn-primary w-full disabled:opacity-50 disabled:cursor-not-allowed"
+              disabled={loading || uploadingPicture}
+            >
+              {loading ? (
+                <span className="flex items-center justify-center space-x-2">
+                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+                  <span>{uploadingPicture ? 'Uploading picture...' : 'Creating account...'}</span>
+                </span>
+              ) : (
+                'Create Account'
+              )}
             </button>
           </div>
         </form>

@@ -139,11 +139,23 @@ const Navbar = () => {
                 )}
                 <div className="flex items-center space-x-4">
                   <Link
-                    to={userType === 'traveler' ? '/profile' : userType === 'admin' ? '/admin' : '/host'}
+                    to={userType === 'traveler' ? '/profile' : userType === 'admin' ? '/admin' : '/host/profile'}
                     className="flex items-center space-x-2 text-gray-700 hover:text-primary-600 transition-colors"
                   >
-                    <User className="w-5 h-5" />
-                    <span>{user?.firstName || 'Profile'}</span>
+                    {user?.profileImage ? (
+                      <img
+                        src={`${import.meta.env.VITE_API_GATEWAY_URL || 'http://localhost:8080'}${user.profileImage}`}
+                        alt="Profile"
+                        className="w-8 h-8 rounded-full object-cover border-2 border-gray-300"
+                        onError={(e) => {
+                          e.target.style.display = 'none'
+                          const icon = e.target.parentElement.querySelector('.profile-icon-fallback')
+                          if (icon) icon.style.display = 'block'
+                        }}
+                      />
+                    ) : null}
+                    <User className={`w-5 h-5 profile-icon-fallback ${user?.profileImage ? 'hidden' : ''}`} />
+                    <span>{user?.firstName || user?.providerName || user?.adminName || 'Profile'}</span>
                   </Link>
                   <button
                     onClick={handleLogout}
@@ -213,7 +225,7 @@ const Navbar = () => {
                   </>
                 )}
                 <Link
-                  to={userType === 'traveler' ? '/profile' : userType === 'admin' ? '/admin' : '/host'}
+                  to={userType === 'traveler' ? '/profile' : userType === 'admin' ? '/admin' : '/host/profile'}
                   className="block text-gray-700 hover:text-primary-600"
                 >
                   Profile

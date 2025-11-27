@@ -20,6 +20,7 @@ router.post('/create', bookingController.createBooking); // No auth needed for i
 router.get('/user/:userId', authenticate, bookingController.getUserBookings);
 router.get('/:bookingId', authenticate, bookingController.getBooking);
 router.put('/:bookingId', authenticate, bookingController.updateBooking);
+router.delete('/:bookingId', authenticate, bookingController.cancelBooking);
 
 module.exports = router;
 

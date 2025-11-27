@@ -156,12 +156,31 @@ const CarDetailPage = () => {
           </button>
           <h1 className="text-3xl font-bold">{car.model || car.carModel}</h1>
           <div className="flex items-center space-x-4 mt-2">
-            {car.carRating && car.carRating > 0 && (
-              <div className="flex items-center bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-medium">
-                <Star className="w-4 h-4 fill-current mr-1" />
-                <span>{car.carRating.toFixed(1)}</span>
-              </div>
-            )}
+            {(() => {
+              // Calculate average rating from reviews array
+              const avgRating = car.reviews && car.reviews.length > 0
+                ? (car.reviews.reduce((sum, review) => sum + (review.rating || 0), 0) / car.reviews.length).toFixed(1)
+                : car.carRating?.toFixed(1) || 0
+              
+              return avgRating > 0 && (
+                <div className="flex items-center space-x-2">
+                  <div className="flex items-center">
+                    {Array.from({ length: 5 }).map((_, i) => (
+                      <Star
+                        key={i}
+                        className={`w-5 h-5 ${i < Math.round(parseFloat(avgRating)) ? 'text-yellow-400 fill-current' : 'text-gray-300'}`}
+                      />
+                    ))}
+                  </div>
+                  <div className="flex items-center bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-medium">
+                    <span>{avgRating} {avgRating >= 4 ? 'Excellent' : avgRating >= 3 ? 'Good' : 'Average'}</span>
+                    {car.reviews && car.reviews.length > 0 && (
+                      <span className="ml-2">({car.reviews.length} review{car.reviews.length > 1 ? 's' : ''})</span>
+                    )}
+                  </div>
+                </div>
+              )
+            })()}
             <div className="flex items-center text-gray-600">
               <MapPin className="w-4 h-4 mr-1" />
               <span>
@@ -172,6 +191,30 @@ const CarDetailPage = () => {
               </span>
             </div>
           </div>
+          {/* Latest Review */}
+          {car.reviews && car.reviews.length > 0 && (() => {
+            // Sort reviews by date (newest first) and get the latest
+            const sortedReviews = [...car.reviews].sort((a, b) => new Date(b.date) - new Date(a.date))
+            const latestReview = sortedReviews[0]
+            
+            return latestReview && latestReview.comment && (
+              <div className="mt-4 p-4 bg-gray-50 rounded-lg border border-gray-200">
+                <div className="flex items-center space-x-2 mb-2">
+                  <div className="flex items-center">
+                    {Array.from({ length: 5 }).map((_, i) => (
+                      <Star
+                        key={i}
+                        className={`w-4 h-4 ${i < latestReview.rating ? 'text-yellow-400 fill-current' : 'text-gray-300'}`}
+                      />
+                    ))}
+                  </div>
+                  <span className="text-sm text-gray-600">
+                    {latestReview.comment}
+                  </span>
+                </div>
+              </div>
+            )
+          })()}
         </div>
       </div>
 

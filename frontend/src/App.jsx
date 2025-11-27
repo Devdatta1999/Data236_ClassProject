@@ -17,6 +17,7 @@ import AdminSignupPage from './pages/AdminSignupPage'
 import TravelerDashboard from './pages/traveler/TravelerDashboard'
 import SearchResults from './pages/traveler/SearchResults'
 import BookingDetails from './pages/traveler/BookingDetails'
+import BookingGroupDetails from './pages/traveler/BookingGroupDetails'
 import HotelDetailPage from './pages/traveler/HotelDetailPage'
 import FlightDetailPage from './pages/traveler/FlightDetailPage'
 import CarDetailPage from './pages/traveler/CarDetailPage'
@@ -26,6 +27,7 @@ import MyBookings from './pages/traveler/MyBookings'
 import ProfilePage from './pages/traveler/ProfilePage'
 import AdminDashboard from './pages/admin/AdminDashboard'
 import HostDashboard from './pages/host/HostDashboard'
+import HostProfilePage from './pages/host/HostProfilePage'
 
 function App() {
   const dispatch = useDispatch()
@@ -74,6 +76,14 @@ function App() {
           element={
             <ProtectedRoute userType="traveler">
               <BookingDetails />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/booking-group/:billingId"
+          element={
+            <ProtectedRoute userType="traveler">
+              <BookingGroupDetails />
             </ProtectedRoute>
           }
         />
@@ -150,6 +160,14 @@ function App() {
           element={
             <ProtectedRoute userType="host">
               <HostDashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/host/profile"
+          element={
+            <ProtectedRoute userType="host">
+              <HostProfilePage />
             </ProtectedRoute>
           }
         />

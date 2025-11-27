@@ -1,11 +1,11 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
-import { updateUser } from '../../store/slices/authSlice'
+import { updateUser, logout } from '../../store/slices/authSlice'
 import { setProfile, updateProfile as updateUserProfile } from '../../store/slices/userSlice'
 import api from '../../services/apiService'
 import { US_STATES } from '../../utils/usStates'
-import { User, Mail, Phone, MapPin, CreditCard, ArrowLeft, Save, Plus, Trash2 } from 'lucide-react'
+import { User, Mail, Phone, MapPin, CreditCard, ArrowLeft, Save, Plus, Trash2, Camera, X } from 'lucide-react'
 
 const ProfilePage = () => {
   const navigate = useNavigate()
@@ -30,6 +30,8 @@ const ProfilePage = () => {
   const [showAddCard, setShowAddCard] = useState(false)
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
   const [cardToDelete, setCardToDelete] = useState(null)
+  const [showDeleteProfileConfirm, setShowDeleteProfileConfirm] = useState(false)
+  const [deleteProfileLoading, setDeleteProfileLoading] = useState(false)
   const [editingCard, setEditingCard] = useState(null)
   const [cardFormData, setCardFormData] = useState({
     cardNumber: '',
@@ -38,6 +40,10 @@ const ProfilePage = () => {
     zipCode: formData.zipCode || '', // Initialize with user's zipCode
   })
   const [cardLoading, setCardLoading] = useState(false)
+  const [profilePicture, setProfilePicture] = useState(null)
+  const [profilePicturePreview, setProfilePicturePreview] = useState(null)
+  const [uploadingPicture, setUploadingPicture] = useState(false)
+  const [currentProfileImage, setCurrentProfileImage] = useState(null)
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -58,6 +64,10 @@ const ProfilePage = () => {
           state: userData?.state || '',
           zipCode: userData?.zipCode || '',
         })
+        // Set current profile image if it exists
+        if (userData?.profileImage) {
+          setCurrentProfileImage(userData.profileImage)
+        }
       } catch (err) {
         console.error('Error fetching profile:', err)
       }
@@ -251,6 +261,115 @@ const ProfilePage = () => {
     setCardToDelete(null)
   }
 
+  const handleDeleteProfile = () => {
+    setShowDeleteProfileConfirm(true)
+  }
+
+  const cancelDeleteProfile = () => {
+    setShowDeleteProfileConfirm(false)
+  }
+
+  const confirmDeleteProfile = async () => {
+    if (!user?.userId) return
+
+    setDeleteProfileLoading(true)
+    setError('')
+    
+    try {
+      await api.delete(`/api/users/${user.userId}`)
+      
+      setSuccess('Your profile has been deleted successfully.')
+      
+      // Logout user and redirect after a short delay
+      setTimeout(() => {
+        dispatch(logout())
+        navigate('/')
+      }, 2000)
+    } catch (err) {
+      const errorMessage = err.response?.data?.error?.message 
+        || err.response?.data?.message 
+        || err.message 
+        || 'Failed to delete profile. Please try again.'
+      setError(errorMessage)
+      setShowDeleteProfileConfirm(false)
+    } finally {
+      setDeleteProfileLoading(false)
+    }
+  }
+
+  const handleProfilePictureChange = async (e) => {
+    const file = e.target.files[0]
+    if (!file) return
+
+    // Validate file type
+    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp']
+    if (!allowedTypes.includes(file.type)) {
+      setError('Please select a valid image file (JPG, PNG, GIF, or WebP)')
+      return
+    }
+
+    // Validate file size (5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      setError('Image size must be less than 5MB')
+      return
+    }
+
+    setProfilePicture(file)
+    
+    // Create preview
+    const reader = new FileReader()
+    reader.onloadend = () => {
+      setProfilePicturePreview(reader.result)
+    }
+    reader.readAsDataURL(file)
+
+    // Upload the picture immediately
+    setUploadingPicture(true)
+    setError('')
+    
+    try {
+      const uploadFormData = new FormData()
+      uploadFormData.append('profilePicture', file)
+
+      const uploadResponse = await api.post('/api/users/upload/profile-picture', uploadFormData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      })
+
+      // Update profile with the uploaded image URL
+      const updateResponse = await api.put(`/api/users/${user.userId}`, {
+        profileImage: uploadResponse.data.data.imageUrl
+      })
+
+      const updatedUser = updateResponse.data.data?.user
+      dispatch(updateUser(updatedUser))
+      dispatch(updateUserProfile(updatedUser))
+      
+      setCurrentProfileImage(uploadResponse.data.data.imageUrl)
+      setProfilePicture(null) // Clear the file after successful upload
+      setProfilePicturePreview(null)
+      setSuccess('Profile picture updated successfully!')
+      
+      // Refresh profile data
+      const userResponse = await api.get(`/api/users/${user.userId}`)
+      const freshUserData = userResponse.data.data?.user
+      dispatch(setProfile(freshUserData))
+    } catch (err) {
+      console.error('Error uploading profile picture:', err)
+      setError('Failed to upload profile picture. Please try again.')
+      setProfilePicture(null)
+      setProfilePicturePreview(null)
+    } finally {
+      setUploadingPicture(false)
+    }
+  }
+
+  const removeProfilePicture = () => {
+    setProfilePicture(null)
+    setProfilePicturePreview(null)
+  }
+
   const handleSubmit = async (e) => {
     e.preventDefault()
     setLoading(true)
@@ -266,6 +385,14 @@ const ProfilePage = () => {
       setSuccess('Profile updated successfully!')
       // Clear error on success
       setError('')
+      
+      // Refresh profile data to get updated profile image
+      const userResponse = await api.get(`/api/users/${user.userId}`)
+      const freshUserData = userResponse.data.data?.user
+      if (freshUserData?.profileImage) {
+        setCurrentProfileImage(freshUserData.profileImage)
+      }
+      dispatch(setProfile(freshUserData))
     } catch (err) {
       const errorResponse = err.response?.data?.error
       const errorMessage = typeof errorResponse === 'string'
@@ -306,6 +433,74 @@ const ProfilePage = () => {
               {typeof success === 'string' ? success : success?.message || 'Success'}
             </div>
           )}
+
+          {/* Profile Picture Section */}
+          <div className="mb-6 pb-6 border-b border-gray-200">
+            <label className="block text-sm font-medium text-gray-700 mb-4">
+              Profile Picture
+            </label>
+            <div className="flex items-center space-x-4">
+              <div className="relative">
+                {profilePicturePreview ? (
+                  <div className="relative">
+                    <img
+                      src={profilePicturePreview}
+                      alt="Profile preview"
+                      className="w-24 h-24 rounded-full object-cover border-2 border-gray-300"
+                    />
+                    <button
+                      type="button"
+                      onClick={removeProfilePicture}
+                      className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  </div>
+                ) : currentProfileImage ? (
+                  <img
+                    src={`${import.meta.env.VITE_API_GATEWAY_URL || 'http://localhost:8080'}${currentProfileImage}`}
+                    alt="Profile"
+                    className="w-24 h-24 rounded-full object-cover border-2 border-gray-300"
+                    onError={(e) => {
+                      e.target.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"%3E%3Cpath fill="%23999" d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/%3E%3C/svg%3E'
+                    }}
+                  />
+                ) : (
+                  <div className="w-24 h-24 rounded-full bg-gray-200 flex items-center justify-center border-2 border-dashed border-gray-300">
+                    <Camera className="w-8 h-8 text-gray-400" />
+                  </div>
+                )}
+              </div>
+              <div className="flex-1">
+                <label
+                  htmlFor="profilePicture"
+                  className="cursor-pointer inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {uploadingPicture ? (
+                    <>
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-gray-600 mr-2"></div>
+                      Uploading...
+                    </>
+                  ) : profilePicturePreview ? (
+                    'Change Picture'
+                  ) : (
+                    'Upload Picture'
+                  )}
+                </label>
+                <input
+                  id="profilePicture"
+                  type="file"
+                  accept="image/jpeg,image/jpg,image/png,image/gif,image/webp"
+                  onChange={handleProfilePictureChange}
+                  className="hidden"
+                  disabled={uploadingPicture || loading}
+                />
+                <p className="text-xs text-gray-500 mt-1">
+                  JPG, PNG, GIF, or WebP (max 5MB)
+                </p>
+              </div>
+            </div>
+          </div>
 
           <div className="grid md:grid-cols-2 gap-6">
             <div>
@@ -755,6 +950,58 @@ const ProfilePage = () => {
             </div>
           )}
         </div>
+
+        {/* Delete Profile Section */}
+        <div className="card mt-8 border-2 border-red-200">
+          <div className="mb-4">
+            <h3 className="text-xl font-semibold text-red-700 mb-2">Danger Zone</h3>
+            <p className="text-sm text-gray-600 mb-4">
+              Once you delete your profile, you will not be able to recover it. 
+              However, your bookings and reviews will be preserved for record-keeping purposes.
+            </p>
+          </div>
+          <button
+            onClick={handleDeleteProfile}
+            className="btn-primary bg-red-600 hover:bg-red-700 text-white flex items-center space-x-2"
+          >
+            <Trash2 className="w-4 h-4" />
+            <span>Delete My Profile</span>
+          </button>
+        </div>
+
+        {/* Delete Profile Confirmation Dialog */}
+        {showDeleteProfileConfirm && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
+              <h3 className="text-lg font-semibold mb-4 text-red-700">Delete Profile</h3>
+              <p className="text-gray-600 mb-4">
+                Are you sure you want to delete your profile? This action cannot be undone.
+              </p>
+              <div className="bg-yellow-50 border border-yellow-200 rounded p-3 mb-4">
+                <p className="text-sm text-yellow-800">
+                  <strong>Note:</strong> Your bookings, reviews, and billing history will be preserved for record-keeping, 
+                  but you will no longer be able to access your account or make new bookings.
+                </p>
+              </div>
+              <div className="flex justify-end space-x-3">
+                <button
+                  onClick={cancelDeleteProfile}
+                  disabled={deleteProfileLoading}
+                  className="btn-secondary disabled:opacity-50"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={confirmDeleteProfile}
+                  disabled={deleteProfileLoading}
+                  className="btn-primary bg-red-600 hover:bg-red-700 disabled:opacity-50"
+                >
+                  {deleteProfileLoading ? 'Deleting...' : 'Yes, Delete My Profile'}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   )

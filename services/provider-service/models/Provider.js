@@ -42,6 +42,10 @@ const providerSchema = new mongoose.Schema({
     state: String,
     zipCode: String
   },
+  profileImage: {
+    type: String,
+    default: null
+  },
   listings: [{
     listingId: {
       type: String,

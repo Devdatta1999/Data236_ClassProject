@@ -22,7 +22,8 @@ const registerProvider = asyncHandler(async (req, res) => {
     email,
     password,
     phoneNumber,
-    address
+    address,
+    profileImage
   } = req.body;
 
   if (!providerId || !providerName || !email || !password || !phoneNumber) {
@@ -120,7 +121,8 @@ const registerProvider = asyncHandler(async (req, res) => {
     email: email.toLowerCase(),
     password, // Will be hashed by pre-save hook
     phoneNumber,
-    address
+    address,
+    profileImage: profileImage || null
   });
   
   logger.info('Saving provider to database...');
@@ -265,6 +267,66 @@ const getProvider = asyncHandler(async (req, res) => {
 
   res.json({
     success: true,
+    data: { provider: provider.toSafeObject() }
+  });
+});
+
+/**
+ * Update provider profile
+ */
+const updateProvider = asyncHandler(async (req, res) => {
+  const { providerId } = req.user; // Get from authenticated user
+  const { providerName, email, phoneNumber, address, profileImage } = req.body;
+
+  if (!providerId) {
+    throw new ValidationError('Provider ID not found in token');
+  }
+
+  const provider = await Provider.findOne({ providerId });
+  if (!provider) {
+    throw new NotFoundError('Provider');
+  }
+
+  // Validate email if provided
+  if (email) {
+    validateEmail(email);
+    // Check if email is already taken by another provider
+    const existingProvider = await Provider.findOne({ 
+      email: email.toLowerCase(), 
+      providerId: { $ne: providerId } 
+    });
+    if (existingProvider) {
+      throw new ConflictError('Email is already in use by another provider');
+    }
+    provider.email = email.toLowerCase();
+  }
+
+  // Validate phone number if provided
+  if (phoneNumber) {
+    validatePhoneNumber(phoneNumber);
+    provider.phoneNumber = phoneNumber;
+  }
+
+  // Update other fields
+  if (providerName) {
+    provider.providerName = providerName;
+  }
+
+  if (address) {
+    provider.address = { ...provider.address, ...address };
+  }
+
+  if (profileImage !== undefined) {
+    provider.profileImage = profileImage;
+  }
+
+  await provider.save();
+
+  logger.info(`Provider profile updated: ${providerId}`);
+
+  res.json({
+    success: true,
+    message: 'Provider profile updated successfully',
     data: { provider: provider.toSafeObject() }
   });
 });
@@ -524,6 +586,7 @@ module.exports = {
   submitListing,
   getProvider,
   getMyProvider,
+  updateProvider,
   getProviderAnalytics,
   getMyListings,
   deleteMyListing,

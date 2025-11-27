@@ -6,12 +6,13 @@
 
 const Booking = require('../models/Booking');
 const { NotFoundError, ValidationError, asyncHandler } = require('../../../shared/utils/errors');
-const { getCache, setCache, deleteCache } = require('../../../shared/config/redis');
+const { getCache, setCache, deleteCache, deleteCachePattern } = require('../../../shared/config/redis');
 const { mongoose, waitForMongoDBReady } = require('../../../shared/config/database');
 const logger = require('../../../shared/utils/logger');
 const axios = require('axios');
 
 const LISTING_SERVICE_URL = process.env.LISTING_SERVICE_URL || 'http://localhost:3002';
+const PROVIDER_SERVICE_URL = process.env.PROVIDER_SERVICE_URL || 'http://localhost:3005';
 
 /**
  * Get booking by ID
@@ -68,28 +69,79 @@ const updateBooking = asyncHandler(async (req, res) => {
 });
 
 /**
- * Get user bookings
+ * Get user bookings with listing and provider details
  */
 const getUserBookings = asyncHandler(async (req, res) => {
   const { userId } = req.params;
-  const { status } = req.query;
+  const { status, billingId } = req.query;
 
-  const cacheKey = `user:${userId}:bookings:${status || 'all'}`;
-  let bookings = await getCache(cacheKey);
+  // Create cache key that includes all query params
+  const cacheKey = `user:${userId}:bookings:${status || 'all'}:${billingId || 'all'}`;
+  let bookingsWithDetails = await getCache(cacheKey);
 
-  if (!bookings) {
+  if (!bookingsWithDetails) {
+    // Fetch bookings from database
     const query = { userId };
     if (status) {
       query.status = status;
     }
-    bookings = await Booking.find(query).sort({ bookingDate: -1 });
-    await setCache(cacheKey, bookings, 900);
+    if (billingId) {
+      query.billingId = billingId;
+    }
+    const bookings = await Booking.find(query).sort({ bookingDate: -1 });
+    
+    // Fetch listing and provider details for all bookings in parallel
+    const enrichedBookings = await Promise.all(
+      bookings.map(async (booking) => {
+        const bookingObj = booking.toObject();
+        let listing = null;
+        let provider = null;
+
+        try {
+          // Fetch listing details
+          const listingTypeLower = booking.listingType.toLowerCase() + 's';
+          const listingResponse = await axios.get(
+            `${LISTING_SERVICE_URL}/api/listings/${listingTypeLower}/${booking.listingId}`,
+            { timeout: 5000 }
+          );
+          listing = listingResponse.data.data?.[listingTypeLower.slice(0, -1)];
+
+          // Fetch provider details if listing has providerId
+          if (listing?.providerId) {
+            try {
+              const providerResponse = await axios.get(
+                `${PROVIDER_SERVICE_URL}/api/providers/${listing.providerId}`,
+                { timeout: 5000 }
+              );
+              provider = providerResponse.data.data?.provider;
+            } catch (providerErr) {
+              logger.warn(`Error fetching provider ${listing.providerId} for booking ${booking.bookingId}:`, providerErr.message);
+              // Continue without provider details
+            }
+          }
+        } catch (listingErr) {
+          logger.warn(`Error fetching listing ${booking.listingId} for booking ${booking.bookingId}:`, listingErr.message);
+          // Continue without listing details - booking will still be returned
+        }
+
+        return {
+          ...bookingObj,
+          listing,
+          provider
+        };
+      })
+    );
+
+    bookingsWithDetails = enrichedBookings;
+    
+    // Cache the enriched bookings for 15 minutes (shorter than bookings cache since listings may change)
+    await setCache(cacheKey, bookingsWithDetails, 900);
   }
 
   res.json({
     success: true,
-    count: bookings.length,
-    data: { bookings }
+    count: bookingsWithDetails.length,
+    data: { bookings: bookingsWithDetails }
   });
 });
 
@@ -599,11 +651,107 @@ const createBooking = asyncHandler(async (req, res) => {
   }
 });
 
+/**
+ * Cancel booking (DELETE endpoint)
+ * Sets booking status to 'Cancelled'
+ * Availability will be automatically recalculated since cancelled bookings are excluded from availability checks
+ */
+const cancelBooking = asyncHandler(async (req, res) => {
+  const { bookingId } = req.params;
+  const userId = req.user?.userId; // From authentication middleware
+
+  if (!userId) {
+    throw new ValidationError('User authentication required');
+  }
+
+  const booking = await Booking.findOne({ bookingId });
+  if (!booking) {
+    throw new NotFoundError('Booking');
+  }
+
+  // Verify user owns this booking
+  if (booking.userId !== userId) {
+    throw new ValidationError('You can only cancel your own bookings');
+  }
+
+  // Check if already cancelled
+  if (booking.status === 'Cancelled') {
+    throw new ValidationError('Booking is already cancelled');
+  }
+
+  // Check if booking is in a state that can be cancelled
+  if (booking.status === 'Failed') {
+    throw new ValidationError('Cannot cancel a failed booking');
+  }
+
+  // If booking has a billingId, cancel all bookings with the same billingId
+  // This ensures that when a user cancels one booking from a multi-room hotel reservation,
+  // all bookings in that reservation (same billing) are cancelled together
+  let cancelledBookings = [];
+  
+  if (booking.billingId) {
+    // Find all bookings with the same billingId that belong to the same user
+    const bookingsToCancel = await Booking.find({
+      billingId: booking.billingId,
+      userId: userId,
+      status: { $nin: ['Cancelled', 'Failed'] } // Only cancel non-cancelled, non-failed bookings
+    });
+
+    if (bookingsToCancel.length === 0) {
+      throw new ValidationError('No bookings found to cancel');
+    }
+
+    // Cancel all bookings in the billing group
+    for (const bookingToCancel of bookingsToCancel) {
+      bookingToCancel.status = 'Cancelled';
+      bookingToCancel.updatedAt = new Date();
+      await bookingToCancel.save();
+      cancelledBookings.push(bookingToCancel.bookingId);
+      
+      // Invalidate individual booking cache
+      await deleteCache(`booking:${bookingToCancel.bookingId}`);
+    }
+
+    logger.info(`Cancelled ${cancelledBookings.length} booking(s) with billingId ${booking.billingId} by user ${userId}`, {
+      bookingIds: cancelledBookings,
+      billingId: booking.billingId
+    });
+  } else {
+    // Single booking without billingId - just cancel this one
+    booking.status = 'Cancelled';
+    booking.updatedAt = new Date();
+    await booking.save();
+    cancelledBookings.push(bookingId);
+    
+    // Invalidate individual booking cache
+    await deleteCache(`booking:${bookingId}`);
+    
+    logger.info(`Booking cancelled: ${bookingId} by user ${userId}`);
+  }
+
+  // Clear all user booking caches (all status variations)
+  await deleteCachePattern(`user:${userId}:bookings:*`);
+  await deleteCachePattern(`user:${booking.userId}:bookings:*`);
+
+  res.json({
+    success: true,
+    message: cancelledBookings.length > 1 
+      ? `Successfully cancelled ${cancelledBookings.length} booking(s)`
+      : 'Booking cancelled successfully',
+    data: { 
+      cancelledBookings,
+      billingId: booking.billingId,
+      count: cancelledBookings.length
+    }
+  });
+});
+
 module.exports = {
   getBooking,
   updateBooking,
   getUserBookings,
   markBookingsAsFailed,
   expirePendingBookings,
-  createBooking
+  createBooking,
+  cancelBooking
 };
