@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Plane, Hotel, Car, Trash2, AlertCircle, Star, MapPin, Calendar, Users } from 'lucide-react'
+import { Plane, Hotel, Car, Trash2, AlertCircle, Star, MapPin, Calendar, Users, Clock, MapPin as MapIcon } from 'lucide-react'
 import api from '../../services/apiService'
 import Notification from '../common/Notification'
 
@@ -99,11 +99,24 @@ const MyListingsTab = ({ onRefresh }) => {
 
   const getListingDetails = (listing) => {
     if (listing.listingType === 'Flight') {
-      return [
-        `Class: ${listing.flightClass}`,
-        `Price: $${listing.ticketPrice}`,
-        `Seats: ${listing.availableSeats}/${listing.totalSeats}`
-      ]
+      // For new flights with seatTypes, show seat type information
+      if (listing.seatTypes && listing.seatTypes.length > 0) {
+        const totalSeats = listing.seatTypes.reduce((sum, st) => sum + (st.totalSeats || 0), 0)
+        const seatInfo = listing.seatTypes.map(st => `${st.type}: ${st.totalSeats} seats @ $${st.ticketPrice || 0}`).join(', ')
+        return [
+          `Total Seats: ${totalSeats}`,
+          `Seat Types: ${seatInfo}`,
+          listing.departureTime && listing.arrivalTime ? `${listing.departureTime} → ${listing.arrivalTime}` : '',
+          listing.operatingDays && listing.operatingDays.length > 0 ? `Operating: ${listing.operatingDays.join(', ')}` : ''
+        ].filter(Boolean)
+      } else {
+        // Legacy format
+        return [
+          `Class: ${listing.flightClass || 'N/A'}`,
+          `Price: $${listing.ticketPrice || 0}`,
+          `Seats: ${listing.availableSeats || 0}/${listing.totalSeats || 0}`
+        ]
+      }
     } else if (listing.listingType === 'Hotel') {
       return [
         `${listing.city}, ${listing.state}`,
@@ -255,11 +268,17 @@ const MyListingsTab = ({ onRefresh }) => {
                   <div className="flex-1">
                     <div className="flex items-center space-x-3 mb-3">
                       <h3 className="text-xl font-semibold">
-                        {getListingTitle(listing)}
+                        {listing.listingType === 'Flight' 
+                          ? `${listing.departureAirport || 'N/A'} → ${listing.arrivalAirport || 'N/A'}`
+                          : getListingTitle(listing)
+                        }
                       </h3>
                       <span className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(listing.status)}`}>
                         {listing.status}
                       </span>
+                      {listing.listingType === 'Flight' && listing.flightId && (
+                        <span className="text-xs text-gray-500">ID: {listing.flightId}</span>
+                      )}
                     </div>
                     
                     {isHotel ? (
@@ -335,13 +354,93 @@ const MyListingsTab = ({ onRefresh }) => {
                           </div>
                         )}
                       </>
+                    ) : listing.listingType === 'Flight' ? (
+                      <>
+                        {/* Flight-specific details */}
+                        <div className="space-y-3 mb-4">
+                          <div className="flex items-center space-x-2 text-gray-600">
+                            <Calendar className="w-4 h-4" />
+                            <span className="font-semibold text-gray-900">{listing.departureAirport} → {listing.arrivalAirport}</span>
+                          </div>
+                          
+                          {listing.departureTime && listing.arrivalTime && (
+                            <div className="flex items-center space-x-4 text-sm text-gray-600">
+                              <div className="flex items-center space-x-2">
+                                <Clock className="w-4 h-4 text-blue-500" />
+                                <span><span className="font-medium">Departure:</span> {listing.departureTime}</span>
+                              </div>
+                              <span className="text-gray-300">→</span>
+                              <div className="flex items-center space-x-2">
+                                <Clock className="w-4 h-4 text-green-500" />
+                                <span><span className="font-medium">Arrival:</span> {listing.arrivalTime}</span>
+                              </div>
+                              {listing.duration && (
+                                <span className="text-gray-500 bg-gray-100 px-2 py-1 rounded">
+                                  {Math.floor(listing.duration / 60)}h {listing.duration % 60}m
+                                </span>
+                              )}
+                            </div>
+                          )}
+                          
+                          {listing.operatingDays && listing.operatingDays.length > 0 && (
+                            <div className="flex flex-wrap gap-2">
+                              <span className="text-xs font-medium text-gray-600">Operating Days:</span>
+                              {listing.operatingDays.map((day, idx) => (
+                                <span key={idx} className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">
+                                  {day}
+                                </span>
+                              ))}
+                            </div>
+                          )}
+                          
+                          {(listing.availableFrom || listing.availableTo) && (
+                            <div className="flex items-center space-x-2 text-sm text-gray-600">
+                              <Calendar className="w-4 h-4" />
+                              <span>
+                                Available from {listing.availableFrom ? new Date(listing.availableFrom).toLocaleDateString() : 'N/A'} 
+                                {' '}to {listing.availableTo ? new Date(listing.availableTo).toLocaleDateString() : 'N/A'}
+                              </span>
+                            </div>
+                          )}
+                        </div>
+
+                        {/* Seat Types */}
+                        {listing.seatTypes && listing.seatTypes.length > 0 && (
+                          <div className="mt-4 pt-4 border-t border-gray-200">
+                            <h4 className="text-sm font-semibold text-gray-700 mb-3">Seat Types & Pricing</h4>
+                            <div className="grid md:grid-cols-3 gap-4">
+                              {listing.seatTypes.map((seatType, idx) => (
+                                <div key={idx} className="bg-gray-50 rounded-lg p-3">
+                                  <div className="flex justify-between items-start mb-2">
+                                    <span className="font-medium text-gray-900">{seatType.type}</span>
+                                    <span className="text-primary-600 font-semibold">${seatType.ticketPrice || 0}</span>
+                                  </div>
+                                  <div className="text-sm text-gray-600">
+                                    Total Seats: <span className="font-semibold">{seatType.totalSeats || 0}</span>
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                            <div className="mt-3 text-sm text-gray-600">
+                              Total Seats: <span className="font-semibold">
+                                {listing.seatTypes.reduce((sum, st) => sum + (st.totalSeats || 0), 0)}
+                              </span>
+                            </div>
+                          </div>
+                        )}
+                        
+                        {/* Legacy format fallback */}
+                        {(!listing.seatTypes || listing.seatTypes.length === 0) && (
+                          <div className="text-sm text-gray-600 space-y-1">
+                            {getListingDetails(listing).map((detail, idx) => (
+                              <p key={idx}>{detail}</p>
+                            ))}
+                          </div>
+                        )}
+                      </>
                     ) : (
                       <>
-                        {/* Non-hotel listing details */}
-                        <p className="text-gray-600 mb-2">Type: {listing.listingType}</p>
-                        <p className="text-sm text-gray-500 mb-2">
-                          ID: {listing.listingId}
-                        </p>
+                        {/* Car listing details */}
                         <div className="text-sm text-gray-600 space-y-1">
                           {getListingDetails(listing).map((detail, idx) => (
                             <p key={idx}>{detail}</p>

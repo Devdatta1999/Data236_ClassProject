@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
 import { setCheckoutId, setLoading, setError } from '../../store/slices/cartSlice'
-import { Trash2, ArrowRight, Calendar } from 'lucide-react'
+import { Trash2, ArrowRight, Calendar, MapPin } from 'lucide-react'
 import { removeFromCart, updateQuantity } from '../../store/slices/cartSlice'
 import { format } from 'date-fns'
 import Notification from '../../components/common/Notification'
@@ -78,13 +78,13 @@ const CheckoutPage = () => {
           quantity: item.quantity,
         }
         
-        // Add dates if they exist (for hotels and cars)
+        // Add dates if they exist (for hotels, cars, and flights)
         if (item.checkInDate) cartItem.checkInDate = item.checkInDate
         if (item.checkOutDate) cartItem.checkOutDate = item.checkOutDate
         if (item.pickupDate) cartItem.pickupDate = item.pickupDate
         if (item.returnDate) cartItem.returnDate = item.returnDate
         if (item.travelDate) cartItem.travelDate = item.travelDate
-        if (item.roomType) cartItem.roomType = item.roomType // For hotels
+        if (item.roomType) cartItem.roomType = item.roomType // For hotels (also used for flight seat types)
         
         return cartItem
       })
@@ -138,6 +138,10 @@ const CheckoutPage = () => {
         ? Math.ceil((new Date(item.checkOutDate) - new Date(item.checkInDate)) / (1000 * 60 * 60 * 24)) || 1
         : 1)
       return sum + (price * nights * item.quantity)
+    } else if (item.listingType === 'Flight') {
+      // For flights, use stored price or calculate from seat type
+      const price = item.price || (item.roomType && item.listing?.seatTypes?.find(st => st.type === item.roomType)?.ticketPrice) || 0
+      return sum + (price * item.quantity)
     } else {
       const price = item.listing?.ticketPrice || item.listing?.pricePerNight || item.listing?.dailyRentalPrice || 0
       return sum + (price * item.quantity)
@@ -279,7 +283,8 @@ const CheckoutPage = () => {
                       totalPrice = price * item.numberOfDays * item.quantity
                       priceLabel = `$${price.toFixed(2)}/day × ${item.numberOfDays} ${item.numberOfDays === 1 ? 'day' : 'days'}`
                     } else if (item.listingType === 'Flight') {
-                      price = listing?.ticketPrice || 0
+                      // For flights, use stored price or get from seat type
+                      price = item.price || (item.roomType && listing?.seatTypes?.find(st => st.type === item.roomType)?.ticketPrice) || 0
                       totalPrice = price * item.quantity
                       priceLabel = `$${price.toFixed(2)} each`
                     } else if (item.listingType === 'Hotel') {
@@ -304,8 +309,29 @@ const CheckoutPage = () => {
                             </h3>
                             <p className="text-sm text-gray-600 mb-2">
                               Type: {item.listingType}
-                              {item.roomType && ` - ${item.roomType} Room`}
+                              {item.roomType && item.listingType === 'Flight' && ` - ${item.roomType} Class`}
+                              {item.roomType && item.listingType === 'Hotel' && ` - ${item.roomType} Room`}
                             </p>
+                            {item.listingType === 'Flight' && (
+                              <>
+                                {listing?.departureAirport && listing?.arrivalAirport && (
+                                  <div className="flex items-center space-x-2 mb-2 text-sm text-gray-600">
+                                    <MapPin className="w-4 h-4" />
+                                    <span>
+                                      {listing.departureAirport} → {listing.arrivalAirport}
+                                    </span>
+                                  </div>
+                                )}
+                                {item.travelDate && (
+                                  <div className="flex items-center space-x-2 mb-2 text-sm text-gray-600">
+                                    <Calendar className="w-4 h-4" />
+                                    <span>
+                                      Travel Date: {format(new Date(item.travelDate), 'MMM dd, yyyy')}
+                                    </span>
+                                  </div>
+                                )}
+                              </>
+                            )}
                             {item.listingType === 'Hotel' && item.checkInDate && item.checkOutDate && (
                               <div className="flex items-center space-x-2 mb-2 text-sm text-gray-600">
                                 <Calendar className="w-4 h-4" />

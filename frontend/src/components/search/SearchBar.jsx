@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Calendar, MapPin, Users, Search, Plus, Minus } from 'lucide-react'
+import { US_AIRPORTS } from '../../utils/usAirports'
 
 const SearchBar = ({ type, onSearch }) => {
   const [params, setParams] = useState({
@@ -7,6 +8,9 @@ const SearchBar = ({ type, onSearch }) => {
     departureAirport: '',
     arrivalAirport: '',
     departureDate: '',
+    returnDate: '',
+    tripType: 'one-way', // 'one-way' or 'round-trip'
+    numberOfPassengers: 1,
     // Hotels
     city: '',
     state: '',
@@ -32,6 +36,32 @@ const SearchBar = ({ type, onSearch }) => {
   if (type === 'flights') {
     return (
       <form onSubmit={handleSubmit} className="space-y-4">
+        {/* Trip Type Toggle */}
+        <div className="flex space-x-2 mb-4">
+          <button
+            type="button"
+            onClick={() => setParams({ ...params, tripType: 'one-way', returnDate: '' })}
+            className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+              params.tripType === 'one-way'
+                ? 'bg-primary-600 text-white'
+                : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+            }`}
+          >
+            One-way
+          </button>
+          <button
+            type="button"
+            onClick={() => setParams({ ...params, tripType: 'round-trip' })}
+            className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+              params.tripType === 'round-trip'
+                ? 'bg-primary-600 text-white'
+                : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+            }`}
+          >
+            Round-trip
+          </button>
+        </div>
+
         <div className="grid md:grid-cols-4 gap-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -39,14 +69,19 @@ const SearchBar = ({ type, onSearch }) => {
             </label>
             <div className="relative">
               <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-              <input
-                type="text"
-                placeholder="Departure airport"
+              <select
                 value={params.departureAirport}
                 onChange={(e) => setParams({ ...params, departureAirport: e.target.value })}
-                className="input-field pl-10"
+                className="input-field pl-10 text-gray-900"
                 required
-              />
+              >
+                <option value="">Select Departure Airport</option>
+                {US_AIRPORTS.map((airport) => (
+                  <option key={airport.code} value={airport.code}>
+                    {airport.code} - {airport.city}
+                  </option>
+                ))}
+              </select>
             </div>
           </div>
           <div>
@@ -55,14 +90,19 @@ const SearchBar = ({ type, onSearch }) => {
             </label>
             <div className="relative">
               <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-              <input
-                type="text"
-                placeholder="Arrival airport"
+              <select
                 value={params.arrivalAirport}
                 onChange={(e) => setParams({ ...params, arrivalAirport: e.target.value })}
-                className="input-field pl-10"
+                className="input-field pl-10 text-gray-900"
                 required
-              />
+              >
+                <option value="">Select Arrival Airport</option>
+                {US_AIRPORTS.map((airport) => (
+                  <option key={airport.code} value={airport.code}>
+                    {airport.code} - {airport.city}
+                  </option>
+                ))}
+              </select>
             </div>
           </div>
           <div>
@@ -75,7 +115,7 @@ const SearchBar = ({ type, onSearch }) => {
                 type="date"
                 value={params.departureDate}
                 onChange={(e) => setParams({ ...params, departureDate: e.target.value })}
-                className="input-field pl-10"
+                className="input-field pl-10 text-gray-900"
                 required
                 min={new Date().toISOString().split('T')[0]}
               />
@@ -83,21 +123,58 @@ const SearchBar = ({ type, onSearch }) => {
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Travelers
+              {params.tripType === 'round-trip' ? 'Return Date' : 'Travelers'}
             </label>
-            <div className="relative">
-              <Users className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-              <input
-                type="number"
-                min="1"
-                value={params.quantity}
-                onChange={(e) => setParams({ ...params, quantity: parseInt(e.target.value) })}
-                className="input-field pl-10"
-                required
-              />
-            </div>
+            {params.tripType === 'round-trip' ? (
+              <div className="relative">
+                <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                <input
+                  type="date"
+                  value={params.returnDate}
+                  onChange={(e) => setParams({ ...params, returnDate: e.target.value })}
+                  className="input-field pl-10 text-gray-900"
+                  required
+                  min={params.departureDate || new Date().toISOString().split('T')[0]}
+                />
+              </div>
+            ) : (
+              <div className="relative">
+                <Users className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                <input
+                  type="number"
+                  min="1"
+                  value={params.numberOfPassengers}
+                  onChange={(e) => setParams({ ...params, numberOfPassengers: parseInt(e.target.value) || 1, quantity: parseInt(e.target.value) || 1 })}
+                  className="input-field pl-10 text-gray-900"
+                  required
+                />
+              </div>
+            )}
           </div>
         </div>
+        {params.tripType === 'round-trip' && (
+          <div className="grid md:grid-cols-4 gap-4">
+            <div></div>
+            <div></div>
+            <div></div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Travelers
+              </label>
+              <div className="relative">
+                <Users className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                <input
+                  type="number"
+                  min="1"
+                  value={params.numberOfPassengers}
+                  onChange={(e) => setParams({ ...params, numberOfPassengers: parseInt(e.target.value) || 1, quantity: parseInt(e.target.value) || 1 })}
+                  className="input-field pl-10 text-gray-900"
+                  required
+                />
+              </div>
+            </div>
+          </div>
+        )}
         <button type="submit" className="btn-primary w-full md:w-auto flex items-center justify-center space-x-2">
           <Search className="w-5 h-5" />
           <span>Search Flights</span>

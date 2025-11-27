@@ -2,6 +2,7 @@ import { useState, useEffect, useRef, useCallback, useMemo } from 'react'
 import api from '../../services/apiService'
 import { Plane, Hotel, Car, ChevronDown, Plus, X } from 'lucide-react'
 import { US_STATES } from '../../utils/usStates'
+import { US_AIRPORTS } from '../../utils/usAirports'
 import Notification from '../common/Notification'
 
 const API_BASE_URL = import.meta.env.VITE_API_GATEWAY_URL || 'http://localhost:8080'
@@ -25,6 +26,11 @@ const CreateListingTab = () => {
     { type: 'Standard', availableCount: 0, pricePerNight: 0 },
     { type: 'Suite', availableCount: 0, pricePerNight: 0 },
     { type: 'Deluxe', availableCount: 0, pricePerNight: 0 }
+  ])
+  const [flightSeatTypes, setFlightSeatTypes] = useState([
+    { type: 'Economy', totalSeats: 0, ticketPrice: 0 },
+    { type: 'Business', totalSeats: 0, ticketPrice: 0 },
+    { type: 'First', totalSeats: 0, ticketPrice: 0 }
   ])
   const [selectedAmenities, setSelectedAmenities] = useState([])
   const [customAmenity, setCustomAmenity] = useState('')
@@ -141,16 +147,62 @@ const CreateListingTab = () => {
         if (!listingData.providerId) {
           throw new Error('Please select a provider from the dropdown')
         }
+        
+        // Validate operating days
+        if (!listingData.operatingDays || listingData.operatingDays.length === 0) {
+          setNotification({ type: 'error', message: 'Please select at least one operating day' })
+          setLoading(false)
+          return
+        }
+        
+        // Calculate duration from departure and arrival times if not already set
+        if (!listingData.duration && listingData.departureTime && listingData.arrivalTime) {
+          const [depHours, depMins] = listingData.departureTime.split(':').map(Number)
+          const [arrHours, arrMins] = listingData.arrivalTime.split(':').map(Number)
+          const depMinutes = depHours * 60 + depMins
+          const arrMinutes = arrHours * 60 + arrMins
+          listingData.duration = arrMinutes >= depMinutes 
+            ? arrMinutes - depMinutes 
+            : (24 * 60) - depMinutes + arrMinutes
+        }
+        
+        listingData.seatTypes = flightSeatTypes.filter(st => st.totalSeats > 0).map(st => ({
+          type: st.type,
+          ticketPrice: st.ticketPrice,
+          totalSeats: st.totalSeats,
+          availableSeats: st.totalSeats // Backend will use this as initial capacity
+        }))
+        
+        // Validate flight data
+        const totalSeats = flightSeatTypes.reduce((sum, st) => sum + (st.totalSeats || 0), 0)
+        if (totalSeats === 0) {
+          setNotification({ type: 'error', message: 'Please add at least one seat type with seats' })
+          setLoading(false)
+          return
+        }
+        
+        if (!listingData.availableFrom || !listingData.availableTo) {
+          setNotification({ type: 'error', message: 'Please select available from and to dates' })
+          setLoading(false)
+          return
+        }
+        
+        if (!listingData.departureTime || !listingData.arrivalTime) {
+          setNotification({ type: 'error', message: 'Please select departure and arrival times' })
+          setLoading(false)
+          return
+        }
+        
         // Ensure flightId is uppercase
         if (listingData.flightId) {
           listingData.flightId = listingData.flightId.toUpperCase()
         }
         // Ensure dates are in correct format
-        if (listingData.departureDateTime && typeof listingData.departureDateTime === 'string') {
-          listingData.departureDateTime = new Date(listingData.departureDateTime).toISOString()
+        if (listingData.availableFrom && typeof listingData.availableFrom === 'string') {
+          listingData.availableFrom = new Date(listingData.availableFrom).toISOString()
         }
-        if (listingData.arrivalDateTime && typeof listingData.arrivalDateTime === 'string') {
-          listingData.arrivalDateTime = new Date(listingData.arrivalDateTime).toISOString()
+        if (listingData.availableTo && typeof listingData.availableTo === 'string') {
+          listingData.availableTo = new Date(listingData.availableTo).toISOString()
         }
         // Ensure airports are uppercase
         if (listingData.departureAirport) {
@@ -178,6 +230,13 @@ const CreateListingTab = () => {
         setSelectedAmenities([])
         setCustomAmenity('')
         setHotelImages([]) // Reset to empty array
+      }
+      if (listingType === 'Flight') {
+        setFlightSeatTypes([
+          { type: 'Economy', totalSeats: 0, ticketPrice: 0 },
+          { type: 'Business', totalSeats: 0, ticketPrice: 0 },
+          { type: 'First', totalSeats: 0, ticketPrice: 0 }
+        ])
       }
     } catch (err) {
       console.error('Create listing error:', err)
@@ -354,83 +413,227 @@ const CreateListingTab = () => {
 
         <form onSubmit={handleSubmit} className="space-y-4">
           {listingType === 'Flight' && (
-            <>
-              <div className="grid md:grid-cols-2 gap-4">
-                {renderProviderAutocomplete("Provider Name (type to search)")}
-                <input
-                  type="text"
-                  placeholder="Provider ID (auto-filled when provider selected)"
-                  value={formData.providerId || ''}
-                  readOnly
-                  className="input-field bg-gray-50 cursor-not-allowed"
-                />
-                <input
-                  type="text"
-                  placeholder="Departure Airport"
-                  value={formData.departureAirport || ''}
-                  onChange={(e) => setFormData({ ...formData, departureAirport: e.target.value })}
-                  className="input-field"
-                  required
-                />
-                <input
-                  type="text"
-                  placeholder="Arrival Airport"
-                  value={formData.arrivalAirport || ''}
-                  onChange={(e) => setFormData({ ...formData, arrivalAirport: e.target.value })}
-                  className="input-field"
-                  required
-                />
-                <input
-                  type="datetime-local"
-                  placeholder="Departure Date/Time"
-                  value={formData.departureDateTime || ''}
-                  onChange={(e) => setFormData({ ...formData, departureDateTime: e.target.value })}
-                  className="input-field"
-                  required
-                />
-                <input
-                  type="datetime-local"
-                  placeholder="Arrival Date/Time"
-                  value={formData.arrivalDateTime || ''}
-                  onChange={(e) => setFormData({ ...formData, arrivalDateTime: e.target.value })}
-                  className="input-field"
-                  required
-                />
-                <input
-                  type="number"
-                  placeholder="Duration (minutes)"
-                  value={formData.duration || ''}
-                  onChange={(e) => setFormData({ ...formData, duration: parseInt(e.target.value) })}
-                  className="input-field"
-                  required
-                />
-                <select
-                  value={formData.flightClass || 'Economy'}
-                  onChange={(e) => setFormData({ ...formData, flightClass: e.target.value })}
-                  className="input-field"
-                >
-                  <option value="Economy">Economy</option>
-                  <option value="Business">Business</option>
-                  <option value="First">First</option>
-                </select>
-                <input
-                  type="number"
-                  placeholder="Ticket Price"
-                  value={formData.ticketPrice || ''}
-                  onChange={(e) => setFormData({ ...formData, ticketPrice: parseFloat(e.target.value) })}
-                  className="input-field"
-                  required
-                />
-                <input
-                  type="number"
-                  placeholder="Total Seats"
-                  value={formData.totalSeats || ''}
-                  onChange={(e) => setFormData({ ...formData, totalSeats: parseInt(e.target.value), availableSeats: parseInt(e.target.value) })}
-                  className="input-field"
-                  required
-                />
+            <div className="space-y-6">
+              {/* Basic Flight Information */}
+              <div>
+                <h3 className="text-lg font-semibold mb-4">Flight Information</h3>
+                <div className="grid md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Provider Name *</label>
+                    {renderProviderAutocomplete("Provider Name (type to search)")}
+                  </div>
+                  <input
+                    type="text"
+                    placeholder="Provider ID (auto-filled when provider selected)"
+                    value={formData.providerId || ''}
+                    readOnly
+                    className="input-field bg-gray-50 cursor-not-allowed"
+                  />
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Flight ID *</label>
+                    <input
+                      type="text"
+                      placeholder="e.g., AA123"
+                      value={formData.flightId || ''}
+                      onChange={(e) => setFormData({ ...formData, flightId: e.target.value.toUpperCase() })}
+                      className="input-field"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Departure Airport *</label>
+                    <select
+                      value={formData.departureAirport || ''}
+                      onChange={(e) => setFormData({ ...formData, departureAirport: e.target.value })}
+                      className="input-field"
+                      required
+                    >
+                      <option value="">Select Departure Airport</option>
+                      {US_AIRPORTS.map((airport) => (
+                        <option key={airport.code} value={airport.code}>
+                          {airport.code} - {airport.city}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Arrival Airport *</label>
+                    <select
+                      value={formData.arrivalAirport || ''}
+                      onChange={(e) => setFormData({ ...formData, arrivalAirport: e.target.value })}
+                      className="input-field"
+                      required
+                    >
+                      <option value="">Select Arrival Airport</option>
+                      {US_AIRPORTS.map((airport) => (
+                        <option key={airport.code} value={airport.code}>
+                          {airport.code} - {airport.city}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Departure Time *</label>
+                    <input
+                      type="time"
+                      value={formData.departureTime || ''}
+                      onChange={(e) => {
+                        const depTime = e.target.value
+                        setFormData({ ...formData, departureTime: depTime })
+                        // Auto-calculate duration if arrival time is set
+                        if (formData.arrivalTime && depTime) {
+                          const [depHours, depMins] = depTime.split(':').map(Number)
+                          const [arrHours, arrMins] = formData.arrivalTime.split(':').map(Number)
+                          const depMinutes = depHours * 60 + depMins
+                          const arrMinutes = arrHours * 60 + arrMins
+                          const duration = arrMinutes >= depMinutes 
+                            ? arrMinutes - depMinutes 
+                            : (24 * 60) - depMinutes + arrMinutes
+                          setFormData(prev => ({ ...prev, departureTime: depTime, duration }))
+                        }
+                      }}
+                      className="input-field"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Arrival Time *</label>
+                    <input
+                      type="time"
+                      value={formData.arrivalTime || ''}
+                      onChange={(e) => {
+                        const arrTime = e.target.value
+                        setFormData({ ...formData, arrivalTime: arrTime })
+                        // Auto-calculate duration if departure time is set
+                        if (formData.departureTime && arrTime) {
+                          const [depHours, depMins] = formData.departureTime.split(':').map(Number)
+                          const [arrHours, arrMins] = arrTime.split(':').map(Number)
+                          const depMinutes = depHours * 60 + depMins
+                          const arrMinutes = arrHours * 60 + arrMins
+                          const duration = arrMinutes >= depMinutes 
+                            ? arrMinutes - depMinutes 
+                            : (24 * 60) - depMinutes + arrMinutes
+                          setFormData(prev => ({ ...prev, arrivalTime: arrTime, duration }))
+                        }
+                      }}
+                      className="input-field"
+                      required
+                    />
+                  </div>
+                  <div className="md:col-span-2">
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Operating Days *</label>
+                    <div className="flex flex-wrap gap-3">
+                      {['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'].map((day) => (
+                        <label key={day} className="flex items-center space-x-2 cursor-pointer">
+                          <input
+                            type="checkbox"
+                            checked={formData.operatingDays?.includes(day) || false}
+                            onChange={(e) => {
+                              const currentDays = formData.operatingDays || []
+                              if (e.target.checked) {
+                                setFormData({ ...formData, operatingDays: [...currentDays, day] })
+                              } else {
+                                setFormData({ ...formData, operatingDays: currentDays.filter(d => d !== day) })
+                              }
+                            }}
+                            className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                          />
+                          <span className="text-sm text-gray-700">{day}</span>
+                        </label>
+                      ))}
+                    </div>
+                    {formData.operatingDays && formData.operatingDays.length === 0 && (
+                      <p className="text-red-500 text-xs mt-1">Please select at least one operating day</p>
+                    )}
+                  </div>
+                </div>
               </div>
-            </>
+
+              {/* Availability Dates */}
+              <div>
+                <h3 className="text-lg font-semibold mb-4">Availability Period</h3>
+                <div className="grid md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Available From *</label>
+                    <input
+                      type="date"
+                      value={formData.availableFrom || ''}
+                      onChange={(e) => setFormData({ ...formData, availableFrom: e.target.value })}
+                      className="input-field"
+                      required
+                      min={new Date().toISOString().split('T')[0]}
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Available To *</label>
+                    <input
+                      type="date"
+                      value={formData.availableTo || ''}
+                      onChange={(e) => setFormData({ ...formData, availableTo: e.target.value })}
+                      className="input-field"
+                      required
+                      min={formData.availableFrom || new Date().toISOString().split('T')[0]}
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Seat Types & Pricing */}
+              <div>
+                <h3 className="text-lg font-semibold mb-4">
+                  Seat Types & Pricing
+                  <span className="text-sm font-normal text-gray-500 ml-2">
+                    (Total Seats: {flightSeatTypes.reduce((sum, st) => sum + (st.totalSeats || 0), 0)})
+                  </span>
+                </h3>
+                <div className="space-y-4">
+                  {flightSeatTypes.map((seatType, index) => (
+                    <div key={index} className="grid md:grid-cols-3 gap-4 p-4 border border-gray-200 rounded-lg">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Seat Type</label>
+                        <input
+                          type="text"
+                          value={seatType.type}
+                          readOnly
+                          className="input-field bg-gray-50 cursor-not-allowed"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Total Seats</label>
+                        <input
+                          type="number"
+                          placeholder="0"
+                          value={seatType.totalSeats || ''}
+                          onChange={(e) => {
+                            const updated = [...flightSeatTypes]
+                            updated[index].totalSeats = parseInt(e.target.value) || 0
+                            setFlightSeatTypes(updated)
+                          }}
+                          className="input-field"
+                          min="0"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Ticket Price ($)</label>
+                        <input
+                          type="number"
+                          placeholder="0.00"
+                          value={seatType.ticketPrice || ''}
+                          onChange={(e) => {
+                            const updated = [...flightSeatTypes]
+                            updated[index].ticketPrice = parseFloat(e.target.value) || 0
+                            setFlightSeatTypes(updated)
+                          }}
+                          className="input-field"
+                          min="0"
+                          step="0.01"
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
           )}
 
           {listingType === 'Hotel' && (
@@ -792,7 +995,10 @@ const CreateListingTab = () => {
                   className="input-field"
                   required
                 />
-                {renderProviderAutocomplete("Provider Name (type to search)")}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Provider Name *</label>
+                  {renderProviderAutocomplete("Provider Name (type to search)")}
+                </div>
                 <select
                   value={formData.carType || ''}
                   onChange={(e) => setFormData({ ...formData, carType: e.target.value })}

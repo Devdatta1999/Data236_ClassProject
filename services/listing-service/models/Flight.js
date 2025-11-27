@@ -30,6 +30,29 @@ const reviewSchema = new mongoose.Schema({
   }
 }, { _id: false });
 
+const seatTypeSchema = new mongoose.Schema({
+  type: {
+    type: String,
+    enum: ['Economy', 'Business', 'First'],
+    required: true
+  },
+  ticketPrice: {
+    type: Number,
+    required: true,
+    min: 0
+  },
+  totalSeats: {
+    type: Number,
+    required: true,
+    min: 1
+  },
+  availableSeats: {
+    type: Number,
+    required: true,
+    min: 0
+  }
+}, { _id: false });
+
 const flightSchema = new mongoose.Schema({
   flightId: {
     type: String,
@@ -59,39 +82,89 @@ const flightSchema = new mongoose.Schema({
     uppercase: true,
     index: true
   },
-  departureDateTime: {
-    type: Date,
+  // Time-only fields (e.g., "14:30", "16:45")
+  departureTime: {
+    type: String,
     required: true,
-    index: true
+    validate: {
+      validator: function(v) {
+        // Validate time format HH:MM
+        return /^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/.test(v);
+      },
+      message: 'Departure time must be in HH:MM format (e.g., 14:30)'
+    }
   },
-  arrivalDateTime: {
-    type: Date,
-    required: true
+  arrivalTime: {
+    type: String,
+    required: true,
+    validate: {
+      validator: function(v) {
+        // Validate time format HH:MM
+        return /^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/.test(v);
+      },
+      message: 'Arrival time must be in HH:MM format (e.g., 16:45)'
+    }
+  },
+  // Days of the week the flight operates (e.g., ["Monday", "Wednesday", "Friday"])
+  operatingDays: {
+    type: [{
+      type: String,
+      enum: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
+    }],
+    required: true,
+    validate: {
+      validator: function(v) {
+        return v && v.length > 0;
+      },
+      message: 'At least one operating day must be specified'
+    }
   },
   duration: {
     type: Number,
     required: true // in minutes
   },
+  // Date range for when this flight is available
+  availableFrom: {
+    type: Date,
+    required: true,
+    index: true
+  },
+  availableTo: {
+    type: Date,
+    required: true,
+    index: true
+  },
+  // Legacy fields for backward compatibility (deprecated)
+  departureDateTime: {
+    type: Date,
+    default: null,
+    index: true
+  },
+  arrivalDateTime: {
+    type: Date,
+    default: null
+  },
+  // Multiple seat types with prices and availability (like hotel room types)
+  seatTypes: [seatTypeSchema],
+  // Legacy fields for backward compatibility (deprecated, use seatTypes instead)
   flightClass: {
     type: String,
     enum: ['Economy', 'Business', 'First'],
-    required: true,
-    index: true
+    default: null
   },
   ticketPrice: {
     type: Number,
-    required: true,
-    min: 0,
-    index: true
+    default: null,
+    min: 0
   },
   totalSeats: {
     type: Number,
-    required: true,
+    default: null,
     min: 1
   },
   availableSeats: {
     type: Number,
-    required: true,
+    default: null,
     min: 0
   },
   flightRating: {
@@ -120,9 +193,10 @@ const flightSchema = new mongoose.Schema({
 });
 
 // Indexes for search optimization
-flightSchema.index({ departureAirport: 1, arrivalAirport: 1, departureDateTime: 1 });
-flightSchema.index({ ticketPrice: 1, flightClass: 1 });
-flightSchema.index({ status: 1, departureDateTime: 1 });
+flightSchema.index({ departureAirport: 1, arrivalAirport: 1, status: 1 });
+flightSchema.index({ status: 1, availableFrom: 1, availableTo: 1 });
+flightSchema.index({ operatingDays: 1, status: 1 });
+flightSchema.index({ departureAirport: 1, arrivalAirport: 1, operatingDays: 1, status: 1 });
 
 // Method to update rating when review is added
 flightSchema.methods.updateRating = function() {

@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { removePendingListing } from '../../store/slices/adminSlice'
 import api from '../../services/apiService'
-import { CheckCircle, XCircle, Plane, Hotel, Car, Star, MapPin, Calendar } from 'lucide-react'
+import { CheckCircle, XCircle, Plane, Hotel, Car, Star, MapPin, Calendar, Clock } from 'lucide-react'
 import Notification from '../common/Notification'
 
 const API_BASE_URL = import.meta.env.VITE_API_GATEWAY_URL || 'http://localhost:8080'
@@ -106,17 +106,31 @@ const PendingRequestsTab = ({ onRefresh }) => {
                 <div className="flex-1">
                   <div className="flex items-center space-x-3 mb-3">
                     <h3 className="text-xl font-semibold">
-                      {listing.flightId || listing.hotelName || `${listing.model} (${listing.year})`}
+                      {listing.type === 'Flight' 
+                        ? `${listing.departureAirport || 'N/A'} → ${listing.arrivalAirport || 'N/A'}`
+                        : listing.flightId || listing.hotelName || `${listing.model} (${listing.year})`
+                      }
                     </h3>
                     <span className="px-3 py-1 bg-yellow-100 text-yellow-800 rounded-full text-xs font-medium">
                       Pending
                     </span>
                   </div>
                   
-                  <p className="text-sm text-gray-500 mb-3">
-                    Provider: <span className="font-medium text-gray-700">{listing.providerName || 'N/A'}</span> | 
-                    ID: <span className="font-medium text-gray-700">{listingId}</span>
-                  </p>
+                  <div className="text-sm text-gray-600 mb-3 space-y-1">
+                    <p>
+                      <span className="font-medium">Provider:</span> {listing.providerName || 'N/A'}
+                    </p>
+                    {listing.type === 'Flight' && listing.flightId && (
+                      <p>
+                        <span className="font-medium">Flight ID:</span> {listing.flightId}
+                      </p>
+                    )}
+                    {listing.type !== 'Flight' && (
+                      <p>
+                        <span className="font-medium">ID:</span> {listingId}
+                      </p>
+                    )}
+                  </div>
                   
                   {isHotel ? (
                     <>
@@ -195,13 +209,89 @@ const PendingRequestsTab = ({ onRefresh }) => {
                     <>
                       {/* Flight Details */}
                       {listing.type === 'Flight' && (
-                        <div className="text-sm text-gray-600 space-y-1">
-                          <p><strong>Route:</strong> {listing.departureAirport} → {listing.arrivalAirport}</p>
-                          <p><strong>Departure:</strong> {listing.departureDateTime ? new Date(listing.departureDateTime).toLocaleString() : 'N/A'}</p>
-                          <p><strong>Arrival:</strong> {listing.arrivalDateTime ? new Date(listing.arrivalDateTime).toLocaleString() : 'N/A'}</p>
-                          <p><strong>Class:</strong> {listing.flightClass}</p>
-                          <p><strong>Price:</strong> ${listing.ticketPrice}</p>
-                          <p><strong>Seats:</strong> {listing.availableSeats}/{listing.totalSeats}</p>
+                        <div className="space-y-3">
+                          <div className="flex items-center space-x-2 text-gray-700">
+                            <Icon className="w-5 h-5 text-purple-600" />
+                            <span className="text-lg font-semibold">{listing.departureAirport} → {listing.arrivalAirport}</span>
+                          </div>
+                          
+                          <div className="grid md:grid-cols-2 gap-4 text-sm">
+                            <div className="space-y-2">
+                              <p className="text-gray-600"><strong>Flight ID:</strong> {listing.flightId || listingId}</p>
+                              {listing.departureTime && listing.arrivalTime && (
+                                <div className="space-y-2 pt-2 border-t border-gray-200">
+                                  <div className="flex items-center space-x-2 text-gray-600">
+                                    <Clock className="w-4 h-4 text-blue-500" />
+                                    <span><strong>Departure:</strong> {listing.departureTime}</span>
+                                  </div>
+                                  <div className="flex items-center space-x-2 text-gray-600">
+                                    <Clock className="w-4 h-4 text-green-500" />
+                                    <span><strong>Arrival:</strong> {listing.arrivalTime}</span>
+                                  </div>
+                                  {listing.duration && (
+                                    <div className="flex items-center space-x-2 text-gray-600">
+                                      <Clock className="w-4 h-4 text-purple-500" />
+                                      <span><strong>Duration:</strong> {Math.floor(listing.duration / 60)}h {listing.duration % 60}m</span>
+                                    </div>
+                                  )}
+                                </div>
+                              )}
+                            </div>
+                            <div>
+                              {(listing.availableFrom || listing.availableTo) && (
+                                <div className="flex items-start space-x-2 text-sm text-gray-600 mb-2">
+                                  <Calendar className="w-4 h-4 mt-0.5" />
+                                  <span>
+                                    Available from {listing.availableFrom ? new Date(listing.availableFrom).toLocaleDateString() : 'N/A'} 
+                                    {' '}to {listing.availableTo ? new Date(listing.availableTo).toLocaleDateString() : 'N/A'}
+                                  </span>
+                                </div>
+                              )}
+                              {listing.operatingDays && listing.operatingDays.length > 0 && (
+                                <div className="mb-2">
+                                  <p className="text-gray-600 mb-1"><strong>Operating Days:</strong></p>
+                                  <div className="flex flex-wrap gap-2">
+                                    {listing.operatingDays.map((day, idx) => (
+                                      <span key={idx} className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">
+                                        {day}
+                                      </span>
+                                    ))}
+                                  </div>
+                                </div>
+                              )}
+                            </div>
+                          </div>
+
+                          {/* Seat Types */}
+                          {listing.seatTypes && listing.seatTypes.length > 0 ? (
+                            <div className="mt-4 pt-4 border-t border-gray-200">
+                              <h4 className="text-sm font-semibold text-gray-700 mb-3">Seat Types & Pricing</h4>
+                              <div className="grid md:grid-cols-3 gap-4">
+                                {listing.seatTypes.map((seatType, idx) => (
+                                  <div key={idx} className="bg-gray-50 rounded-lg p-3 border border-gray-200">
+                                    <div className="flex justify-between items-start mb-2">
+                                      <span className="font-medium text-gray-900">{seatType.type}</span>
+                                      <span className="text-primary-600 font-semibold">${seatType.ticketPrice || 0}</span>
+                                    </div>
+                                    <div className="text-sm text-gray-600">
+                                      Total Seats: <span className="font-semibold">{seatType.totalSeats || 0}</span>
+                                    </div>
+                                  </div>
+                                ))}
+                              </div>
+                              <div className="mt-3 text-sm text-gray-600">
+                                Total Seats: <span className="font-semibold">
+                                  {listing.seatTypes.reduce((sum, st) => sum + (st.totalSeats || 0), 0)}
+                                </span>
+                              </div>
+                            </div>
+                          ) : (
+                            <div className="mt-3 pt-3 border-t border-gray-200 text-sm text-gray-600">
+                              <p><strong>Class:</strong> {listing.flightClass || 'N/A'}</p>
+                              <p><strong>Price:</strong> ${listing.ticketPrice || 0}</p>
+                              <p><strong>Seats:</strong> {listing.availableSeats || 0}/{listing.totalSeats || 0}</p>
+                            </div>
+                          )}
                         </div>
                       )}
                       

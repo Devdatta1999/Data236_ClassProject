@@ -14,40 +14,370 @@ const crypto = require('crypto');
 /**
  * Handle flight search event
  */
+/**
+ * Calculate seat availability for a flight based on bookings
+ * Returns availability for each seat type for the given date
+ */
+async function calculateFlightSeatAvailability(flightId, travelDate, seatType, quantity) {
+  // Define booking schema inline for availability calculation
+  let Booking;
+  if (mongoose.models.Booking) {
+    Booking = mongoose.models.Booking;
+  } else {
+    const bookingSchema = new mongoose.Schema({
+      listingId: { type: String, required: true, index: true },
+      listingType: { type: String, enum: ['Flight', 'Hotel', 'Car'], required: true, index: true },
+      roomType: { type: String, default: null }, // Used for flight seat type
+      quantity: { type: Number, required: true, min: 1 },
+      travelDate: { type: Date, default: null },
+      status: { type: String, enum: ['Confirmed', 'Pending', 'Cancelled', 'Failed'], default: 'Pending', index: true }
+    }, { collection: 'bookings', strict: false });
+    Booking = mongoose.model('Booking', bookingSchema, 'bookings');
+  }
+  
+  const travel = new Date(travelDate);
+  travel.setHours(0, 0, 0, 0);
+  const travelEnd = new Date(travelDate);
+  travelEnd.setHours(23, 59, 59, 999);
+  
+  // Find all bookings for this flight on this date with this seat type
+  const bookings = await Booking.find({
+    listingId: flightId,
+    listingType: 'Flight',
+    status: { $in: ['Confirmed', 'Pending'] },
+    travelDate: { $gte: travel, $lte: travelEnd },
+    roomType: seatType // Using roomType field for seat type
+  });
+  
+  // Sum up booked quantities
+  const bookedSeats = bookings.reduce((sum, booking) => sum + booking.quantity, 0);
+  
+  return bookedSeats;
+}
+
+/**
+ * Handle flight search event
+ * Supports one-way and round trip searches
+ */
 async function handleFlightSearch(event) {
-  const { requestId, departureAirport, arrivalAirport, departureDate, minPrice, maxPrice, flightClass, sortBy } = event;
+  const { 
+    requestId, 
+    departureAirport, 
+    arrivalAirport, 
+    departureDate, 
+    returnDate, // For round trip
+    tripType, // 'one-way' or 'round-trip'
+    minPrice, 
+    maxPrice, 
+    seatType, // Filter by specific seat type
+    sortBy,
+    numberOfPassengers // Number of passengers needed
+  } = event;
 
   try {
-    const query = { status: 'Active' };
+    // Search for outbound flights
+    const outboundQuery = { status: 'Active' };
 
-    if (departureAirport) query.departureAirport = departureAirport.toUpperCase();
-    if (arrivalAirport) query.arrivalAirport = arrivalAirport.toUpperCase();
+    if (departureAirport) outboundQuery.departureAirport = departureAirport.toUpperCase();
+    if (arrivalAirport) outboundQuery.arrivalAirport = arrivalAirport.toUpperCase();
+    
+    // Get day of week from departure date for filtering by operating days
+    let searchDayOfWeek = null;
     if (departureDate) {
-      const startDate = new Date(departureDate);
-      startDate.setHours(0, 0, 0, 0);
-      const endDate = new Date(departureDate);
-      endDate.setHours(23, 59, 59, 999);
-      query.departureDateTime = { $gte: startDate, $lte: endDate };
+      const searchDate = new Date(departureDate);
+      // Check if flight is available on this date (within availableFrom/availableTo range)
+      outboundQuery.availableFrom = { $lte: searchDate };
+      outboundQuery.availableTo = { $gte: searchDate };
+      
+      // Get day of week (0 = Sunday, 1 = Monday, ..., 6 = Saturday)
+      const dayIndex = searchDate.getDay();
+      const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+      searchDayOfWeek = daysOfWeek[dayIndex];
     }
-    if (minPrice || maxPrice) {
-      query.ticketPrice = {};
-      if (minPrice) query.ticketPrice.$gte = parseFloat(minPrice);
-      if (maxPrice) query.ticketPrice.$lte = parseFloat(maxPrice);
-    }
-    if (flightClass) query.flightClass = flightClass;
-    query.availableSeats = { $gt: 0 };
 
-    const cacheKey = `search:flight:${crypto.createHash('md5').update(JSON.stringify(query)).digest('hex')}`;
+    const cacheKey = `search:flight:${crypto.createHash('md5').update(JSON.stringify(outboundQuery)).digest('hex')}`;
     
-    let flights = await getCache(cacheKey);
+    let outboundFlights = await getCache(cacheKey);
     
-    if (!flights) {
-      flights = await Flight.find(query)
-        .sort({ [sortBy || 'departureDateTime']: 1 })
+    if (!outboundFlights) {
+      outboundFlights = await Flight.find(outboundQuery)
+        .sort({ departureTime: 1 }) // Sort by departure time
         .limit(100);
       
-      await setCache(cacheKey, flights, 900);
+      await setCache(cacheKey, outboundFlights, 900);
     }
+
+    // Filter by operating days if search date is provided
+    if (searchDayOfWeek) {
+      outboundFlights = outboundFlights.filter(flight => {
+        const flightObj = flight.toObject ? flight.toObject() : flight;
+        // Check if flight operates on the search day
+        return flightObj.operatingDays && flightObj.operatingDays.includes(searchDayOfWeek);
+      });
+    }
+
+    // Calculate actual seat availability for each flight
+    const flightsWithAvailability = await Promise.all(
+      outboundFlights.map(async (flight) => {
+        const flightObj = flight.toObject ? flight.toObject() : flight;
+        
+        // Build departureDateTime and arrivalDateTime from search date + flight times for display
+        let departureDateTime = null;
+        let arrivalDateTime = null;
+        if (departureDate && flightObj.departureTime && flightObj.arrivalTime) {
+          const searchDate = new Date(departureDate);
+          const [depHours, depMins] = flightObj.departureTime.split(':').map(Number);
+          const [arrHours, arrMins] = flightObj.arrivalTime.split(':').map(Number);
+          
+          departureDateTime = new Date(searchDate);
+          departureDateTime.setHours(depHours, depMins, 0, 0);
+          
+          arrivalDateTime = new Date(searchDate);
+          arrivalDateTime.setHours(arrHours, arrMins, 0, 0);
+          
+          // If arrival time is earlier than departure time, assume next day
+          if (arrivalDateTime <= departureDateTime) {
+            arrivalDateTime.setDate(arrivalDateTime.getDate() + 1);
+          }
+        }
+        
+        // If flight has seatTypes (new format), calculate availability per seat type
+        if (flightObj.seatTypes && Array.isArray(flightObj.seatTypes)) {
+          const seatTypesWithAvailability = await Promise.all(
+            flightObj.seatTypes.map(async (seatTypeData) => {
+              const bookedSeats = await calculateFlightSeatAvailability(
+                flightObj.flightId,
+                departureDate,
+                seatTypeData.type,
+                0 // We're just checking, not booking
+              );
+              
+              const available = Math.max(0, seatTypeData.availableSeats - bookedSeats);
+              
+              return {
+                ...seatTypeData,
+                availableSeats: available,
+                bookedSeats: bookedSeats
+              };
+            })
+          );
+          
+          // Filter by seat type if specified
+          let filteredSeatTypes = seatTypesWithAvailability;
+          if (seatType) {
+            filteredSeatTypes = seatTypesWithAvailability.filter(st => st.type === seatType);
+          }
+          
+          // Filter by price range if specified
+          if (minPrice || maxPrice) {
+            filteredSeatTypes = filteredSeatTypes.filter(st => {
+              if (minPrice && st.ticketPrice < parseFloat(minPrice)) return false;
+              if (maxPrice && st.ticketPrice > parseFloat(maxPrice)) return false;
+              return true;
+            });
+          }
+          
+          // Filter by number of passengers needed
+          if (numberOfPassengers) {
+            filteredSeatTypes = filteredSeatTypes.filter(st => st.availableSeats >= numberOfPassengers);
+          }
+          
+          // Only include flight if it has available seat types after filtering
+          if (filteredSeatTypes.length === 0) {
+            return null;
+          }
+          
+          return {
+            ...flightObj,
+            departureDateTime: departureDateTime || flightObj.departureDateTime,
+            arrivalDateTime: arrivalDateTime || flightObj.arrivalDateTime,
+            seatTypes: filteredSeatTypes
+          };
+        } else {
+          // Legacy format - single seat type
+          // Check availability using legacy fields
+          const bookedSeats = await calculateFlightSeatAvailability(
+            flightObj.flightId,
+            departureDate,
+            flightObj.flightClass,
+            0
+          );
+          
+          const available = Math.max(0, (flightObj.availableSeats || 0) - bookedSeats);
+          
+          if (available < (numberOfPassengers || 1)) {
+            return null;
+          }
+          
+          // Convert legacy format to new format for consistency
+          return {
+            ...flightObj,
+            seatTypes: [{
+              type: flightObj.flightClass,
+              ticketPrice: flightObj.ticketPrice,
+              totalSeats: flightObj.totalSeats,
+              availableSeats: available,
+              bookedSeats: bookedSeats
+            }]
+          };
+        }
+      })
+    );
+
+    // Filter out null flights (no availability)
+    const availableOutboundFlights = flightsWithAvailability.filter(f => f !== null);
+
+    let returnFlights = [];
+    
+    // If round trip, search for return flights
+    let returnDayOfWeek = null;
+    if (tripType === 'round-trip' && returnDate && departureAirport && arrivalAirport) {
+      const returnQuery = {
+        status: 'Active',
+        departureAirport: arrivalAirport.toUpperCase(), // Reverse airports for return
+        arrivalAirport: departureAirport.toUpperCase()
+      };
+      
+      const searchDate = new Date(returnDate);
+      returnQuery.availableFrom = { $lte: searchDate };
+      returnQuery.availableTo = { $gte: searchDate };
+      
+      // Get day of week for return flight
+      const dayIndex = searchDate.getDay();
+      const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+      returnDayOfWeek = daysOfWeek[dayIndex];
+      
+      const returnCacheKey = `search:flight:${crypto.createHash('md5').update(JSON.stringify(returnQuery)).digest('hex')}`;
+      
+      let returnFlightsCached = await getCache(returnCacheKey);
+      
+      if (!returnFlightsCached) {
+        returnFlightsCached = await Flight.find(returnQuery)
+          .sort({ departureTime: 1 }) // Sort by departure time
+          .limit(100);
+        
+        await setCache(returnCacheKey, returnFlightsCached, 900);
+      }
+
+      // Filter by operating days if return date is provided
+      if (returnDayOfWeek) {
+        returnFlightsCached = returnFlightsCached.filter(flight => {
+          const flightObj = flight.toObject ? flight.toObject() : flight;
+          return flightObj.operatingDays && flightObj.operatingDays.includes(returnDayOfWeek);
+        });
+      }
+
+      // Calculate availability for return flights
+      const returnFlightsWithAvailability = await Promise.all(
+        returnFlightsCached.map(async (flight) => {
+          const flightObj = flight.toObject ? flight.toObject() : flight;
+          
+          // Build departureDateTime and arrivalDateTime from return date + flight times
+          let departureDateTime = null;
+          let arrivalDateTime = null;
+          if (returnDate && flightObj.departureTime && flightObj.arrivalTime) {
+            const searchDate = new Date(returnDate);
+            const [depHours, depMins] = flightObj.departureTime.split(':').map(Number);
+            const [arrHours, arrMins] = flightObj.arrivalTime.split(':').map(Number);
+            
+            departureDateTime = new Date(searchDate);
+            departureDateTime.setHours(depHours, depMins, 0, 0);
+            
+            arrivalDateTime = new Date(searchDate);
+            arrivalDateTime.setHours(arrHours, arrMins, 0, 0);
+            
+            // If arrival time is earlier than departure time, assume next day
+            if (arrivalDateTime <= departureDateTime) {
+              arrivalDateTime.setDate(arrivalDateTime.getDate() + 1);
+            }
+          }
+          
+          if (flightObj.seatTypes && Array.isArray(flightObj.seatTypes)) {
+            const seatTypesWithAvailability = await Promise.all(
+              flightObj.seatTypes.map(async (seatTypeData) => {
+                const bookedSeats = await calculateFlightSeatAvailability(
+                  flightObj.flightId,
+                  returnDate,
+                  seatTypeData.type,
+                  0
+                );
+                
+                const available = Math.max(0, seatTypeData.availableSeats - bookedSeats);
+                
+                return {
+                  ...seatTypeData,
+                  availableSeats: available,
+                  bookedSeats: bookedSeats
+                };
+              })
+            );
+            
+            let filteredSeatTypes = seatTypesWithAvailability;
+            if (seatType) {
+              filteredSeatTypes = filteredSeatTypes.filter(st => st.type === seatType);
+            }
+            
+            if (minPrice || maxPrice) {
+              filteredSeatTypes = filteredSeatTypes.filter(st => {
+                if (minPrice && st.ticketPrice < parseFloat(minPrice)) return false;
+                if (maxPrice && st.ticketPrice > parseFloat(maxPrice)) return false;
+                return true;
+              });
+            }
+            
+            if (numberOfPassengers) {
+              filteredSeatTypes = filteredSeatTypes.filter(st => st.availableSeats >= numberOfPassengers);
+            }
+            
+            if (filteredSeatTypes.length === 0) {
+              return null;
+            }
+            
+            return {
+              ...flightObj,
+              departureDateTime: departureDateTime || flightObj.departureDateTime,
+              arrivalDateTime: arrivalDateTime || flightObj.arrivalDateTime,
+              seatTypes: filteredSeatTypes
+            };
+          } else {
+            const bookedSeats = await calculateFlightSeatAvailability(
+              flightObj.flightId,
+              returnDate,
+              flightObj.flightClass,
+              0
+            );
+            
+            const available = Math.max(0, (flightObj.availableSeats || 0) - bookedSeats);
+            
+            if (available < (numberOfPassengers || 1)) {
+              return null;
+            }
+            
+            return {
+              ...flightObj,
+              departureDateTime: departureDateTime || flightObj.departureDateTime,
+              arrivalDateTime: arrivalDateTime || flightObj.arrivalDateTime,
+              seatTypes: [{
+                type: flightObj.flightClass,
+                ticketPrice: flightObj.ticketPrice,
+                totalSeats: flightObj.totalSeats,
+                availableSeats: available,
+                bookedSeats: bookedSeats
+              }]
+            };
+          }
+        })
+      );
+      
+      returnFlights = returnFlightsWithAvailability.filter(f => f !== null);
+    }
+
+    // Structure response for frontend: outbound/return format
+    const responseData = {
+      outbound: availableOutboundFlights,
+      return: returnFlights,
+      tripType: tripType || 'one-way'
+    };
 
     await sendMessage('search-events-response', {
       key: requestId,
@@ -55,10 +385,7 @@ async function handleFlightSearch(event) {
         requestId,
         success: true,
         eventType: 'search.flights',
-        data: {
-          flights,
-          count: flights.length
-        }
+        data: responseData
       }
     });
 

@@ -18,6 +18,7 @@ import TravelerDashboard from './pages/traveler/TravelerDashboard'
 import SearchResults from './pages/traveler/SearchResults'
 import BookingDetails from './pages/traveler/BookingDetails'
 import HotelDetailPage from './pages/traveler/HotelDetailPage'
+import FlightDetailPage from './pages/traveler/FlightDetailPage'
 import CheckoutPage from './pages/traveler/CheckoutPage'
 import PaymentPage from './pages/traveler/PaymentPage'
 import MyBookings from './pages/traveler/MyBookings'
@@ -80,6 +81,14 @@ function App() {
           element={
             <ProtectedRoute userType="traveler">
               <HotelDetailPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/flight/:flightId"
+          element={
+            <ProtectedRoute userType="traveler">
+              <FlightDetailPage />
             </ProtectedRoute>
           }
         />

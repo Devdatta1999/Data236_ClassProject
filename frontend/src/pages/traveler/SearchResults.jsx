@@ -9,6 +9,88 @@ import { format, differenceInDays } from 'date-fns'
 
 const API_BASE_URL = import.meta.env.VITE_API_GATEWAY_URL || 'http://localhost:8080'
 
+// Flight Card Component
+const FlightCard = ({ item, searchParams, searchType, onViewDetails }) => {
+  const formatTime = (dateTime) => {
+    if (!dateTime) return 'N/A'
+    return format(new Date(dateTime), 'hh:mm a')
+  }
+  
+  const formatDate = (dateTime) => {
+    if (!dateTime) return 'N/A'
+    return format(new Date(dateTime), 'MMM dd')
+  }
+  
+  const formatDuration = (duration) => {
+    if (!duration) return 'N/A'
+    const hours = Math.floor(duration / 60)
+    const minutes = duration % 60
+    return hours > 0 ? `${hours}h ${minutes}m` : `${minutes}m`
+  }
+  
+  // Get minimum price from seat types
+  const minPrice = item.seatTypes && item.seatTypes.length > 0
+    ? Math.min(...item.seatTypes.filter(st => st.availableSeats > 0).map(st => st.ticketPrice))
+    : item.ticketPrice || 0
+  
+  const availableSeatTypes = item.seatTypes ? item.seatTypes.filter(st => st.availableSeats > 0) : []
+  
+  return (
+    <div className="card hover:shadow-lg transition-shadow cursor-pointer" onClick={() => onViewDetails(item)}>
+      <div className="flex justify-between items-start">
+        <div className="flex-1">
+          <div className="flex items-center space-x-4 mb-3">
+            <h3 className="text-xl font-semibold">{item.flightId}</h3>
+            {item.providerName && (
+              <span className="text-sm text-gray-600">{item.providerName}</span>
+            )}
+            {item.flightRating > 0 && (
+              <div className="flex items-center">
+                <Star className="w-4 h-4 text-yellow-400 fill-current" />
+                <span className="ml-1">{item.flightRating.toFixed(1)}</span>
+              </div>
+            )}
+          </div>
+          
+          <div className="grid md:grid-cols-4 gap-4 items-center">
+            <div>
+              <p className="text-2xl font-bold">{item.departureAirport}</p>
+              <p className="text-sm text-gray-600">{formatTime(item.departureDateTime)}</p>
+              <p className="text-xs text-gray-500">{formatDate(item.departureDateTime)}</p>
+            </div>
+            <div className="text-center">
+              <p className="text-xs text-gray-500">{formatDuration(item.duration)}</p>
+              <div className="flex items-center my-2">
+                <div className="flex-1 h-px bg-gray-300"></div>
+                <div className="mx-2 transform rotate-90">→</div>
+                <div className="flex-1 h-px bg-gray-300"></div>
+              </div>
+            </div>
+            <div>
+              <p className="text-2xl font-bold">{item.arrivalAirport}</p>
+              <p className="text-sm text-gray-600">{formatTime(item.arrivalDateTime)}</p>
+              <p className="text-xs text-gray-500">{formatDate(item.arrivalDateTime)}</p>
+            </div>
+            <div className="text-right">
+              <p className="text-2xl font-bold text-primary-600">${minPrice.toFixed(2)}</p>
+              <p className="text-sm text-gray-500">per person</p>
+              <button
+                onClick={(e) => {
+                  e.stopPropagation()
+                  onViewDetails(item)
+                }}
+                className="btn-primary mt-3 flex items-center space-x-2"
+              >
+                <span>View Details</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 const SearchResults = () => {
   const location = useLocation()
   const navigate = useNavigate()
@@ -75,6 +157,9 @@ const SearchResults = () => {
             departureAirport: searchParams.departureAirport,
             arrivalAirport: searchParams.arrivalAirport,
             departureDate: searchParams.departureDate,
+            returnDate: searchParams.returnDate || null,
+            tripType: searchParams.tripType || 'one-way',
+            numberOfPassengers: searchParams.numberOfPassengers || searchParams.quantity || 1,
           }
         } else if (type === 'hotels') {
           eventType = 'search.hotels'
@@ -108,16 +193,45 @@ const SearchResults = () => {
 
         // Handle different response formats
         let items = []
-        if (response.hotels) {
+        if (type === 'flights') {
+          // Check if response already has the new structure {outbound, return, tripType}
+          if (response.data?.outbound || response.outbound) {
+            items = {
+              outbound: response.data?.outbound || response.outbound || [],
+              return: response.data?.return || response.return || [],
+              tripType: response.data?.tripType || response.tripType || 'one-way'
+            }
+          } else if (response.data) {
+            // Response structure from backend: { outbound, return, tripType }
+            items = {
+              outbound: response.data.outbound || [],
+              return: response.data.return || [],
+              tripType: response.data.tripType || 'one-way'
+            }
+          } else {
+            // Legacy format - flight search returns flights and optionally returnFlights for round trip
+            const flights = response.data?.flights || response.flights || []
+            // Store return flights separately if they exist
+            if (response.data?.returnFlights || response.returnFlights) {
+              items = {
+                outbound: flights,
+                return: response.data?.returnFlights || response.returnFlights || [],
+                tripType: response.data?.tripType || response.tripType || 'one-way'
+              }
+            } else {
+              items = flights
+            }
+          }
+        } else if (response.hotels) {
           items = response.hotels
         } else if (response.data?.hotels) {
           items = response.data.hotels
         } else {
-          const resultKey = type === 'flights' ? 'flights' : type === 'hotels' ? 'hotels' : 'cars'
+          const resultKey = type === 'hotels' ? 'hotels' : 'cars'
           items = response[resultKey] || []
         }
         
-        console.log(`Search results for ${type}:`, items.length, 'items found', items)
+        console.log(`Search results for ${type}:`, items)
         dispatch(setSearchResults({ type, results: items }))
         setResults(items)
         isSearching.current = false
@@ -243,50 +357,124 @@ const SearchResults = () => {
           <h2 className="text-2xl font-bold text-gray-900">
             Search Results for {searchType}
           </h2>
-          <p className="text-gray-600 mt-2">{results.length} results found</p>
+          <p className="text-gray-600 mt-2">
+            {searchType === 'flights' && results.outbound 
+              ? `${results.outbound.length} outbound flight${results.outbound.length !== 1 ? 's' : ''} found${results.return ? `, ${results.return.length} return flight${results.return.length !== 1 ? 's' : ''}` : ''}`
+              : Array.isArray(results) 
+                ? `${results.length} result${results.length !== 1 ? 's' : ''} found`
+                : '0 results found'}
+          </p>
         </div>
 
         <div className="space-y-4">
-          {results.map((item) => (
-            <div key={item[`${searchType.slice(0, -1)}Id`] || item.flightId || item.hotelId || item.carId} className="card">
-              {searchType === 'flights' && (
-                <div className="flex justify-between items-start">
-                  <div className="flex-1">
-                    <div className="flex items-center space-x-4 mb-2">
-                      <h3 className="text-xl font-semibold">{item.flightId}</h3>
-                      <div className="flex items-center">
-                        <Star className="w-4 h-4 text-yellow-400 fill-current" />
-                        <span className="ml-1">{item.flightRating || 'N/A'}</span>
+          {searchType === 'flights' && results && typeof results === 'object' && results.outbound ? (
+            results.tripType === 'round-trip' ? (
+              // Round trip view - split screen
+              <div className="space-y-6">
+                <div className="text-center mb-4">
+                  <h3 className="text-xl font-bold text-gray-900">Round Trip Flights</h3>
+                  <p className="text-gray-600">{results.outbound.length} outbound, {results.return?.length || 0} return flights found</p>
+                </div>
+                
+                <div className="grid md:grid-cols-2 gap-6">
+                  {/* Left side - Outbound */}
+                  <div className="space-y-4">
+                    <h4 className="text-lg font-semibold text-gray-800 mb-3">Outbound - Departure</h4>
+                    {results.outbound.length > 0 ? (
+                      results.outbound.map((item) => (
+                        <FlightCard 
+                          key={item.flightId} 
+                          item={item} 
+                          searchParams={location.state?.searchParams}
+                          searchType={searchType}
+                          onViewDetails={(flight) => navigate(`/flight/${flight.flightId}`, { 
+                            state: { 
+                              flight, 
+                              searchParams: { ...location.state?.searchParams, flightType: 'outbound' },
+                              returnFlights: results.return
+                            } 
+                          })}
+                        />
+                      ))
+                    ) : (
+                      <div className="text-center py-8 text-gray-500">
+                        No outbound flights found.
                       </div>
-                    </div>
-                    <div className="grid md:grid-cols-3 gap-4 text-sm text-gray-600">
-                      <div>
-                        <p className="font-medium">{item.departureAirport}</p>
-                        <p>{item.departureDateTime ? format(new Date(item.departureDateTime), 'MMM dd, hh:mm a') : 'N/A'}</p>
-                      </div>
-                      <div className="text-center">
-                        <p className="text-xs">{item.duration} min</p>
-                      </div>
-                      <div>
-                        <p className="font-medium">{item.arrivalAirport}</p>
-                        <p>{item.arrivalDateTime ? format(new Date(item.arrivalDateTime), 'MMM dd, hh:mm a') : 'N/A'}</p>
-                      </div>
-                    </div>
-                    <p className="mt-2 text-sm text-gray-500">{item.flightClass}</p>
+                    )}
                   </div>
-                  <div className="ml-6 text-right">
-                    <p className="text-2xl font-bold text-primary-600">${item.ticketPrice}</p>
-                    <p className="text-sm text-gray-500">{item.availableSeats} seats left</p>
-                    <button
-                      onClick={() => handleAddToCart(item)}
-                      className="btn-primary mt-4 flex items-center space-x-2"
-                    >
-                      <ShoppingCart className="w-4 h-4" />
-                      <span>Add to Cart</span>
-                    </button>
+                  
+                  {/* Right side - Return */}
+                  <div className="space-y-4">
+                    <h4 className="text-lg font-semibold text-gray-800 mb-3">Return</h4>
+                    {results.return && results.return.length > 0 ? (
+                      results.return.map((item) => (
+                        <FlightCard 
+                          key={item.flightId} 
+                          item={item} 
+                          searchParams={location.state?.searchParams}
+                          searchType={searchType}
+                          onViewDetails={(flight) => navigate(`/flight/${flight.flightId}`, { 
+                            state: { 
+                              flight, 
+                              searchParams: { ...location.state?.searchParams, flightType: 'return' },
+                              outboundFlights: results.outbound
+                            } 
+                          })}
+                        />
+                      ))
+                    ) : (
+                      <div className="text-center py-8 text-gray-500">
+                        No return flights found. Try adjusting your search.
+                      </div>
+                    )}
                   </div>
                 </div>
-              )}
+              </div>
+            ) : (
+              // One-way with new structure - show outbound flights
+              <div className="space-y-4">
+                {results.outbound.length > 0 ? (
+                  results.outbound.map((item) => (
+                    <FlightCard 
+                      key={item.flightId} 
+                      item={item} 
+                      searchParams={location.state?.searchParams}
+                      searchType={searchType}
+                      onViewDetails={(flight) => navigate(`/flight/${flight.flightId}`, { 
+                        state: { 
+                          flight, 
+                          searchParams: location.state?.searchParams
+                        } 
+                      })}
+                    />
+                  ))
+                ) : (
+                  <div className="text-center py-12">
+                    <p className="text-gray-600 text-lg">No flights found. Try adjusting your search criteria.</p>
+                  </div>
+                )}
+              </div>
+            )
+          ) : searchType === 'flights' && Array.isArray(results) ? (
+            // Legacy one-way format - single list
+            results.map((item) => (
+              <FlightCard 
+                key={item.flightId} 
+                item={item} 
+                searchParams={location.state?.searchParams}
+                searchType={searchType}
+                onViewDetails={(flight) => navigate(`/flight/${flight.flightId}`, { 
+                  state: { 
+                    flight, 
+                    searchParams: location.state?.searchParams
+                  } 
+                })}
+              />
+            ))
+          ) : searchType === 'flights' ? null : (
+            // Hotels and Cars - existing logic
+            results.map((item) => (
+              <div key={item[`${searchType.slice(0, -1)}Id`] || item.hotelId || item.carId} className="card">
 
               {searchType === 'hotels' && (() => {
                 const checkInDate = location.state?.searchParams?.checkInDate
@@ -512,11 +700,14 @@ const SearchResults = () => {
                   </div>
                 )
               })()}
-            </div>
-          ))}
+              </div>
+            ))
+          )}
         </div>
 
-        {results.length === 0 && !loading && (
+        {((searchType === 'flights' && results.outbound && results.outbound.length === 0) ||
+          (Array.isArray(results) && results.length === 0) ||
+          (!results || (typeof results === 'object' && !results.outbound && !Array.isArray(results)))) && !loading && (
           <div className="text-center py-12">
             <p className="text-gray-600 text-lg">No results found. Try adjusting your search criteria.</p>
           </div>

@@ -25,7 +25,7 @@ const bookingSchema = new mongoose.Schema({
   checkOutDate: { type: Date, default: null },
   travelDate: { type: Date, default: null },
   quantity: { type: Number, required: true, min: 1 },
-  roomType: { type: String, enum: ['Standard', 'Suite', 'Deluxe', 'Single', 'Double', 'Presidential'], default: null },
+  roomType: { type: String, default: null }, // For hotels: room types; For flights: seat types
   totalAmount: { type: Number, required: true, min: 0 },
   status: { type: String, enum: ['Confirmed', 'Pending', 'Cancelled', 'Failed'], default: 'Pending', index: true },
   billingId: { type: String, default: null, index: true },

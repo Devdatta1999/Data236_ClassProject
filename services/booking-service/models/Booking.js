@@ -52,8 +52,7 @@ const bookingSchema = new mongoose.Schema({
   },
   roomType: {
     type: String,
-    enum: ['Standard', 'Suite', 'Deluxe', 'Single', 'Double', 'Presidential'],
-    default: null // For hotels only
+    default: null // For hotels: room types (Standard, Suite, Deluxe, etc.); For flights: seat types (Economy, Business, First)
   },
   totalAmount: {
     type: Number,

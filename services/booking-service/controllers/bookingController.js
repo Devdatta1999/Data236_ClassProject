@@ -313,8 +313,93 @@ const createBooking = asyncHandler(async (req, res) => {
 
     // Check availability (same logic as Kafka handler)
     if (listingType === 'Flight') {
-      if (listing.availableSeats < quantity) {
-        throw new ValidationError('Not enough seats available');
+      if (!travelDate) {
+        throw new ValidationError('Travel date is required for flight bookings');
+      }
+      
+      // Validate seat type
+      let seatType = roomType; // Use roomType field for seat type (for consistency)
+      if (!seatType) {
+        throw new ValidationError('Seat type is required for flight bookings');
+      }
+      
+      // Check if flight has seatTypes (new format) or legacy format
+      if (listing.seatTypes && Array.isArray(listing.seatTypes)) {
+        const selectedSeatType = listing.seatTypes.find(st => st.type === seatType);
+        if (!selectedSeatType) {
+          throw new ValidationError(`Seat type '${seatType}' is not available on this flight. Available types: ${listing.seatTypes.map(st => st.type).join(', ')}`);
+        }
+        
+        // Check availability for this seat type on this date
+        const travel = new Date(travelDate);
+        travel.setHours(0, 0, 0, 0);
+        const travelEnd = new Date(travelDate);
+        travelEnd.setHours(23, 59, 59, 999);
+        
+        const conflictingBookings = await Booking.find({
+          listingId,
+          listingType: 'Flight',
+          roomType: seatType, // Using roomType field for seat type
+          status: { $in: ['Confirmed', 'Pending'] },
+          travelDate: { $gte: travel, $lte: travelEnd }
+        });
+        
+        const bookedSeats = conflictingBookings.reduce((sum, b) => sum + b.quantity, 0);
+        const availableSeats = Math.max(0, selectedSeatType.availableSeats - bookedSeats);
+        
+        if (availableSeats < quantity) {
+          throw new ValidationError(`Not enough ${seatType} seats available. Available: ${availableSeats}, Requested: ${quantity}`);
+        }
+        
+        // Validate travel date is within flight's available date range
+        const availableFrom = new Date(listing.availableFrom);
+        const availableTo = new Date(listing.availableTo);
+        const travelDateObj = new Date(travelDate);
+        
+        if (travelDateObj < availableFrom || travelDateObj > availableTo) {
+          throw new ValidationError('Selected travel date is outside the flight\'s availability period');
+        }
+        
+        // Validate that the travel date falls on an operating day
+        if (listing.operatingDays && Array.isArray(listing.operatingDays) && listing.operatingDays.length > 0) {
+          const dayIndex = travelDateObj.getDay();
+          const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+          const travelDayOfWeek = daysOfWeek[dayIndex];
+          
+          if (!listing.operatingDays.includes(travelDayOfWeek)) {
+            throw new ValidationError(`This flight does not operate on ${travelDayOfWeek}. Operating days: ${listing.operatingDays.join(', ')}`);
+          }
+        }
+      } else {
+        // Legacy format - single seat type
+        if (listing.flightClass !== seatType) {
+          throw new ValidationError(`Seat type '${seatType}' does not match flight class '${listing.flightClass}'`);
+        }
+        
+        if (listing.availableSeats < quantity) {
+          throw new ValidationError('Not enough seats available');
+        }
+        
+        // Check bookings for legacy format
+        const travel = new Date(travelDate);
+        travel.setHours(0, 0, 0, 0);
+        const travelEnd = new Date(travelDate);
+        travelEnd.setHours(23, 59, 59, 999);
+        
+        const conflictingBookings = await Booking.find({
+          listingId,
+          listingType: 'Flight',
+          roomType: seatType,
+          status: { $in: ['Confirmed', 'Pending'] },
+          travelDate: { $gte: travel, $lte: travelEnd }
+        });
+        
+        const bookedSeats = conflictingBookings.reduce((sum, b) => sum + b.quantity, 0);
+        const availableSeats = Math.max(0, (listing.availableSeats || 0) - bookedSeats);
+        
+        if (availableSeats < quantity) {
+          throw new ValidationError(`Not enough seats available. Available: ${availableSeats}, Requested: ${quantity}`);
+        }
       }
     } else if (listingType === 'Hotel') {
       if (!checkInDate || !checkOutDate) {
@@ -406,8 +491,20 @@ const createBooking = asyncHandler(async (req, res) => {
 
     // Calculate total amount
     let totalAmount = 0;
+    let seatType = roomType; // For flights, roomType is actually seatType
+    
     if (listingType === 'Flight') {
-      totalAmount = listing.ticketPrice * quantity;
+      if (listing.seatTypes && Array.isArray(listing.seatTypes)) {
+        // New format - get price from seat type
+        const selectedSeatType = listing.seatTypes.find(st => st.type === seatType);
+        if (!selectedSeatType) {
+          throw new ValidationError(`Seat type '${seatType}' not found for price calculation`);
+        }
+        totalAmount = selectedSeatType.ticketPrice * quantity;
+      } else {
+        // Legacy format
+        totalAmount = listing.ticketPrice * quantity;
+      }
     } else if (listingType === 'Hotel') {
       const nights = Math.ceil((new Date(checkOutDate) - new Date(checkInDate)) / (1000 * 60 * 60 * 24));
       if (nights < 1) {
@@ -434,7 +531,7 @@ const createBooking = asyncHandler(async (req, res) => {
       listingId,
       listingType,
       quantity,
-      roomType: listingType === 'Hotel' ? roomType : null,
+      roomType: listingType === 'Hotel' ? roomType : (listingType === 'Flight' ? seatType : null), // For flights, store seat type in roomType field
       totalAmount,
       checkInDate: listingType === 'Hotel' || listingType === 'Car' ? checkInDate : null,
       checkOutDate: listingType === 'Hotel' || listingType === 'Car' ? checkOutDate : null,
@@ -460,13 +557,12 @@ const createBooking = asyncHandler(async (req, res) => {
     });
 
     // Update listing availability (if needed)
+    // Note: For flights with seatTypes, availability is calculated dynamically from bookings
+    // Legacy flights might need manual updates, but we skip to avoid conflicts
     try {
-      if (listingType === 'Flight') {
-        await axios.put(`${LISTING_SERVICE_URL}/api/listings/flights/${listingId}`, {
-          availableSeats: listing.availableSeats - quantity
-        });
-      }
-      // Hotels and cars don't need availability updates (calculated dynamically)
+      // Availability is now calculated dynamically from bookings for all listing types
+      // No manual updates needed
+      logger.info(`[createBooking] Availability will be calculated dynamically from bookings`);
     } catch (error) {
       logger.warn(`[createBooking] Failed to update listing availability: ${error.message}`);
       // Don't fail the booking if availability update fails
