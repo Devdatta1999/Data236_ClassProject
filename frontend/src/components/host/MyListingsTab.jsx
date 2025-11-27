@@ -253,17 +253,47 @@ const MyListingsTab = ({ onRefresh }) => {
 
                 <div className="flex items-start space-x-4 flex-1">
                   {!isHotel && (
-                    <div className={`p-3 rounded-lg ${
-                      listing.status === 'Active' ? 'bg-green-100' :
-                      listing.status === 'Pending' ? 'bg-yellow-100' :
-                      'bg-gray-100'
-                    }`}>
-                      <Icon className={`w-6 h-6 ${
-                        listing.status === 'Active' ? 'text-green-600' :
-                        listing.status === 'Pending' ? 'text-yellow-600' :
-                        'text-gray-600'
-                      }`} />
-                    </div>
+                    <>
+                      {/* Show provider profile image for flights and cars */}
+                      {listing.image && (
+                        <div className="w-16 h-16 flex-shrink-0">
+                          <img
+                            src={`${API_BASE_URL}${listing.image}`}
+                            alt={listing.providerName || 'Provider'}
+                            className="w-full h-full object-cover rounded-lg border border-gray-200"
+                            onError={(e) => {
+                              // Fallback to icon if image fails to load
+                              e.target.style.display = 'none'
+                              e.target.nextSibling.style.display = 'flex'
+                            }}
+                          />
+                          <div className={`hidden w-16 h-16 p-3 rounded-lg ${
+                            listing.status === 'Active' ? 'bg-green-100' :
+                            listing.status === 'Pending' ? 'bg-yellow-100' :
+                            'bg-gray-100'
+                          } items-center justify-center`}>
+                            <Icon className={`w-6 h-6 ${
+                              listing.status === 'Active' ? 'text-green-600' :
+                              listing.status === 'Pending' ? 'text-yellow-600' :
+                              'text-gray-600'
+                            }`} />
+                          </div>
+                        </div>
+                      )}
+                      {!listing.image && (
+                        <div className={`p-3 rounded-lg ${
+                          listing.status === 'Active' ? 'bg-green-100' :
+                          listing.status === 'Pending' ? 'bg-yellow-100' :
+                          'bg-gray-100'
+                        }`}>
+                          <Icon className={`w-6 h-6 ${
+                            listing.status === 'Active' ? 'text-green-600' :
+                            listing.status === 'Pending' ? 'text-yellow-600' :
+                            'text-gray-600'
+                          }`} />
+                        </div>
+                      )}
+                    </>
                   )}
                   <div className="flex-1">
                     <div className="flex items-center space-x-3 mb-3">

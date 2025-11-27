@@ -79,7 +79,7 @@ const CarDetailPage = () => {
       numberOfDays,
       dailyRentalPrice: car.dailyRentalPrice,
       totalPrice,
-      image: car.images && car.images.length > 0 ? car.images[0] : null,
+      image: car.image || (car.images && car.images.length > 0 ? car.images[0] : null),
       address: `${car.neighbourhood || ''}${car.neighbourhood ? ', ' : ''}${car.city}${car.state ? `, ${car.state}` : ''}${car.country ? `, ${car.country}` : ''}`,
     }
 
@@ -154,7 +154,24 @@ const CarDetailPage = () => {
             <ArrowLeft className="w-4 h-4" />
             <span>Back to Search</span>
           </button>
-          <h1 className="text-3xl font-bold">{car.model || car.carModel}</h1>
+          <div className="flex items-center space-x-4">
+            {car.image && (
+              <img
+                src={`${import.meta.env.VITE_API_GATEWAY_URL || 'http://localhost:8080'}${car.image}`}
+                alt={car.providerName || car.model || car.carModel}
+                className="w-24 h-24 rounded-lg object-cover border border-gray-200"
+                onError={(e) => {
+                  e.target.style.display = 'none'
+                }}
+              />
+            )}
+            <div>
+              <h1 className="text-3xl font-bold">{car.model || car.carModel}</h1>
+              {car.providerName && (
+                <span className="text-gray-600 text-sm">{car.providerName}</span>
+              )}
+            </div>
+          </div>
           <div className="flex items-center space-x-4 mt-2">
             {(() => {
               // Calculate average rating from reviews array

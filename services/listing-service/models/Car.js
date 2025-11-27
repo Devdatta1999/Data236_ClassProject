@@ -52,6 +52,10 @@ const carSchema = new mongoose.Schema({
     type: String,
     required: true
   },
+  image: {
+    type: String,
+    default: null // Provider's profile picture URL
+  },
   model: {
     type: String,
     required: true

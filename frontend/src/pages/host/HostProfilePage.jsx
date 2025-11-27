@@ -52,6 +52,8 @@ const HostProfilePage = () => {
           setCurrentProfileImage(providerData.profileImage)
           setProfilePicturePreview(providerData.profileImage)
         }
+        // Don't update Redux here to avoid infinite loops - Redux already has user data from login
+        // Only update Redux when user explicitly makes changes (upload picture, update profile)
       } catch (err) {
         console.error('Error fetching profile:', err)
         setError('Failed to load profile. Please try again.')
@@ -59,7 +61,8 @@ const HostProfilePage = () => {
     }
 
     fetchProfile()
-  }, [user])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user?.providerId]) // Only depend on providerId, not the entire user object
 
   const handleProfilePictureChange = async (e) => {
     const file = e.target.files[0]
@@ -109,18 +112,20 @@ const HostProfilePage = () => {
       const updatedProvider = updateResponse.data.data?.provider
       dispatch(updateUser(updatedProvider))
       
-      setCurrentProfileImage(uploadResponse.data.data.imageUrl)
+      const imageUrl = uploadResponse.data.data.imageUrl
+      setCurrentProfileImage(imageUrl)
       setProfilePicture(null) // Clear the file after successful upload
-      setProfilePicturePreview(uploadResponse.data.data.imageUrl)
+      setProfilePicturePreview(imageUrl)
       setSuccess('Profile picture updated successfully!')
       
-      // Refresh profile data
+      // Refresh profile data to ensure everything is in sync
       const providerResponse = await api.get('/api/providers/me')
       const freshProviderData = providerResponse.data.data?.provider
       if (freshProviderData?.profileImage) {
         setCurrentProfileImage(freshProviderData.profileImage)
         setProfilePicturePreview(freshProviderData.profileImage)
       }
+      dispatch(updateUser(freshProviderData)) // Update Redux with fresh data including profileImage
     } catch (err) {
       console.error('Error uploading profile picture:', err)
       setError('Failed to upload profile picture. Please try again.')
@@ -170,6 +175,7 @@ const HostProfilePage = () => {
         setCurrentProfileImage(freshProviderData.profileImage)
         setProfilePicturePreview(freshProviderData.profileImage)
       }
+      dispatch(updateUser(freshProviderData)) // Update Redux with fresh data including profileImage
     } catch (err) {
       const errorResponse = err.response?.data?.error
       const errorMessage = typeof errorResponse === 'string'
@@ -223,6 +229,7 @@ const HostProfilePage = () => {
                     src={`${import.meta.env.VITE_API_GATEWAY_URL || 'http://localhost:8080'}${profilePicturePreview}`}
                     alt="Profile"
                     className="w-24 h-24 rounded-full object-cover border-2 border-gray-300"
+                    key={profilePicturePreview} // Force re-render when image changes
                     onError={(e) => {
                       e.target.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"%3E%3Cpath fill="%23999" d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/%3E%3C/svg%3E'
                     }}

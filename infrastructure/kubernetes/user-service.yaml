@@ -24,6 +24,9 @@ spec:
             name: aerive-config
         - secretRef:
             name: aerive-secrets
+        volumeMounts:
+        - name: uploads-storage
+          mountPath: /workspace/services/user-service/uploads
         resources:
           requests:
             memory: "256Mi"
@@ -43,6 +46,10 @@ spec:
             port: 3001
           initialDelaySeconds: 10
           periodSeconds: 5
+      volumes:
+      - name: uploads-storage
+        persistentVolumeClaim:
+          claimName: aerive-user-uploads-pvc
 ---
 apiVersion: v1
 kind: Service

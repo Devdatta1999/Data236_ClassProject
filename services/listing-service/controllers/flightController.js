@@ -11,6 +11,7 @@ const logger = require('../../../shared/utils/logger');
 const axios = require('axios');
 
 const USER_SERVICE_URL = process.env.USER_SERVICE_URL || 'http://aerive-user-service:3001';
+const PROVIDER_SERVICE_URL = process.env.PROVIDER_SERVICE_URL || 'http://aerive-provider-service:3005';
 
 /**
  * Get flight by ID
@@ -131,7 +132,40 @@ const createFlight = asyncHandler(async (req, res) => {
     ? 'Active' 
     : 'Pending';
   
-  const flight = new Flight({
+  // Fetch provider's profile image if not provided and providerId exists
+  let image = flightData.image;
+  if (!image && flightData.providerId) {
+    try {
+      const providerResponse = await axios.get(`${PROVIDER_SERVICE_URL}/api/providers/${flightData.providerId}`, {
+        headers: {
+          'Authorization': req.headers.authorization || req.headers.Authorization || ''
+        },
+        timeout: 5000
+      });
+      image = providerResponse.data.data?.provider?.profileImage || null;
+      logger.info(`Fetched provider profile image for flight ${flightData.flightId}: ${image ? 'found' : 'not found'}`, {
+        providerId: flightData.providerId,
+        imageUrl: image
+      });
+    } catch (err) {
+      logger.warn(`Failed to fetch provider profile image for flight ${flightData.flightId}: ${err.message}`, {
+        providerId: flightData.providerId,
+        error: err.message
+      });
+      // Continue without image if fetch fails
+      image = null;
+    }
+  }
+  
+  logger.info(`Creating flight ${flightData.flightId} with image: ${image || 'none'}`, {
+    flightId: flightData.flightId,
+    providerId: flightData.providerId,
+    imageFromRequest: flightData.image,
+    finalImage: image
+  });
+  
+  // Build flight object, ensuring image is set correctly
+  const flightObj = {
     ...flightData,
     flightId: flightData.flightId.toUpperCase(),
     departureAirport: flightData.departureAirport.toUpperCase(),
@@ -143,7 +177,16 @@ const createFlight = asyncHandler(async (req, res) => {
     availableFrom: availableFrom,
     availableTo: availableTo,
     status
-  });
+  };
+  
+  // Explicitly set image field (after spread to ensure it's not overwritten)
+  if (image) {
+    flightObj.image = image;
+  } else {
+    flightObj.image = null;
+  }
+  
+  const flight = new Flight(flightObj);
 
   await flight.save();
 

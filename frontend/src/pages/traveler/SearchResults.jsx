@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { setSearchResults, setLoading, setError, setSearchType } from '../../store/slices/searchSlice'
 import { addToCart } from '../../store/slices/cartSlice'
 import { sendEventAndWait } from '../../services/kafkaService'
-import { ShoppingCart, Star, MapPin, Calendar, Users, Check } from 'lucide-react'
+import { ShoppingCart, Star, MapPin, Calendar, Users, Check, Plane, Car } from 'lucide-react'
 import { format, differenceInDays } from 'date-fns'
 
 const API_BASE_URL = import.meta.env.VITE_API_GATEWAY_URL || 'http://localhost:8080'
@@ -15,76 +15,414 @@ const FlightCard = ({ item, searchParams, searchType, onViewDetails }) => {
     if (!dateTime) return 'N/A'
     return format(new Date(dateTime), 'hh:mm a')
   }
-  
+
   const formatDate = (dateTime) => {
     if (!dateTime) return 'N/A'
     return format(new Date(dateTime), 'MMM dd')
   }
-  
+
   const formatDuration = (duration) => {
     if (!duration) return 'N/A'
     const hours = Math.floor(duration / 60)
     const minutes = duration % 60
     return hours > 0 ? `${hours}h ${minutes}m` : `${minutes}m`
   }
-  
+
   // Get minimum price from seat types
-  const minPrice = item.seatTypes && item.seatTypes.length > 0
-    ? Math.min(...item.seatTypes.filter(st => st.availableSeats > 0).map(st => st.ticketPrice))
-    : item.ticketPrice || 0
-  
-  const availableSeatTypes = item.seatTypes ? item.seatTypes.filter(st => st.availableSeats > 0) : []
-  
+  const minPrice =
+    item.seatTypes && item.seatTypes.length > 0
+      ? Math.min(
+          ...item.seatTypes
+            .filter((st) => st.availableSeats > 0)
+            .map((st) => st.ticketPrice),
+        )
+      : item.ticketPrice || 0
+
   return (
-    <div className="card hover:shadow-lg transition-shadow cursor-pointer" onClick={() => onViewDetails(item)}>
+    <div
+      className="card hover:shadow-lg transition-shadow cursor-pointer"
+      onClick={() => onViewDetails(item)}
+    >
       <div className="flex justify-between items-start">
+        <div className="flex-1 flex items-start space-x-4">
+          {/* Flight Image */}
+          <div className="w-24 h-24 flex-shrink-0 rounded-lg overflow-hidden bg-gray-200 flex items-center justify-center">
+            {item.image ? (
+              <img
+                src={`${API_BASE_URL}${item.image}`}
+                alt={item.providerName || item.flightId}
+                className="w-full h-full object-cover"
+                onError={(e) => {
+                  e.target.style.display = 'none'
+                  if (e.target.nextSibling) e.target.nextSibling.classList.remove('hidden')
+                }}
+              />
+            ) : null}
+            <div className={`w-full h-full flex items-center justify-center text-gray-400 ${item.image ? 'hidden' : ''}`}>
+              <Plane className="w-8 h-8" />
+            </div>
+          </div>
+          <div className="flex-1">
+            <div className="flex items-center space-x-4 mb-3">
+              <div className="flex-1">
+                <h3 className="text-xl font-semibold">{item.flightId}</h3>
+                {item.providerName && (
+                  <span className="text-sm text-gray-600">{item.providerName}</span>
+                )}
+              </div>
+              {item.flightRating > 0 && (
+                <div className="flex items-center">
+                  <Star className="w-4 h-4 text-yellow-400 fill-current" />
+                  <span className="ml-1">{item.flightRating.toFixed(1)}</span>
+                </div>
+              )}
+            </div>
+
+            <div className="grid md:grid-cols-4 gap-4 items-center">
+              <div>
+                <p className="text-2xl font-bold">{item.departureAirport}</p>
+                <p className="text-sm text-gray-600">{formatTime(item.departureDateTime)}</p>
+                <p className="text-xs text-gray-500">{formatDate(item.departureDateTime)}</p>
+              </div>
+              <div className="text-center">
+                <p className="text-xs text-gray-500">{formatDuration(item.duration)}</p>
+                <div className="flex items-center my-2">
+                  <div className="flex-1 h-px bg-gray-300" />
+                  <div className="mx-2 transform rotate-90">→</div>
+                  <div className="flex-1 h-px bg-gray-300" />
+                </div>
+              </div>
+              <div>
+                <p className="text-2xl font-bold">{item.arrivalAirport}</p>
+                <p className="text-sm text-gray-600">{formatTime(item.arrivalDateTime)}</p>
+                <p className="text-xs text-gray-500">{formatDate(item.arrivalDateTime)}</p>
+              </div>
+              <div className="text-right">
+                <p className="text-2xl font-bold text-primary-600">
+                  ${minPrice.toFixed(2)}
+                </p>
+                <p className="text-sm text-gray-500">per person</p>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    onViewDetails(item)
+                  }}
+                  className="btn-primary mt-3 flex items-center space-x-2"
+                >
+                  <span>View Details</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// Hotel Card Component
+const HotelCard = ({ item, location, navigate }) => {
+  const checkInDate = location.state?.searchParams?.checkInDate
+  const checkOutDate = location.state?.searchParams?.checkOutDate
+  const nights =
+    checkInDate && checkOutDate
+      ? differenceInDays(new Date(checkOutDate), new Date(checkInDate)) || 1
+      : 1
+
+  const minPrice =
+    item.roomAvailability && item.roomAvailability.length > 0
+      ? Math.min(
+          ...item.roomAvailability
+            .filter((rt) => rt.available > 0)
+            .map((rt) => rt.pricePerNight),
+        )
+      : item.roomTypes && item.roomTypes.length > 0
+      ? Math.min(...item.roomTypes.map((rt) => rt.pricePerNight))
+      : 0
+
+  // Compute image source once
+  const getImageSrc = () => {
+    if (!item.images || item.images.length === 0) return ''
+    const imagePath = item.images[0]
+    if (!imagePath) return ''
+    // If it's already a full URL (http/https), return as is
+    if (imagePath.startsWith('http')) return imagePath
+    // If it already starts with /api/listings/images/, prepend API_BASE_URL
+    if (imagePath.startsWith('/api/listings/images/')) {
+      return `${API_BASE_URL}${imagePath}`
+    }
+    // Otherwise, extract filename and construct the path
+    const filename = imagePath.split('/').pop()
+    const encodedFilename = encodeURIComponent(filename)
+    return `${API_BASE_URL}/api/listings/images/${encodedFilename}`
+  }
+  
+  const imageSrc = getImageSrc()
+
+  return (
+    <div
+      className="card"
+      onClick={(e) => {
+        e.stopPropagation()
+        navigate(`/hotel/${item.hotelId}`, {
+          state: {
+            hotel: item,
+            searchParams: location.state?.searchParams || {},
+            type: 'hotels',
+            fromSearch: true,
+          },
+        })
+      }}
+    >
+      <div className="flex justify-between items-start cursor-pointer hover:bg-gray-50 p-4 -m-4 rounded-lg transition-colors">
+        {/* Hotel Image */}
+        <div className="w-32 h-32 flex-shrink-0 mr-4 rounded-lg overflow-hidden bg-gray-200 flex items-center justify-center">
+          {imageSrc ? (
+            <img
+              src={imageSrc}
+              alt={item.hotelName}
+              className="w-full h-full object-cover"
+              onError={(e) => {
+                e.target.style.display = 'none'
+                if (e.target.nextSibling) e.target.nextSibling.classList.remove('hidden')
+              }}
+            />
+          ) : null}
+          <div
+            className={`w-full h-full flex items-center justify-center text-gray-400 ${
+              imageSrc ? 'hidden' : ''
+            }`}
+          >
+            <svg
+              className="w-12 h-12"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
+              />
+            </svg>
+          </div>
+        </div>
+
         <div className="flex-1">
-          <div className="flex items-center space-x-4 mb-3">
-            <h3 className="text-xl font-semibold">{item.flightId}</h3>
-            {item.providerName && (
-              <span className="text-sm text-gray-600">{item.providerName}</span>
+          <div className="flex items-center space-x-4 mb-2">
+            <h3 className="text-xl font-semibold">{item.hotelName}</h3>
+            <div className="flex items-center space-x-1">
+              {Array.from({ length: item.starRating || 0 }).map((_, i) => (
+                <Star key={i} className="w-4 h-4 text-yellow-400 fill-current" />
+              ))}
+            </div>
+            {item.hotelRating > 0 && (
+              <div className="flex items-center bg-green-100 text-green-800 px-2 py-1 rounded text-sm">
+                <Star className="w-3 h-3 fill-current mr-1" />
+                <span>{item.hotelRating.toFixed(1)}</span>
+              </div>
             )}
-            {item.flightRating > 0 && (
+          </div>
+          <div className="flex items-center text-gray-600 mb-2">
+            <MapPin className="w-4 h-4 mr-1" />
+            <span>
+              {item.address}, {item.city}, {item.state} {item.zipCode}
+            </span>
+          </div>
+          {item.amenities && item.amenities.length > 0 && (
+            <div className="flex flex-wrap gap-2 mb-2">
+              {item.amenities.slice(0, 5).map((amenity, idx) => (
+                <span
+                  key={idx}
+                  className="text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded"
+                >
+                  {amenity}
+                </span>
+              ))}
+              {item.amenities.length > 5 && (
+                <span className="text-xs text-gray-500">
+                  +{item.amenities.length - 5} more
+                </span>
+              )}
+            </div>
+          )}
+          {item.roomAvailability && item.roomAvailability.length > 0 && (
+            <div className="text-sm text-gray-600">
+              <span className="font-medium">Available room types:</span>{' '}
+              {item.roomAvailability
+                .filter((rt) => rt.available > 0)
+                .map((rt) => rt.type)
+                .join(', ')}
+            </div>
+          )}
+        </div>
+
+        <div className="ml-6 text-right">
+          <p className="text-2xl font-bold text-primary-600">
+            ${minPrice.toFixed(2)}
+          </p>
+          <p className="text-sm text-gray-500">per night</p>
+          {nights > 1 && (
+            <p className="text-sm text-gray-600 mt-1">
+              ${(minPrice * nights).toFixed(2)} for {nights} nights
+            </p>
+          )}
+          <button
+            onClick={(e) => {
+              e.stopPropagation()
+              navigate(`/hotel/${item.hotelId}`, {
+                state: {
+                  hotel: item,
+                  searchParams: location.state?.searchParams || {},
+                  type: 'hotels',
+                  fromSearch: true,
+                },
+              })
+            }}
+            className="btn-primary mt-4 flex items-center space-x-2"
+          >
+            <span>View Details</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// Car Card Component
+const CarCard = ({ item, location, navigate }) => {
+  const pickupDate = location.state?.searchParams?.pickupDate
+  const returnDate = location.state?.searchParams?.returnDate
+
+  const isValidDate = (dateStr) => {
+    if (!dateStr) return false
+    const date = new Date(dateStr)
+    return date instanceof Date && !isNaN(date.getTime())
+  }
+
+  const numberOfDays =
+    pickupDate &&
+    returnDate &&
+    isValidDate(pickupDate) &&
+    isValidDate(returnDate)
+      ? differenceInDays(new Date(returnDate), new Date(pickupDate)) || 1
+      : 1
+
+  const totalPrice = (item.dailyRentalPrice || 0) * numberOfDays
+
+  return (
+    <div className="card">
+      <div className="flex justify-between items-start">
+        <div className="flex-1 flex items-start space-x-4">
+          {/* Car Image */}
+          <div className="w-24 h-24 flex-shrink-0 rounded-lg overflow-hidden bg-gray-200 flex items-center justify-center">
+            {item.image ? (
+              <img
+                src={`${API_BASE_URL}${item.image}`}
+                alt={item.providerName || item.model || item.carModel}
+                className="w-full h-full object-cover"
+                onError={(e) => {
+                  e.target.style.display = 'none'
+                  if (e.target.nextSibling) e.target.nextSibling.classList.remove('hidden')
+                }}
+              />
+            ) : null}
+            <div className={`w-full h-full flex items-center justify-center text-gray-400 ${item.image ? 'hidden' : ''}`}>
+              <Car className="w-8 h-8" />
+            </div>
+          </div>
+          <div className="flex-1">
+            <div className="flex items-center space-x-4 mb-2">
+              <div className="flex-1">
+                <h3 className="text-xl font-semibold">{item.model || item.carModel}</h3>
+                {item.providerName && (
+                  <span className="text-sm text-gray-600">{item.providerName}</span>
+                )}
+              </div>
               <div className="flex items-center">
                 <Star className="w-4 h-4 text-yellow-400 fill-current" />
-                <span className="ml-1">{item.flightRating.toFixed(1)}</span>
+                <span className="ml-1">{item.carRating || 'N/A'}</span>
               </div>
+            </div>
+            <div className="text-sm text-gray-600 mb-2">
+              <p className="font-medium">
+                {item.carType} • {item.transmissionType} •{' '}
+                {item.numberOfSeats || item.seats} seats
+              </p>
+              <div className="flex items-center space-x-2 mt-1">
+                <MapPin className="w-4 h-4 text-gray-400" />
+                <span>
+                  {item.neighbourhood && `${item.neighbourhood}, `}
+                  {item.city}
+                  {item.state && `, ${item.state}`}
+                  {item.country && `, ${item.country}`}
+                </span>
+              </div>
+              {pickupDate &&
+                returnDate &&
+                isValidDate(pickupDate) &&
+                isValidDate(returnDate) && (
+                  <div className="flex items-center space-x-2 mt-1">
+                    <Calendar className="w-4 h-4 text-gray-400" />
+                    <span>
+                      {format(new Date(pickupDate), 'MMM dd, yyyy')} -{' '}
+                      {format(new Date(returnDate), 'MMM dd, yyyy')} ({numberOfDays}{' '}
+                      {numberOfDays === 1 ? 'day' : 'days'})
+                    </span>
+                  </div>
+                )}
+              <div className="flex items-center space-x-2 mt-1">
+                <Calendar className="w-4 h-4 text-gray-400" />
+                <span>
+                  Available:{' '}
+                  {item.availableFrom && isValidDate(item.availableFrom)
+                    ? format(new Date(item.availableFrom), 'MMM dd, yyyy')
+                    : 'N/A'}{' '}
+                  -{' '}
+                  {item.availableTo && isValidDate(item.availableTo)
+                    ? format(new Date(item.availableTo), 'MMM dd, yyyy')
+                    : 'N/A'}
+                </span>
+              </div>
+              {item.providerName && (
+                <p className="text-sm text-gray-500 mt-1">
+                  Provider: {item.providerName}
+                </p>
+              )}
+            </div>
+          </div>
+        </div>
+        <div className="ml-6 text-right">
+          <p className="text-2xl font-bold text-primary-600">
+            ${item.dailyRentalPrice}
+          </p>
+          <p className="text-sm text-gray-500">per day</p>
+          {pickupDate &&
+            returnDate &&
+            isValidDate(pickupDate) &&
+            isValidDate(returnDate) && (
+              <p className="text-sm text-gray-600 mt-1">
+                Total: ${totalPrice.toFixed(2)} ({numberOfDays}{' '}
+                {numberOfDays === 1 ? 'day' : 'days'})
+              </p>
             )}
-          </div>
-          
-          <div className="grid md:grid-cols-4 gap-4 items-center">
-            <div>
-              <p className="text-2xl font-bold">{item.departureAirport}</p>
-              <p className="text-sm text-gray-600">{formatTime(item.departureDateTime)}</p>
-              <p className="text-xs text-gray-500">{formatDate(item.departureDateTime)}</p>
-            </div>
-            <div className="text-center">
-              <p className="text-xs text-gray-500">{formatDuration(item.duration)}</p>
-              <div className="flex items-center my-2">
-                <div className="flex-1 h-px bg-gray-300"></div>
-                <div className="mx-2 transform rotate-90">→</div>
-                <div className="flex-1 h-px bg-gray-300"></div>
-              </div>
-            </div>
-            <div>
-              <p className="text-2xl font-bold">{item.arrivalAirport}</p>
-              <p className="text-sm text-gray-600">{formatTime(item.arrivalDateTime)}</p>
-              <p className="text-xs text-gray-500">{formatDate(item.arrivalDateTime)}</p>
-            </div>
-            <div className="text-right">
-              <p className="text-2xl font-bold text-primary-600">${minPrice.toFixed(2)}</p>
-              <p className="text-sm text-gray-500">per person</p>
-              <button
-                onClick={(e) => {
-                  e.stopPropagation()
-                  onViewDetails(item)
-                }}
-                className="btn-primary mt-3 flex items-center space-x-2"
-              >
-                <span>View Details</span>
-              </button>
-            </div>
-          </div>
+          <button
+            onClick={(e) => {
+              e.stopPropagation()
+              navigate(`/car/${item.carId}`, {
+                state: {
+                  car: item,
+                  searchParams: location.state?.searchParams || {},
+                  type: 'cars',
+                  fromSearch: true,
+                },
+              })
+            }}
+            className="btn-primary mt-4 flex items-center space-x-2"
+          >
+            <span>View Details</span>
+          </button>
         </div>
       </div>
     </div>
@@ -104,7 +442,7 @@ const SearchResults = () => {
   useEffect(() => {
     const performSearch = async () => {
       const { searchParams, type } = location.state || {}
-      
+
       // If no location.state but we have results in Redux, use those
       if (!searchParams || !type) {
         const currentSearchType = searchType || 'hotels'
@@ -117,16 +455,13 @@ const SearchResults = () => {
         navigate('/dashboard')
         return
       }
-      
+
       const searchKey = JSON.stringify({ searchParams, type })
-      
-      // Prevent duplicate searches - if already searching or already completed this search, skip
+
       if (lastSearchKey.current === searchKey) {
         if (isSearching.current) {
-          // Still searching, don't start another
           return
         }
-        // Already completed, use cached results
         if (results.length > 0) {
           dispatch(setLoading(false))
           return
@@ -138,11 +473,9 @@ const SearchResults = () => {
           return
         }
       }
-      
-      // Set search type
+
       dispatch(setSearchType(type))
-      
-      // Mark that we're searching BEFORE starting
+
       lastSearchKey.current = searchKey
       isSearching.current = true
       dispatch(setLoading(true))
@@ -159,7 +492,8 @@ const SearchResults = () => {
             departureDate: searchParams.departureDate,
             returnDate: searchParams.returnDate || null,
             tripType: searchParams.tripType || 'one-way',
-            numberOfPassengers: searchParams.numberOfPassengers || searchParams.quantity || 1,
+            numberOfPassengers:
+              searchParams.numberOfPassengers || searchParams.quantity || 1,
           }
         } else if (type === 'hotels') {
           eventType = 'search.hotels'
@@ -188,35 +522,31 @@ const SearchResults = () => {
             ...eventData,
           },
           'search-events-response',
-          30000
+          30000,
         )
 
-        // Handle different response formats
         let items = []
         if (type === 'flights') {
-          // Check if response already has the new structure {outbound, return, tripType}
           if (response.data?.outbound || response.outbound) {
             items = {
               outbound: response.data?.outbound || response.outbound || [],
               return: response.data?.return || response.return || [],
-              tripType: response.data?.tripType || response.tripType || 'one-way'
+              tripType: response.data?.tripType || response.tripType || 'one-way',
             }
           } else if (response.data) {
-            // Response structure from backend: { outbound, return, tripType }
             items = {
               outbound: response.data.outbound || [],
               return: response.data.return || [],
-              tripType: response.data.tripType || 'one-way'
+              tripType: response.data.tripType || 'one-way',
             }
           } else {
-            // Legacy format - flight search returns flights and optionally returnFlights for round trip
             const flights = response.data?.flights || response.flights || []
-            // Store return flights separately if they exist
             if (response.data?.returnFlights || response.returnFlights) {
               items = {
                 outbound: flights,
-                return: response.data?.returnFlights || response.returnFlights || [],
-                tripType: response.data?.tripType || response.tripType || 'one-way'
+                return:
+                  response.data?.returnFlights || response.returnFlights || [],
+                tripType: response.data?.tripType || response.tripType || 'one-way',
               }
             } else {
               items = flights
@@ -230,7 +560,7 @@ const SearchResults = () => {
           const resultKey = type === 'hotels' ? 'hotels' : 'cars'
           items = response[resultKey] || []
         }
-        
+
         console.log(`Search results for ${type}:`, items)
         dispatch(setSearchResults({ type, results: items }))
         setResults(items)
@@ -241,27 +571,34 @@ const SearchResults = () => {
         console.error('Search error:', err)
         isSearching.current = false
         dispatch(setLoading(false))
-        // Reset on error so it can retry if needed
         lastSearchKey.current = null
       }
     }
 
     performSearch()
-    // Only depend on location.state - don't include searchResults/searchType to avoid infinite loops
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [location.state])
 
   const handleAddToCart = (item) => {
-    const listingId = item[`${searchType.slice(0, -1)}Id`] || item.flightId || item.hotelId || item.carId
-    const listingType = searchType === 'flights' ? 'Flight' : searchType === 'hotels' ? 'Hotel' : 'Car'
-    
-    // For cars, calculate number of days
+    const listingId =
+      item[`${searchType.slice(0, -1)}Id`] ||
+      item.flightId ||
+      item.hotelId ||
+      item.carId
+    const listingType =
+      searchType === 'flights'
+        ? 'Flight'
+        : searchType === 'hotels'
+        ? 'Hotel'
+        : 'Car'
+
     let numberOfDays = 1
     if (searchType === 'cars') {
       const pickupDate = location.state?.searchParams?.pickupDate
       const returnDate = location.state?.searchParams?.returnDate
       if (pickupDate && returnDate) {
-        numberOfDays = differenceInDays(new Date(returnDate), new Date(pickupDate)) || 1
+        numberOfDays =
+          differenceInDays(new Date(returnDate), new Date(pickupDate)) || 1
       }
     }
 
@@ -269,8 +606,10 @@ const SearchResults = () => {
       listingId,
       listingType,
       listing: item,
-      quantity: 1, // For cars, quantity is always 1 (each car is a unique vehicle)
-      ...(searchType === 'flights' && { travelDate: location.state?.searchParams?.departureDate }),
+      quantity: 1,
+      ...(searchType === 'flights' && {
+        travelDate: location.state?.searchParams?.departureDate,
+      }),
       ...(searchType === 'hotels' && {
         checkInDate: location.state?.searchParams?.checkInDate,
         checkOutDate: location.state?.searchParams?.checkOutDate,
@@ -279,56 +618,60 @@ const SearchResults = () => {
         pickupDate: location.state?.searchParams?.pickupDate,
         returnDate: location.state?.searchParams?.returnDate,
         numberOfDays,
-        quantity: 1, // Cars are always quantity 1 - each car is a unique vehicle booking
+        quantity: 1,
       }),
     }
 
     dispatch(addToCart(cartItem))
-    // Success feedback is handled by the button state change
   }
 
-  // Check if item is already in cart (for cars, check for date overlaps)
   const getCartItemForCar = (item) => {
-    const listingId = item[`${searchType.slice(0, -1)}Id`] || item.flightId || item.hotelId || item.carId
-    const listingType = searchType === 'flights' ? 'Flight' : searchType === 'hotels' ? 'Hotel' : 'Car'
-    
+    const listingId =
+      item[`${searchType.slice(0, -1)}Id`] ||
+      item.flightId ||
+      item.hotelId ||
+      item.carId
+    const listingType =
+      searchType === 'flights'
+        ? 'Flight'
+        : searchType === 'hotels'
+        ? 'Hotel'
+        : 'Car'
+
     if (searchType === 'cars') {
       const pickupDate = location.state?.searchParams?.pickupDate
       const returnDate = location.state?.searchParams?.returnDate
-      
+
       if (!pickupDate || !returnDate) return null
-      
+
       const searchPickup = new Date(pickupDate)
       const searchReturn = new Date(returnDate)
-      
-      // Find cart items with same car that have overlapping dates
+
       const overlappingItem = cartItems.find((cartItem) => {
         if (cartItem.listingId !== listingId || cartItem.listingType !== listingType) {
           return false
         }
-        
+
         if (!cartItem.pickupDate || !cartItem.returnDate) {
           return false
         }
-        
+
         const cartPickup = new Date(cartItem.pickupDate)
         const cartReturn = new Date(cartItem.returnDate)
-        
-        // Check for date overlap: two date ranges overlap if one starts before the other ends
+
         return searchPickup <= cartReturn && cartPickup <= searchReturn
       })
-      
+
       return overlappingItem || null
     } else {
       const found = cartItems.find(
         (cartItem) =>
-          cartItem.listingId === listingId &&
-          cartItem.listingType === listingType
+          cartItem.listingId === listingId && cartItem.listingType === listingType,
       )
       return found || null
     }
   }
-  
+
   const isItemInCart = (item) => {
     return getCartItemForCar(item) !== null
   }
@@ -337,7 +680,7 @@ const SearchResults = () => {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600 mx-auto"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600 mx-auto" />
           <p className="mt-4 text-gray-600">Searching...</p>
         </div>
       </div>
@@ -358,42 +701,63 @@ const SearchResults = () => {
             Search Results for {searchType}
           </h2>
           <p className="text-gray-600 mt-2">
-            {searchType === 'flights' && results.outbound 
-              ? `${results.outbound.length} outbound flight${results.outbound.length !== 1 ? 's' : ''} found${results.return ? `, ${results.return.length} return flight${results.return.length !== 1 ? 's' : ''}` : ''}`
-              : Array.isArray(results) 
-                ? `${results.length} result${results.length !== 1 ? 's' : ''} found`
-                : '0 results found'}
+            {searchType === 'flights' && results.outbound
+              ? `${results.outbound.length} outbound flight${
+                  results.outbound.length !== 1 ? 's' : ''
+                } found${
+                  results.return
+                    ? `, ${results.return.length} return flight${
+                        results.return.length !== 1 ? 's' : ''
+                      }`
+                    : ''
+                }`
+              : Array.isArray(results)
+              ? `${results.length} result${results.length !== 1 ? 's' : ''} found`
+              : '0 results found'}
           </p>
         </div>
 
         <div className="space-y-4">
-          {searchType === 'flights' && results && typeof results === 'object' && results.outbound ? (
+          {searchType === 'flights' &&
+          results &&
+          typeof results === 'object' &&
+          results.outbound ? (
             results.tripType === 'round-trip' ? (
-              // Round trip view - split screen
               <div className="space-y-6">
                 <div className="text-center mb-4">
-                  <h3 className="text-xl font-bold text-gray-900">Round Trip Flights</h3>
-                  <p className="text-gray-600">{results.outbound.length} outbound, {results.return?.length || 0} return flights found</p>
+                  <h3 className="text-xl font-bold text-gray-900">
+                    Round Trip Flights
+                  </h3>
+                  <p className="text-gray-600">
+                    {results.outbound.length} outbound, {results.return?.length || 0}{' '}
+                    return flights found
+                  </p>
                 </div>
-                
+
                 <div className="grid md:grid-cols-2 gap-6">
-                  {/* Left side - Outbound */}
                   <div className="space-y-4">
-                    <h4 className="text-lg font-semibold text-gray-800 mb-3">Outbound - Departure</h4>
+                    <h4 className="text-lg font-semibold text-gray-800 mb-3">
+                      Outbound - Departure
+                    </h4>
                     {results.outbound.length > 0 ? (
                       results.outbound.map((item) => (
-                        <FlightCard 
-                          key={item.flightId} 
-                          item={item} 
+                        <FlightCard
+                          key={item.flightId}
+                          item={item}
                           searchParams={location.state?.searchParams}
                           searchType={searchType}
-                          onViewDetails={(flight) => navigate(`/flight/${flight.flightId}`, { 
-                            state: { 
-                              flight, 
-                              searchParams: { ...location.state?.searchParams, flightType: 'outbound' },
-                              returnFlights: results.return
-                            } 
-                          })}
+                          onViewDetails={(flight) =>
+                            navigate(`/flight/${flight.flightId}`, {
+                              state: {
+                                flight,
+                                searchParams: {
+                                  ...location.state?.searchParams,
+                                  flightType: 'outbound',
+                                },
+                                returnFlights: results.return,
+                              },
+                            })
+                          }
                         />
                       ))
                     ) : (
@@ -402,24 +766,30 @@ const SearchResults = () => {
                       </div>
                     )}
                   </div>
-                  
-                  {/* Right side - Return */}
+
                   <div className="space-y-4">
-                    <h4 className="text-lg font-semibold text-gray-800 mb-3">Return</h4>
+                    <h4 className="text-lg font-semibold text-gray-800 mb-3">
+                      Return
+                    </h4>
                     {results.return && results.return.length > 0 ? (
                       results.return.map((item) => (
-                        <FlightCard 
-                          key={item.flightId} 
-                          item={item} 
+                        <FlightCard
+                          key={item.flightId}
+                          item={item}
                           searchParams={location.state?.searchParams}
                           searchType={searchType}
-                          onViewDetails={(flight) => navigate(`/flight/${flight.flightId}`, { 
-                            state: { 
-                              flight, 
-                              searchParams: { ...location.state?.searchParams, flightType: 'return' },
-                              outboundFlights: results.outbound
-                            } 
-                          })}
+                          onViewDetails={(flight) =>
+                            navigate(`/flight/${flight.flightId}`, {
+                              state: {
+                                flight,
+                                searchParams: {
+                                  ...location.state?.searchParams,
+                                  flightType: 'return',
+                                },
+                                outboundFlights: results.outbound,
+                              },
+                            })
+                          }
                         />
                       ))
                     ) : (
@@ -431,281 +801,99 @@ const SearchResults = () => {
                 </div>
               </div>
             ) : (
-              // One-way with new structure - show outbound flights
               <div className="space-y-4">
                 {results.outbound.length > 0 ? (
                   results.outbound.map((item) => (
-                    <FlightCard 
-                      key={item.flightId} 
-                      item={item} 
+                    <FlightCard
+                      key={item.flightId}
+                      item={item}
                       searchParams={location.state?.searchParams}
                       searchType={searchType}
-                      onViewDetails={(flight) => navigate(`/flight/${flight.flightId}`, { 
-                        state: { 
-                          flight, 
-                          searchParams: location.state?.searchParams
-                        } 
-                      })}
+                      onViewDetails={(flight) =>
+                        navigate(`/flight/${flight.flightId}`, {
+                          state: {
+                            flight,
+                            searchParams: location.state?.searchParams,
+                          },
+                        })
+                      }
                     />
                   ))
                 ) : (
                   <div className="text-center py-12">
-                    <p className="text-gray-600 text-lg">No flights found. Try adjusting your search criteria.</p>
+                    <p className="text-gray-600 text-lg">
+                      No flights found. Try adjusting your search criteria.
+                    </p>
                   </div>
                 )}
               </div>
             )
           ) : searchType === 'flights' && Array.isArray(results) ? (
-            // Legacy one-way format - single list
             results.map((item) => (
-              <FlightCard 
-                key={item.flightId} 
-                item={item} 
+              <FlightCard
+                key={item.flightId}
+                item={item}
                 searchParams={location.state?.searchParams}
                 searchType={searchType}
-                onViewDetails={(flight) => navigate(`/flight/${flight.flightId}`, { 
-                  state: { 
-                    flight, 
-                    searchParams: location.state?.searchParams
-                  } 
-                })}
+                onViewDetails={(flight) =>
+                  navigate(`/flight/${flight.flightId}`, {
+                    state: {
+                      flight,
+                      searchParams: location.state?.searchParams,
+                    },
+                  })
+                }
               />
             ))
-          ) : searchType === 'flights' ? null : (
-            // Hotels and Cars - existing logic
-            results.map((item) => (
-              <div key={item[`${searchType.slice(0, -1)}Id`] || item.hotelId || item.carId} className="card">
-
-              {searchType === 'hotels' && (() => {
-                const checkInDate = location.state?.searchParams?.checkInDate
-                const checkOutDate = location.state?.searchParams?.checkOutDate
-                const nights = checkInDate && checkOutDate 
-                  ? differenceInDays(new Date(checkOutDate), new Date(checkInDate)) || 1
-                  : 1
-                
-                // Get minimum price from available room types
-                const minPrice = item.roomAvailability && item.roomAvailability.length > 0
-                  ? Math.min(...item.roomAvailability.filter(rt => rt.available > 0).map(rt => rt.pricePerNight))
-                  : item.roomTypes && item.roomTypes.length > 0
-                  ? Math.min(...item.roomTypes.map(rt => rt.pricePerNight))
-                  : 0
-                
+          ) : searchType !== 'flights' ? (
+            results.map((item) => {
+              const key =
+                item[`${searchType.slice(0, -1)}Id`] ||
+                item.hotelId ||
+                item.carId
+              if (searchType === 'hotels') {
                 return (
-                  <div 
-                    className="flex justify-between items-start cursor-pointer hover:bg-gray-50 p-4 -m-4 rounded-lg transition-colors"
-                    onClick={(e) => {
-                      e.stopPropagation()
-                      navigate(`/hotel/${item.hotelId}`, { 
-                        state: { 
-                          hotel: item,
-                          searchParams: location.state?.searchParams || {},
-                          type: 'hotels',
-                          fromSearch: true
-                        } 
-                      })
-                    }}
-                  >
-                    {/* Hotel Image */}
-                    <div className="w-32 h-32 flex-shrink-0 mr-4 rounded-lg overflow-hidden bg-gray-200 flex items-center justify-center">
-                      {item.images && item.images.length > 0 ? (
-                        <img
-                          src={(() => {
-                            const imagePath = item.images[0]
-                            if (!imagePath) return ''
-                            if (imagePath.startsWith('http')) return imagePath
-                            // Extract just the filename from the path and encode it properly
-                            const filename = imagePath.split('/').pop()
-                            // Encode the filename to handle spaces and special characters
-                            const encodedFilename = encodeURIComponent(filename)
-                            return `${API_BASE_URL}/api/listings/images/${encodedFilename}`
-                          })()}
-                          alt={item.hotelName}
-                          className="w-full h-full object-cover"
-                          onError={(e) => {
-                            // Hide image on error, show placeholder div instead
-                            e.target.style.display = 'none'
-                            e.target.nextSibling?.classList.remove('hidden')
-                          }}
-                        />
-                      ) : null}
-                      <div className={`w-full h-full flex items-center justify-center text-gray-400 ${item.images && item.images.length > 0 ? 'hidden' : ''}`}>
-                        <svg className="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-                        </svg>
-                      </div>
-                    </div>
-                    <div className="flex-1">
-                      <div className="flex items-center space-x-4 mb-2">
-                        <h3 className="text-xl font-semibold">{item.hotelName}</h3>
-                        <div className="flex items-center space-x-1">
-                          {Array.from({ length: item.starRating || 0 }).map((_, i) => (
-                            <Star key={i} className="w-4 h-4 text-yellow-400 fill-current" />
-                          ))}
-                        </div>
-                        {item.hotelRating > 0 && (
-                          <div className="flex items-center bg-green-100 text-green-800 px-2 py-1 rounded text-sm">
-                            <Star className="w-3 h-3 fill-current mr-1" />
-                            <span>{item.hotelRating.toFixed(1)}</span>
-                          </div>
-                        )}
-                      </div>
-                      <div className="flex items-center text-gray-600 mb-2">
-                        <MapPin className="w-4 h-4 mr-1" />
-                        <span>{item.address}, {item.city}, {item.state} {item.zipCode}</span>
-                      </div>
-                      {item.amenities && item.amenities.length > 0 && (
-                        <div className="flex flex-wrap gap-2 mb-2">
-                          {item.amenities.slice(0, 5).map((amenity, idx) => (
-                            <span key={idx} className="text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded">
-                              {amenity}
-                            </span>
-                          ))}
-                          {item.amenities.length > 5 && (
-                            <span className="text-xs text-gray-500">+{item.amenities.length - 5} more</span>
-                          )}
-                        </div>
-                      )}
-                      {item.roomAvailability && item.roomAvailability.length > 0 && (
-                        <div className="text-sm text-gray-600">
-                          <span className="font-medium">Available room types:</span>{' '}
-                          {item.roomAvailability
-                            .filter(rt => rt.available > 0)
-                            .map(rt => rt.type)
-                            .join(', ')}
-                        </div>
-                      )}
-                    </div>
-                    <div className="ml-6 text-right">
-                      <p className="text-2xl font-bold text-primary-600">
-                        ${minPrice.toFixed(2)}
-                      </p>
-                      <p className="text-sm text-gray-500">per night</p>
-                      {nights > 1 && (
-                        <p className="text-sm text-gray-600 mt-1">
-                          ${(minPrice * nights).toFixed(2)} for {nights} nights
-                        </p>
-                      )}
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation()
-                          navigate(`/hotel/${item.hotelId}`, { 
-                            state: { 
-                              hotel: item,
-                              searchParams: location.state?.searchParams || {},
-                              type: 'hotels',
-                              fromSearch: true
-                            } 
-                          })
-                        }}
-                        className="btn-primary mt-4 flex items-center space-x-2"
-                      >
-                        <span>View Details</span>
-                      </button>
-                    </div>
-                  </div>
+                  <HotelCard
+                    key={key}
+                    item={item}
+                    location={location}
+                    navigate={navigate}
+                  />
                 )
-              })()}
-
-              {searchType === 'cars' && (() => {
-                const pickupDate = location.state?.searchParams?.pickupDate
-                const returnDate = location.state?.searchParams?.returnDate
-                
-                // Validate dates before using them
-                const isValidDate = (dateStr) => {
-                  if (!dateStr) return false
-                  const date = new Date(dateStr)
-                  return date instanceof Date && !isNaN(date.getTime())
-                }
-                
-                const numberOfDays = (pickupDate && returnDate && isValidDate(pickupDate) && isValidDate(returnDate))
-                  ? (differenceInDays(new Date(returnDate), new Date(pickupDate)) || 1)
-                  : 1
-                const totalPrice = (item.dailyRentalPrice || 0) * numberOfDays
-
+              }
+              if (searchType === 'cars') {
                 return (
-                  <div className="flex justify-between items-start">
-                    <div className="flex-1">
-                      <div className="flex items-center space-x-4 mb-2">
-                        <h3 className="text-xl font-semibold">{item.model || item.carModel}</h3>
-                        <div className="flex items-center">
-                          <Star className="w-4 h-4 text-yellow-400 fill-current" />
-                          <span className="ml-1">{item.carRating || 'N/A'}</span>
-                        </div>
-                      </div>
-                      <div className="text-sm text-gray-600 mb-2">
-                        <p className="font-medium">{item.carType} • {item.transmissionType} • {item.numberOfSeats || item.seats} seats</p>
-                        <div className="flex items-center space-x-2 mt-1">
-                          <MapPin className="w-4 h-4 text-gray-400" />
-                          <span>
-                            {item.neighbourhood && `${item.neighbourhood}, `}
-                            {item.city}
-                            {item.state && `, ${item.state}`}
-                            {item.country && `, ${item.country}`}
-                          </span>
-                        </div>
-                        {pickupDate && returnDate && isValidDate(pickupDate) && isValidDate(returnDate) && (
-                          <div className="flex items-center space-x-2 mt-1">
-                            <Calendar className="w-4 h-4 text-gray-400" />
-                            <span>
-                              {format(new Date(pickupDate), 'MMM dd, yyyy')} - {format(new Date(returnDate), 'MMM dd, yyyy')} ({numberOfDays} {numberOfDays === 1 ? 'day' : 'days'})
-                            </span>
-                          </div>
-                        )}
-                        <div className="flex items-center space-x-2 mt-1">
-                          <Calendar className="w-4 h-4 text-gray-400" />
-                          <span>
-                            Available: {item.availableFrom && isValidDate(item.availableFrom) ? format(new Date(item.availableFrom), 'MMM dd, yyyy') : 'N/A'} - {item.availableTo && isValidDate(item.availableTo) ? format(new Date(item.availableTo), 'MMM dd, yyyy') : 'N/A'}
-                          </span>
-                        </div>
-                        {item.providerName && (
-                          <p className="text-sm text-gray-500 mt-1">Provider: {item.providerName}</p>
-                        )}
-                      </div>
-                    </div>
-                    <div className="ml-6 text-right">
-                      <p className="text-2xl font-bold text-primary-600">${item.dailyRentalPrice}</p>
-                      <p className="text-sm text-gray-500">per day</p>
-                      {pickupDate && returnDate && isValidDate(pickupDate) && isValidDate(returnDate) && (
-                        <p className="text-sm text-gray-600 mt-1">
-                          Total: ${totalPrice.toFixed(2)} ({numberOfDays} {numberOfDays === 1 ? 'day' : 'days'})
-                        </p>
-                      )}
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation()
-                          navigate(`/car/${item.carId}`, { 
-                            state: { 
-                              car: item,
-                              searchParams: location.state?.searchParams || {},
-                              type: 'cars',
-                              fromSearch: true
-                            } 
-                          })
-                        }}
-                        className="btn-primary mt-4 flex items-center space-x-2"
-                      >
-                        <span>View Details</span>
-                      </button>
-                    </div>
-                  </div>
+                  <CarCard
+                    key={key}
+                    item={item}
+                    location={location}
+                    navigate={navigate}
+                  />
                 )
-              })()}
-              </div>
-            ))
-          )}
+              }
+              return null
+            })
+          ) : null}
         </div>
 
-        {((searchType === 'flights' && results.outbound && results.outbound.length === 0) ||
+        {((searchType === 'flights' &&
+          results.outbound &&
+          results.outbound.length === 0) ||
           (Array.isArray(results) && results.length === 0) ||
-          (!results || (typeof results === 'object' && !results.outbound && !Array.isArray(results)))) && !loading && (
-          <div className="text-center py-12">
-            <p className="text-gray-600 text-lg">No results found. Try adjusting your search criteria.</p>
-          </div>
-        )}
+          (!results ||
+            (typeof results === 'object' &&
+              !results.outbound &&
+              !Array.isArray(results)))) &&
+          !loading && (
+            <div className="text-center py-12">
+              <p className="text-gray-600 text-lg">
+                No results found. Try adjusting your search criteria.
+              </p>
+            </div>
+          )}
       </div>
     </div>
   )
 }
 
 export default SearchResults
-

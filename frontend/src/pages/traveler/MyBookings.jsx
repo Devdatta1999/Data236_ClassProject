@@ -328,10 +328,40 @@ const MyBookings = () => {
                       onClick={() => navigate(`/booking-group/${billingId}`)}
                     >
                       <div className="flex justify-between items-start mb-4">
-                        <div className="flex-1">
-                          <div className="flex items-center space-x-3 mb-2">
-                            <h3 className="text-xl font-semibold">{listingName}</h3>
-                          </div>
+                        <div className="flex-1 flex items-start space-x-4">
+                          {/* Hotel Image */}
+                          {(listing?.images && listing.images.length > 0) || provider?.profileImage ? (
+                            <div className="w-24 h-24 flex-shrink-0 rounded-lg overflow-hidden bg-gray-200 flex items-center justify-center">
+                              {listing?.images && listing.images.length > 0 ? (
+                                <img
+                                  src={`${import.meta.env.VITE_API_GATEWAY_URL || 'http://localhost:8080'}/api/listings/images/${encodeURIComponent(listing.images[0].split('/').pop())}`}
+                                  alt={listingName}
+                                  className="w-full h-full object-cover"
+                                  onError={(e) => {
+                                    e.target.style.display = 'none'
+                                    if (e.target.nextSibling) e.target.nextSibling.classList.remove('hidden')
+                                  }}
+                                />
+                              ) : provider?.profileImage ? (
+                                <img
+                                  src={`${import.meta.env.VITE_API_GATEWAY_URL || 'http://localhost:8080'}${provider.profileImage}`}
+                                  alt={provider.providerName || provider.name}
+                                  className="w-full h-full object-cover"
+                                  onError={(e) => {
+                                    e.target.style.display = 'none'
+                                    if (e.target.nextSibling) e.target.nextSibling.classList.remove('hidden')
+                                  }}
+                                />
+                              ) : null}
+                              <div className="hidden w-full h-full flex items-center justify-center text-gray-400">
+                                <Building2 className="w-8 h-8" />
+                              </div>
+                            </div>
+                          ) : null}
+                          <div className="flex-1">
+                            <div className="flex items-center space-x-3 mb-2">
+                              <h3 className="text-xl font-semibold">{listingName}</h3>
+                            </div>
                           
                           {billingId && (
                             <p className="text-sm text-gray-500 mb-2">
@@ -362,6 +392,7 @@ const MyBookings = () => {
                               </span>
                             </div>
                           )}
+                          </div>
                         </div>
                         <div className="text-right ml-6">
                           <p className="text-2xl font-bold text-primary-600">
@@ -462,21 +493,63 @@ const MyBookings = () => {
                     listingName = listing.hotelName || 'Hotel'
                   }
 
-              return (
+                  return (
                 <div
                   key={booking.bookingId}
                   className="card hover:shadow-lg transition-shadow cursor-pointer"
                   onClick={() => navigate(`/booking/${booking.bookingId}`)}
                 >
                   <div className="flex justify-between items-start">
-                    <div className="flex-1">
-                      <div className="flex items-center space-x-3 mb-2">
-                        <h3 className="text-xl font-semibold">{listingName || booking.bookingId}</h3>
-                        <span className={`px-3 py-1 rounded-full text-sm font-medium flex items-center space-x-1 ${getStatusColor(booking.status)}`}>
-                          {getStatusIcon(booking.status)}
-                          <span>{booking.status}</span>
-                        </span>
-                      </div>
+                    <div className="flex-1 flex items-start space-x-4">
+                      {/* Listing Image */}
+                      {(() => {
+                        let imageUrl = null
+                        if (booking.listingType === 'Flight' && (listing?.image || provider?.profileImage)) {
+                          imageUrl = listing?.image || provider?.profileImage
+                        } else if (booking.listingType === 'Car' && (listing?.image || provider?.profileImage)) {
+                          imageUrl = listing?.image || provider?.profileImage
+                        } else if (booking.listingType === 'Hotel' && ((listing?.images && listing.images.length > 0) || provider?.profileImage)) {
+                          if (listing?.images && listing.images.length > 0) {
+                            const imagePath = listing.images[0]
+                            imageUrl = `/api/listings/images/${encodeURIComponent(imagePath.split('/').pop())}`
+                          } else {
+                            imageUrl = provider?.profileImage
+                          }
+                        }
+                        
+                        if (!imageUrl) return null
+                        
+                        return (
+                          <div className="w-24 h-24 flex-shrink-0 rounded-lg overflow-hidden bg-gray-200 flex items-center justify-center">
+                            <img
+                              src={`${import.meta.env.VITE_API_GATEWAY_URL || 'http://localhost:8080'}${imageUrl}`}
+                              alt={listingName || booking.bookingId}
+                              className="w-full h-full object-cover"
+                              onError={(e) => {
+                                e.target.style.display = 'none'
+                                if (e.target.nextSibling) e.target.nextSibling.classList.remove('hidden')
+                              }}
+                            />
+                            <div className="hidden w-full h-full flex items-center justify-center text-gray-400">
+                              {booking.listingType === 'Flight' ? (
+                                <Plane className="w-8 h-8" />
+                              ) : booking.listingType === 'Car' ? (
+                                <Car className="w-8 h-8" />
+                              ) : (
+                                <Building2 className="w-8 h-8" />
+                              )}
+                            </div>
+                          </div>
+                        )
+                      })()}
+                      <div className="flex-1">
+                        <div className="flex items-center space-x-3 mb-2">
+                          <h3 className="text-xl font-semibold">{listingName || booking.bookingId}</h3>
+                          <span className={`px-3 py-1 rounded-full text-sm font-medium flex items-center space-x-1 ${getStatusColor(booking.status)}`}>
+                            {getStatusIcon(booking.status)}
+                            <span>{booking.status}</span>
+                          </span>
+                        </div>
                       
                       {booking.bookingId && (
                         <p className="text-sm text-gray-500 mb-2">
@@ -595,6 +668,7 @@ const MyBookings = () => {
                           </div>
                         )
                       })()}
+                      </div>
                     </div>
                     <div className="text-right ml-6">
                       <p className="text-2xl font-bold text-primary-600">

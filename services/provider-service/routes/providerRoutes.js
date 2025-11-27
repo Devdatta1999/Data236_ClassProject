@@ -19,6 +19,7 @@ router.get('/listings', authenticate, requireProvider, providerController.getMyL
 router.delete('/listings', authenticate, requireProvider, providerController.deleteMyListing);
 router.get('/me', authenticate, requireProvider, providerController.getMyProvider);
 router.put('/me', authenticate, requireProvider, providerController.updateProvider);
+router.post('/sync-images', authenticate, requireProvider, providerController.syncProviderImageToAllListings);
 router.get('/:providerId', authenticate, providerController.getProvider);
 router.get('/:providerId/analytics', authenticate, requireProvider, providerController.getProviderAnalytics);
 

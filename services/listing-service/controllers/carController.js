@@ -11,6 +11,7 @@ const logger = require('../../../shared/utils/logger');
 const axios = require('axios');
 
 const USER_SERVICE_URL = process.env.USER_SERVICE_URL || 'http://aerive-user-service:3001';
+const PROVIDER_SERVICE_URL = process.env.PROVIDER_SERVICE_URL || 'http://aerive-provider-service:3005';
 
 /**
  * Get car by ID
@@ -51,13 +52,54 @@ const createCar = asyncHandler(async (req, res) => {
     ? 'Active' 
     : 'Pending';
   
-  // Ensure dates are properly formatted
-  const car = new Car({
+  // Fetch provider's profile image if not provided and providerId exists
+  let image = carData.image;
+  if (!image && carData.providerId) {
+    try {
+      const providerResponse = await axios.get(`${PROVIDER_SERVICE_URL}/api/providers/${carData.providerId}`, {
+        headers: {
+          'Authorization': req.headers.authorization || req.headers.Authorization || ''
+        },
+        timeout: 5000
+      });
+      image = providerResponse.data.data?.provider?.profileImage || null;
+      logger.info(`Fetched provider profile image for car ${carData.carId}: ${image ? 'found' : 'not found'}`, {
+        providerId: carData.providerId,
+        imageUrl: image
+      });
+    } catch (err) {
+      logger.warn(`Failed to fetch provider profile image for car ${carData.carId}: ${err.message}`, {
+        providerId: carData.providerId,
+        error: err.message
+      });
+      // Continue without image if fetch fails
+      image = null;
+    }
+  }
+  
+  logger.info(`Creating car ${carData.carId} with image: ${image || 'none'}`, {
+    carId: carData.carId,
+    providerId: carData.providerId,
+    imageFromRequest: carData.image,
+    finalImage: image
+  });
+  
+  // Build car object, ensuring image is set correctly
+  const carObj = {
     ...carData,
     availableFrom: carData.availableFrom ? new Date(carData.availableFrom) : undefined,
     availableTo: carData.availableTo ? new Date(carData.availableTo) : undefined,
     status
-  });
+  };
+  
+  // Explicitly set image field (after spread to ensure it's not overwritten)
+  if (image) {
+    carObj.image = image;
+  } else {
+    carObj.image = null;
+  }
+  
+  const car = new Car(carObj);
   
   // Validate date range
   if (car.availableFrom && car.availableTo && car.availableFrom >= car.availableTo) {

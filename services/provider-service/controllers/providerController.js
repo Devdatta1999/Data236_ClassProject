@@ -11,6 +11,59 @@ const axios = require('axios');
 const LISTING_SERVICE_URL = process.env.LISTING_SERVICE_URL || 'http://localhost:3002';
 
 /**
+ * Sync provider profile image to all their listings
+ */
+async function syncProviderImageToListings(providerId, imageUrl, authToken) {
+  try {
+    // Get all listings for this provider
+    const [flightsResponse, carsResponse] = await Promise.all([
+      axios.get(`${LISTING_SERVICE_URL}/api/listings/flights/by-provider`, {
+        params: { providerId },
+        headers: { 'Authorization': authToken }
+      }).catch(() => ({ data: { data: { flights: [] } } })),
+      axios.get(`${LISTING_SERVICE_URL}/api/listings/cars/by-provider`, {
+        params: { providerId },
+        headers: { 'Authorization': authToken }
+      }).catch(() => ({ data: { data: { cars: [] } } }))
+    ]);
+
+    const flights = flightsResponse.data?.data?.flights || [];
+    const cars = carsResponse.data?.data?.cars || [];
+
+    // Update all flights
+    await Promise.all(
+      flights.map(flight =>
+        axios.put(
+          `${LISTING_SERVICE_URL}/api/listings/flights/${flight.flightId}`,
+          { image: imageUrl },
+          { headers: { 'Authorization': authToken } }
+        ).catch(err => {
+          logger.warn(`Failed to update image for flight ${flight.flightId}: ${err.message}`);
+        })
+      )
+    );
+
+    // Update all cars
+    await Promise.all(
+      cars.map(car =>
+        axios.put(
+          `${LISTING_SERVICE_URL}/api/listings/cars/${car.carId}`,
+          { image: imageUrl },
+          { headers: { 'Authorization': authToken } }
+        ).catch(err => {
+          logger.warn(`Failed to update image for car ${car.carId}: ${err.message}`);
+        })
+      )
+    );
+
+    logger.info(`Synced profile image to ${flights.length} flights and ${cars.length} cars for provider ${providerId}`);
+  } catch (error) {
+    logger.error(`Error syncing provider image to listings: ${error.message}`);
+    // Don't throw - this is a background sync operation
+  }
+}
+
+/**
  * Register provider
  */
 const registerProvider = asyncHandler(async (req, res) => {
@@ -184,7 +237,8 @@ const submitListing = asyncHandler(async (req, res) => {
     logger.info(`Calling listing service to create ${listingType} listing`, {
       url: `${LISTING_SERVICE_URL}/api/listings/${listingTypeLower}`,
       hasAuthToken: !!authToken,
-      listingId: finalListingData.carId || finalListingData.flightId || finalListingData.hotelId
+      listingId: finalListingData.carId || finalListingData.flightId || finalListingData.hotelId,
+      providerProfileImage: provider.profileImage || 'none'
     });
     
     await axios.post(
@@ -193,6 +247,7 @@ const submitListing = asyncHandler(async (req, res) => {
         ...finalListingData,
         providerId,
         providerName: provider.providerName,
+        image: provider.profileImage || null, // Include provider's profile picture as listing image
         status: 'Pending'
       },
       {
@@ -316,11 +371,22 @@ const updateProvider = asyncHandler(async (req, res) => {
     provider.address = { ...provider.address, ...address };
   }
 
+  const imageChanged = profileImage !== undefined && provider.profileImage !== profileImage;
+  
   if (profileImage !== undefined) {
     provider.profileImage = profileImage;
   }
 
   await provider.save();
+
+  // If profile image changed, sync to all listings
+  if (imageChanged && profileImage) {
+    const authToken = req.headers.authorization || req.headers.Authorization;
+    // Sync in background (don't wait for it)
+    syncProviderImageToListings(providerId, profileImage, authToken).catch(err => {
+      logger.error(`Background sync of profile image failed: ${err.message}`);
+    });
+  }
 
   logger.info(`Provider profile updated: ${providerId}`);
 
@@ -542,6 +608,42 @@ const deleteMyListing = asyncHandler(async (req, res) => {
 });
 
 /**
+ * Sync provider profile image to all existing listings (for existing listings without images)
+ */
+const syncProviderImageToAllListings = asyncHandler(async (req, res) => {
+  const { providerId } = req.user;
+  
+  if (!providerId) {
+    throw new ValidationError('Provider ID not found in token');
+  }
+
+  const provider = await Provider.findOne({ providerId });
+  if (!provider) {
+    throw new NotFoundError('Provider');
+  }
+
+  if (!provider.profileImage) {
+    return res.json({
+      success: true,
+      message: 'Provider has no profile image to sync',
+      data: { synced: 0 }
+    });
+  }
+
+  const authToken = req.headers.authorization || req.headers.Authorization;
+  if (!authToken) {
+    throw new ValidationError('Authentication token is required');
+  }
+
+  await syncProviderImageToListings(providerId, provider.profileImage, authToken);
+
+  res.json({
+    success: true,
+    message: 'Profile image synced to all listings successfully'
+  });
+});
+
+/**
  * Search providers by name (for autocomplete)
  */
 const searchProviders = asyncHandler(async (req, res) => {
@@ -590,6 +692,7 @@ module.exports = {
   getProviderAnalytics,
   getMyListings,
   deleteMyListing,
-  searchProviders
+  searchProviders,
+  syncProviderImageToAllListings
 };
 

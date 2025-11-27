@@ -67,7 +67,10 @@ const ProfilePage = () => {
         // Set current profile image if it exists
         if (userData?.profileImage) {
           setCurrentProfileImage(userData.profileImage)
+          setProfilePicturePreview(userData.profileImage)
         }
+        // Don't update Redux here to avoid infinite loops - Redux already has user data from login
+        // Only update Redux when user explicitly makes changes (upload picture, update profile)
       } catch (err) {
         console.error('Error fetching profile:', err)
       }
@@ -75,7 +78,8 @@ const ProfilePage = () => {
 
     fetchProfile()
     fetchSavedCards()
-  }, [user, dispatch])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user?.userId]) // Only depend on userId, not the entire user object
 
   const fetchSavedCards = async () => {
     if (!user?.userId) return
@@ -346,15 +350,21 @@ const ProfilePage = () => {
       dispatch(updateUser(updatedUser))
       dispatch(updateUserProfile(updatedUser))
       
-      setCurrentProfileImage(uploadResponse.data.data.imageUrl)
+      const imageUrl = uploadResponse.data.data.imageUrl
+      setCurrentProfileImage(imageUrl)
       setProfilePicture(null) // Clear the file after successful upload
-      setProfilePicturePreview(null)
+      setProfilePicturePreview(imageUrl) // Set preview to the uploaded image URL
       setSuccess('Profile picture updated successfully!')
       
-      // Refresh profile data
+      // Refresh profile data to ensure everything is in sync
       const userResponse = await api.get(`/api/users/${user.userId}`)
       const freshUserData = userResponse.data.data?.user
+      if (freshUserData?.profileImage) {
+        setCurrentProfileImage(freshUserData.profileImage)
+        setProfilePicturePreview(freshUserData.profileImage)
+      }
       dispatch(setProfile(freshUserData))
+      dispatch(updateUser(freshUserData)) // Update Redux with fresh data including profileImage
     } catch (err) {
       console.error('Error uploading profile picture:', err)
       setError('Failed to upload profile picture. Please try again.')
@@ -391,8 +401,10 @@ const ProfilePage = () => {
       const freshUserData = userResponse.data.data?.user
       if (freshUserData?.profileImage) {
         setCurrentProfileImage(freshUserData.profileImage)
+        setProfilePicturePreview(freshUserData.profileImage)
       }
       dispatch(setProfile(freshUserData))
+      dispatch(updateUser(freshUserData)) // Update Redux with fresh data including profileImage
     } catch (err) {
       const errorResponse = err.response?.data?.error
       const errorMessage = typeof errorResponse === 'string'
@@ -442,25 +454,38 @@ const ProfilePage = () => {
             <div className="flex items-center space-x-4">
               <div className="relative">
                 {profilePicturePreview ? (
-                  <div className="relative">
+                  profilePicturePreview.startsWith('data:') ? (
+                    <div className="relative">
+                      <img
+                        src={profilePicturePreview}
+                        alt="Profile preview"
+                        className="w-24 h-24 rounded-full object-cover border-2 border-gray-300"
+                      />
+                      <button
+                        type="button"
+                        onClick={removeProfilePicture}
+                        className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600"
+                      >
+                        <X className="w-4 h-4" />
+                      </button>
+                    </div>
+                  ) : (
                     <img
-                      src={profilePicturePreview}
-                      alt="Profile preview"
+                      src={`${import.meta.env.VITE_API_GATEWAY_URL || 'http://localhost:8080'}${profilePicturePreview}`}
+                      alt="Profile"
                       className="w-24 h-24 rounded-full object-cover border-2 border-gray-300"
+                      key={profilePicturePreview} // Force re-render when image changes
+                      onError={(e) => {
+                        e.target.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"%3E%3Cpath fill="%23999" d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/%3E%3C/svg%3E'
+                      }}
                     />
-                    <button
-                      type="button"
-                      onClick={removeProfilePicture}
-                      className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600"
-                    >
-                      <X className="w-4 h-4" />
-                    </button>
-                  </div>
+                  )
                 ) : currentProfileImage ? (
                   <img
                     src={`${import.meta.env.VITE_API_GATEWAY_URL || 'http://localhost:8080'}${currentProfileImage}`}
                     alt="Profile"
                     className="w-24 h-24 rounded-full object-cover border-2 border-gray-300"
+                    key={currentProfileImage} // Force re-render when image changes
                     onError={(e) => {
                       e.target.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"%3E%3Cpath fill="%23999" d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/%3E%3C/svg%3E'
                     }}

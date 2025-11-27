@@ -33,9 +33,21 @@ app.use((req, res, next) => {
   });
 });
 
-// Serve uploaded profile pictures statically
+// Ensure uploads directory structure exists (important for persistent volumes)
 const path = require('path');
-app.use('/api/users/profile-pictures', express.static(path.join(__dirname, '../uploads/profile-pictures'), {
+const fs = require('fs');
+const uploadsDir = path.join(__dirname, '../uploads');
+const profilePicturesDir = path.join(__dirname, '../uploads/profile-pictures');
+if (!fs.existsSync(uploadsDir)) {
+  fs.mkdirSync(uploadsDir, { recursive: true });
+}
+if (!fs.existsSync(profilePicturesDir)) {
+  fs.mkdirSync(profilePicturesDir, { recursive: true });
+}
+logger.info('Uploads directory structure initialized', { uploadsDir, profilePicturesDir });
+
+// Serve uploaded profile pictures statically
+app.use('/api/users/profile-pictures', express.static(profilePicturesDir, {
   setHeaders: (res, filePath) => {
     // Set proper content type for images
     if (filePath.endsWith('.webp')) {

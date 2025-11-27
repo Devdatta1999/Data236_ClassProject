@@ -205,9 +205,21 @@ const CheckoutPage = () => {
                     <div key={groupKey} className="card">
                       <div className="flex justify-between items-start mb-4">
                         <div className="flex-1">
-                          <h3 className="text-lg font-semibold mb-2">
-                            {firstItem.listingName || listing?.hotelName || 'Hotel'}
-                          </h3>
+                          <div className="flex items-center space-x-4 mb-2">
+                            {(firstItem.image || listing?.image) && (
+                              <img
+                                src={`${import.meta.env.VITE_API_GATEWAY_URL || 'http://localhost:8080'}${firstItem.image || listing?.image}`}
+                                alt={firstItem.listingName || listing?.hotelName || 'Hotel'}
+                                className="w-16 h-16 rounded-lg object-cover border border-gray-200"
+                                onError={(e) => {
+                                  e.target.style.display = 'none'
+                                }}
+                              />
+                            )}
+                            <h3 className="text-lg font-semibold">
+                              {firstItem.listingName || listing?.hotelName || 'Hotel'}
+                            </h3>
+                          </div>
                           {firstItem.checkInDate && firstItem.checkOutDate && (
                             <div className="flex items-center space-x-2 mb-2 text-sm text-gray-600">
                               <Calendar className="w-4 h-4" />
@@ -304,9 +316,21 @@ const CheckoutPage = () => {
                       <div key={item.originalIndex} className="card">
                         <div className="flex justify-between items-start">
                           <div className="flex-1">
-                            <h3 className="text-lg font-semibold mb-2">
-                              {item.listingName || listing?.flightId || listing?.hotelName || listing?.model || listing?.carModel}
-                            </h3>
+                            <div className="flex items-center space-x-4 mb-2">
+                              {(item.image || listing?.image) && (
+                                <img
+                                  src={`${import.meta.env.VITE_API_GATEWAY_URL || 'http://localhost:8080'}${item.image || listing?.image}`}
+                                  alt={item.listingName || listing?.flightId || listing?.hotelName || listing?.model || listing?.carModel}
+                                  className="w-16 h-16 rounded-lg object-cover border border-gray-200"
+                                  onError={(e) => {
+                                    e.target.style.display = 'none'
+                                  }}
+                                />
+                              )}
+                              <h3 className="text-lg font-semibold">
+                                {item.listingName || listing?.flightId || listing?.hotelName || listing?.model || listing?.carModel}
+                              </h3>
+                            </div>
                             <p className="text-sm text-gray-600 mb-2">
                               Type: {item.listingType}
                               {item.roomType && item.listingType === 'Flight' && ` - ${item.roomType} Class`}

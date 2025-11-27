@@ -152,6 +152,7 @@ const Navbar = () => {
                           const icon = e.target.parentElement.querySelector('.profile-icon-fallback')
                           if (icon) icon.style.display = 'block'
                         }}
+                        key={user.profileImage} // Force re-render when profileImage changes
                       />
                     ) : null}
                     <User className={`w-5 h-5 profile-icon-fallback ${user?.profileImage ? 'hidden' : ''}`} />

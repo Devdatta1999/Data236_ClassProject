@@ -70,6 +70,10 @@ const flightSchema = new mongoose.Schema({
     type: String,
     required: true
   },
+  image: {
+    type: String,
+    default: null // Provider's profile picture URL
+  },
   departureAirport: {
     type: String,
     required: true,

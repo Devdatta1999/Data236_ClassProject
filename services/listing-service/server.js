@@ -21,10 +21,22 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Serve uploaded images statically
+// Ensure uploads directory structure exists (important for persistent volumes)
 const path = require('path');
+const fs = require('fs');
+const uploadsDir = path.join(__dirname, '../uploads');
+const imagesDir = path.join(__dirname, '../uploads/images');
+if (!fs.existsSync(uploadsDir)) {
+  fs.mkdirSync(uploadsDir, { recursive: true });
+}
+if (!fs.existsSync(imagesDir)) {
+  fs.mkdirSync(imagesDir, { recursive: true });
+}
+logger.info('Uploads directory structure initialized', { uploadsDir, imagesDir });
+
+// Serve uploaded images statically
 // Use express.static with options to handle URL-encoded filenames
-app.use('/api/listings/images', express.static(path.join(__dirname, '../uploads/images'), {
+app.use('/api/listings/images', express.static(imagesDir, {
   setHeaders: (res, filePath) => {
     // Set proper content type for images
     if (filePath.endsWith('.webp')) {

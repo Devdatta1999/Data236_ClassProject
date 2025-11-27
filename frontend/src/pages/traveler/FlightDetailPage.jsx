@@ -97,7 +97,7 @@ const FlightDetailPage = () => {
         totalPrice,
         travelDate,
         numberOfPassengers: seat.quantity,
-        image: null,
+        image: flight.image || null,
         address: `${flight.departureAirport} → ${flight.arrivalAirport}`,
       }
 
@@ -190,11 +190,25 @@ const FlightDetailPage = () => {
             <ArrowLeft className="w-4 h-4" />
             <span>Back to Search</span>
           </button>
-          <h1 className="text-3xl font-bold">{flight.flightId}</h1>
-          <div className="flex items-center space-x-4 mt-2">
-            {flight.providerName && (
-              <span className="text-gray-600">{flight.providerName}</span>
+          <div className="flex items-center space-x-4">
+            {flight.image && (
+              <img
+                src={`${import.meta.env.VITE_API_GATEWAY_URL || 'http://localhost:8080'}${flight.image}`}
+                alt={flight.providerName || flight.flightId}
+                className="w-24 h-24 rounded-lg object-cover border border-gray-200"
+                onError={(e) => {
+                  e.target.style.display = 'none'
+                }}
+              />
             )}
+            <div>
+              <h1 className="text-3xl font-bold">{flight.flightId}</h1>
+              {flight.providerName && (
+                <span className="text-gray-600 text-sm">{flight.providerName}</span>
+              )}
+            </div>
+          </div>
+          <div className="flex items-center space-x-4 mt-2">
             {(() => {
               // Calculate average rating from reviews array
               const avgRating = flight.reviews && flight.reviews.length > 0
