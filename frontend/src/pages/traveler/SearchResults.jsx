@@ -621,8 +621,6 @@ const SearchResults = () => {
                   ? (differenceInDays(new Date(returnDate), new Date(pickupDate)) || 1)
                   : 1
                 const totalPrice = (item.dailyRentalPrice || 0) * numberOfDays
-                const cartItem = getCartItemForCar(item)
-                const inCart = cartItem !== null
 
                 return (
                   <div className="flex justify-between items-start">
@@ -672,30 +670,22 @@ const SearchResults = () => {
                           Total: ${totalPrice.toFixed(2)} ({numberOfDays} {numberOfDays === 1 ? 'day' : 'days'})
                         </p>
                       )}
-                      {inCart && cartItem?.pickupDate && cartItem?.returnDate ? (
-                        <div className="mt-4">
-                          <button
-                            disabled
-                            className="btn-secondary w-full flex items-center justify-center space-x-2 opacity-50 cursor-not-allowed"
-                          >
-                            <Check className="w-4 h-4" />
-                            <span>Already in Cart</span>
-                          </button>
-                          <p className="text-xs text-gray-500 mt-2 text-center">
-                            Added for: {isValidDate(cartItem.pickupDate) && isValidDate(cartItem.returnDate) 
-                              ? `${format(new Date(cartItem.pickupDate), 'MMM dd, yyyy')} - ${format(new Date(cartItem.returnDate), 'MMM dd, yyyy')}`
-                              : 'N/A'}
-                          </p>
-                        </div>
-                      ) : (
-                        <button
-                          onClick={() => handleAddToCart(item)}
-                          className="btn-primary mt-4 flex items-center space-x-2"
-                        >
-                          <ShoppingCart className="w-4 h-4" />
-                          <span>Add to Cart</span>
-                        </button>
-                      )}
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          navigate(`/car/${item.carId}`, { 
+                            state: { 
+                              car: item,
+                              searchParams: location.state?.searchParams || {},
+                              type: 'cars',
+                              fromSearch: true
+                            } 
+                          })
+                        }}
+                        className="btn-primary mt-4 flex items-center space-x-2"
+                      >
+                        <span>View Details</span>
+                      </button>
                     </div>
                   </div>
                 )
