@@ -1,77 +1,202 @@
-import { useState, useEffect } from 'react'
-import { Plane, Hotel, Car, CheckCircle, Star, MapPin, Calendar } from 'lucide-react'
+import { useState, useEffect, useRef } from 'react'
+import { Plane, Hotel, Car, Search, Edit2, X, MapPin, Clock, Calendar, CheckCircle, Star } from 'lucide-react'
 import api from '../../services/apiService'
+import { US_AIRPORTS } from '../../utils/usAirports'
+import Notification from '../common/Notification'
 
 const API_BASE_URL = import.meta.env.VITE_API_GATEWAY_URL || 'http://localhost:8080'
 
 // Helper function to get image source
 const getImageSrc = (imagePath) => {
   if (!imagePath) return ''
-  // If it's already a full URL (http/https), return as is
   if (imagePath.startsWith('http')) return imagePath
-  // If it already starts with /api/, prepend API_BASE_URL (handles both listings/images and providers/profile-pictures)
   if (imagePath.startsWith('/api/')) {
     return `${API_BASE_URL}${imagePath}`
   }
-  // Otherwise, extract filename and construct the path (assume listings/images)
   const filename = imagePath.split('/').pop()
   const encodedFilename = encodeURIComponent(filename)
   return `${API_BASE_URL}/api/listings/images/${encodedFilename}`
 }
 
 const ApprovedListingsTab = ({ onRefresh }) => {
+  const [activeListingTab, setActiveListingTab] = useState('flights') // 'flights', 'hotels', 'cars'
   const [approvedListings, setApprovedListings] = useState({
     flights: [],
     hotels: [],
     cars: []
   })
+  const [filteredListings, setFilteredListings] = useState([])
   const [loading, setLoading] = useState(false)
+  const [notification, setNotification] = useState(null)
+  
+  // Flight search filters
+  const [showFlightSearch, setShowFlightSearch] = useState(false)
+  const [departureAirport, setDepartureAirport] = useState('')
+  const [arrivalAirport, setArrivalAirport] = useState('')
+  const [providerSearchQuery, setProviderSearchQuery] = useState('')
+  const [selectedProvider, setSelectedProvider] = useState(null)
+  const [providerSuggestions, setProviderSuggestions] = useState([])
+  const [showProviderDropdown, setShowProviderDropdown] = useState(false)
+  const providerDropdownRef = useRef(null)
+  
+  // Edit modal state
+  const [editModal, setEditModal] = useState({ isOpen: false, listing: null, listingType: null })
 
   useEffect(() => {
     fetchApprovedListings()
   }, [])
+
+  // Update filtered listings when active tab changes
+  useEffect(() => {
+    if (activeListingTab === 'flights') {
+      setFilteredListings(approvedListings.flights || [])
+    } else if (activeListingTab === 'hotels') {
+      setFilteredListings(approvedListings.hotels || [])
+    } else {
+      setFilteredListings(approvedListings.cars || [])
+    }
+  }, [activeListingTab, approvedListings])
+
+  // Close provider dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (providerDropdownRef.current && !providerDropdownRef.current.contains(event.target)) {
+        setShowProviderDropdown(false)
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [])
+
+  // Fetch provider suggestions
+  useEffect(() => {
+    const fetchProviders = async () => {
+      if (providerSearchQuery.trim().length >= 2) {
+        try {
+          const response = await api.get(`/api/providers/search?q=${encodeURIComponent(providerSearchQuery)}`)
+          setProviderSuggestions(response.data.data?.providers || [])
+          setShowProviderDropdown(true)
+        } catch (err) {
+          console.error('Error fetching providers:', err)
+          setProviderSuggestions([])
+        }
+      } else {
+        setProviderSuggestions([])
+        setShowProviderDropdown(false)
+      }
+    }
+
+    const debounceTimer = setTimeout(fetchProviders, 300)
+    return () => clearTimeout(debounceTimer)
+  }, [providerSearchQuery])
 
   const fetchApprovedListings = async () => {
     setLoading(true)
     try {
       const response = await api.get('/api/admin/listings/approved')
       const data = response.data.data?.approvedListings || {}
-      setApprovedListings({
+      const listings = {
         flights: data.flights || [],
         hotels: data.hotels || [],
         cars: data.cars || []
-      })
+      }
+      setApprovedListings(listings)
+      
+      // Set initial filtered listings based on active tab
+      if (activeListingTab === 'flights') {
+        setFilteredListings(listings.flights)
+      } else if (activeListingTab === 'hotels') {
+        setFilteredListings(listings.hotels)
+      } else {
+        setFilteredListings(listings.cars)
+      }
     } catch (err) {
       console.error('Error fetching approved listings:', err)
+      setNotification({ type: 'error', message: 'Failed to fetch approved listings' })
     } finally {
       setLoading(false)
     }
   }
 
-  const allListings = [
-    ...approvedListings.flights.map(l => ({ ...l, type: 'Flight', icon: Plane })),
-    ...approvedListings.hotels.map(l => ({ ...l, type: 'Hotel', icon: Hotel })),
-    ...approvedListings.cars.map(l => ({ ...l, type: 'Car', icon: Car })),
-  ]
-
-  if (loading) {
-    return (
-      <div className="text-center py-12">
-        <p className="text-gray-600 text-lg">Loading approved listings...</p>
-      </div>
-    )
+  const handleFlightSearch = () => {
+    if (activeListingTab !== 'flights') return
+    
+    let results = approvedListings.flights || []
+    
+    // Filter by departure airport
+    if (departureAirport) {
+      results = results.filter(f => 
+        f.departureAirport?.toUpperCase() === departureAirport.toUpperCase()
+      )
+    }
+    
+    // Filter by arrival airport
+    if (arrivalAirport) {
+      results = results.filter(f => 
+        f.arrivalAirport?.toUpperCase() === arrivalAirport.toUpperCase()
+      )
+    }
+    
+    // Filter by provider name
+    if (selectedProvider) {
+      results = results.filter(f => 
+        f.providerId === selectedProvider.providerId || 
+        f.providerName === selectedProvider.providerName
+      )
+    }
+    
+    setFilteredListings(results)
+    setNotification({ 
+      type: results.length > 0 ? 'success' : 'info', 
+      message: `Found ${results.length} flight(s)` 
+    })
   }
 
-  if (allListings.length === 0) {
-    return (
-      <div className="text-center py-12">
-        <p className="text-gray-600 text-lg">No approved listings</p>
-      </div>
-    )
+  const handleResetSearch = () => {
+    setDepartureAirport('')
+    setArrivalAirport('')
+    setProviderSearchQuery('')
+    setSelectedProvider(null)
+    setFilteredListings(approvedListings.flights || [])
+  }
+
+  const handleEdit = (listing, listingType) => {
+    setEditModal({ isOpen: true, listing, listingType })
+  }
+
+  const handleCloseEdit = () => {
+    setEditModal({ isOpen: false, listing: null, listingType: null })
+  }
+
+  const handleSaveEdit = async (updatedData) => {
+    try {
+      const { listing, listingType } = editModal
+      const endpoint = `/api/listings/${listingType.toLowerCase()}s/${listing[`${listingType.toLowerCase()}Id`] || listing.listingId}`
+      
+      await api.put(endpoint, updatedData)
+      setNotification({ type: 'success', message: 'Listing updated successfully!' })
+      handleCloseEdit()
+      fetchApprovedListings()
+      if (onRefresh) onRefresh()
+    } catch (err) {
+      console.error('Error updating listing:', err)
+      setNotification({ 
+        type: 'error', 
+        message: err.response?.data?.error?.message || 'Failed to update listing' 
+      })
+    }
   }
 
   return (
     <div className="space-y-6">
+      {notification && (
+        <Notification
+          type={notification.type}
+          message={notification.message}
+          onClose={() => setNotification(null)}
+        />
+      )}
+
       <div className="flex justify-between items-center">
         <h2 className="text-2xl font-bold">Approved Listings</h2>
         <button
@@ -81,193 +206,785 @@ const ApprovedListingsTab = ({ onRefresh }) => {
           Refresh
         </button>
       </div>
-      
-      {allListings.map((listing) => {
-        const Icon = listing.icon
-        const listingId = listing.flightId || listing.hotelId || listing.carId
-        const isHotel = listing.type === 'Hotel'
 
-        return (
-          <div key={listingId} className="card overflow-hidden">
-            <div className={`flex ${isHotel ? 'flex-col md:flex-row' : 'items-start'} justify-between gap-4`}>
-              {/* Listing Image */}
-              {(() => {
-                let imageSrc = null
-                let imageAlt = ''
-                
-                // Check for hotel images
-                if (isHotel && listing.images && listing.images.length > 0 && listing.images[0]) {
-                  imageSrc = getImageSrc(listing.images[0])
-                  imageAlt = listing.hotelName || 'Hotel'
-                } 
-                // Check for flight image (can be null, empty string, or URL)
-                else if (listing.type === 'Flight' && listing.image && listing.image.trim()) {
-                  imageSrc = getImageSrc(listing.image)
-                  imageAlt = listing.flightId || 'Flight'
-                } 
-                // Check for car image
-                else if (listing.type === 'Car' && listing.image && listing.image.trim()) {
-                  imageSrc = getImageSrc(listing.image)
-                  imageAlt = listing.model || listing.carModel || 'Car'
-                }
-                
-                if (imageSrc) {
-                  return (
-                    <div className="md:w-64 h-48 md:h-auto flex-shrink-0 rounded-lg overflow-hidden bg-gray-200 flex items-center justify-center">
-                      <img
-                        src={imageSrc}
-                        alt={imageAlt}
-                        className="w-full h-full object-cover"
-                        onError={(e) => {
-                          console.error('Image failed to load:', imageSrc)
-                          e.target.style.display = 'none'
-                          if (e.target.nextSibling) e.target.nextSibling.classList.remove('hidden')
-                        }}
-                      />
-                      <div className="hidden w-full h-full flex items-center justify-center text-gray-400">
-                        <Icon className="w-12 h-12" />
-                      </div>
+      {/* Listing Type Tabs */}
+      <div className="bg-white rounded-lg border border-gray-200">
+        <div className="flex border-b border-gray-200">
+          <button
+            onClick={() => {
+              setActiveListingTab('flights')
+              setShowFlightSearch(false)
+            }}
+            className={`flex items-center space-x-2 px-6 py-4 border-b-2 transition-colors ${
+              activeListingTab === 'flights'
+                ? 'border-purple-600 text-purple-600'
+                : 'border-transparent text-gray-600 hover:text-gray-900'
+            }`}
+          >
+            <Plane className="w-5 h-5" />
+            <span>Flights</span>
+            {approvedListings.flights && approvedListings.flights.length > 0 && (
+              <span className="bg-purple-100 text-purple-800 px-2 py-1 rounded-full text-xs font-medium">
+                {approvedListings.flights.length}
+              </span>
+            )}
+          </button>
+          <button
+            onClick={() => setActiveListingTab('hotels')}
+            className={`flex items-center space-x-2 px-6 py-4 border-b-2 transition-colors ${
+              activeListingTab === 'hotels'
+                ? 'border-purple-600 text-purple-600'
+                : 'border-transparent text-gray-600 hover:text-gray-900'
+            }`}
+          >
+            <Hotel className="w-5 h-5" />
+            <span>Hotels</span>
+            {approvedListings.hotels && approvedListings.hotels.length > 0 && (
+              <span className="bg-purple-100 text-purple-800 px-2 py-1 rounded-full text-xs font-medium">
+                {approvedListings.hotels.length}
+              </span>
+            )}
+          </button>
+          <button
+            onClick={() => setActiveListingTab('cars')}
+            className={`flex items-center space-x-2 px-6 py-4 border-b-2 transition-colors ${
+              activeListingTab === 'cars'
+                ? 'border-purple-600 text-purple-600'
+                : 'border-transparent text-gray-600 hover:text-gray-900'
+            }`}
+          >
+            <Car className="w-5 h-5" />
+            <span>Cars</span>
+            {approvedListings.cars && approvedListings.cars.length > 0 && (
+              <span className="bg-purple-100 text-purple-800 px-2 py-1 rounded-full text-xs font-medium">
+                {approvedListings.cars.length}
+              </span>
+            )}
+          </button>
+        </div>
+
+        {/* Flight Search */}
+        {activeListingTab === 'flights' && (
+          <div className="p-4 border-b border-gray-200 bg-gray-50">
+            <button
+              onClick={() => setShowFlightSearch(!showFlightSearch)}
+              className="flex items-center space-x-2 text-purple-600 hover:text-purple-700 font-medium"
+            >
+              <Search className="w-4 h-4" />
+              <span>{showFlightSearch ? 'Hide Search' : 'Show Search'}</span>
+            </button>
+
+            {showFlightSearch && (
+              <div className="mt-4 grid md:grid-cols-3 gap-4">
+                {/* Departure Airport */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Departure Airport
+                  </label>
+                  <select
+                    value={departureAirport}
+                    onChange={(e) => setDepartureAirport(e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                  >
+                    <option value="">All Airports</option>
+                    {US_AIRPORTS.map(airport => (
+                      <option key={airport.code} value={airport.code}>
+                        {airport.code} - {airport.city}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* Arrival Airport */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Arrival Airport
+                  </label>
+                  <select
+                    value={arrivalAirport}
+                    onChange={(e) => setArrivalAirport(e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                  >
+                    <option value="">All Airports</option>
+                    {US_AIRPORTS.map(airport => (
+                      <option key={airport.code} value={airport.code}>
+                        {airport.code} - {airport.city}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* Provider Name */}
+                <div className="relative" ref={providerDropdownRef}>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Provider Name
+                  </label>
+                  <input
+                    type="text"
+                    value={selectedProvider ? selectedProvider.providerName : providerSearchQuery}
+                    onChange={(e) => {
+                      setProviderSearchQuery(e.target.value)
+                      if (!e.target.value) {
+                        setSelectedProvider(null)
+                      }
+                    }}
+                    onFocus={() => {
+                      if (providerSearchQuery.length >= 2) {
+                        setShowProviderDropdown(true)
+                      }
+                    }}
+                    placeholder="Type to search providers..."
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                  />
+                  
+                  {selectedProvider && (
+                    <button
+                      onClick={() => {
+                        setSelectedProvider(null)
+                        setProviderSearchQuery('')
+                      }}
+                      className="absolute right-2 top-8 text-gray-400 hover:text-gray-600"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  )}
+
+                  {showProviderDropdown && providerSuggestions.length > 0 && (
+                    <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-y-auto">
+                      {providerSuggestions.map((provider) => (
+                        <div
+                          key={provider.providerId}
+                          onClick={() => {
+                            setSelectedProvider(provider)
+                            setProviderSearchQuery('')
+                            setShowProviderDropdown(false)
+                          }}
+                          className="px-4 py-2 hover:bg-purple-50 cursor-pointer"
+                        >
+                          <div className="font-medium">{provider.providerName}</div>
+                          <div className="text-sm text-gray-500">{provider.providerId}</div>
+                        </div>
+                      ))}
                     </div>
-                  )
-                }
-                
-                // Show placeholder icon if no image
-                return (
-                  <div className="md:w-64 h-48 md:h-auto flex-shrink-0 bg-green-100 rounded-lg flex items-center justify-center">
-                    <Icon className="w-12 h-12 text-green-600" />
-                  </div>
-                )
-              })()}
-
-              <div className="flex items-start space-x-4 flex-1">
-                <div className="flex-1">
-                  <div className="flex items-center space-x-3 mb-3">
-                    <h3 className="text-xl font-semibold">
-                      {listing.flightId || listing.hotelName || `${listing.model} (${listing.year})`}
-                    </h3>
-                    <span className="px-3 py-1 bg-green-100 text-green-800 rounded-full text-xs font-medium flex items-center space-x-1">
-                      <CheckCircle className="w-3 h-3" />
-                      <span>Active</span>
-                    </span>
-                  </div>
-                  
-                  <p className="text-sm text-gray-500 mb-3">
-                    Provider: <span className="font-medium text-gray-700">{listing.providerName || 'N/A'}</span> | 
-                    ID: <span className="font-medium text-gray-700">{listingId}</span>
-                  </p>
-                  
-                  {isHotel ? (
-                    <>
-                      {/* Hotel-specific details */}
-                      <div className="space-y-2 mb-4">
-                        <div className="flex items-center space-x-2 text-gray-600">
-                          <MapPin className="w-4 h-4" />
-                          <span>{listing.address}, {listing.city}, {listing.state} {listing.zipCode}</span>
-                        </div>
-                        <div className="flex items-center space-x-4">
-                          {listing.starRating && (
-                            <div className="flex items-center space-x-1">
-                              {Array.from({ length: listing.starRating }).map((_, i) => (
-                                <Star key={i} className="w-4 h-4 text-yellow-400 fill-current" />
-                              ))}
-                              <span className="text-sm text-gray-600 ml-1">{listing.starRating} stars</span>
-                            </div>
-                          )}
-                          {listing.hotelRating && (
-                            <div className="flex items-center space-x-1 bg-green-100 text-green-800 px-2 py-1 rounded text-sm">
-                              <Star className="w-3 h-3 fill-current" />
-                              <span>{listing.hotelRating.toFixed(1)}</span>
-                            </div>
-                          )}
-                        </div>
-                        {listing.amenities && listing.amenities.length > 0 && (
-                          <div className="flex flex-wrap gap-2 mt-2">
-                            {listing.amenities.slice(0, 6).map((amenity, idx) => (
-                              <span key={idx} className="text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded">
-                                {amenity}
-                              </span>
-                            ))}
-                            {listing.amenities.length > 6 && (
-                              <span className="text-xs text-gray-500">+{listing.amenities.length - 6} more</span>
-                            )}
-                          </div>
-                        )}
-                      </div>
-
-                      {/* Room Types */}
-                      {listing.roomTypes && listing.roomTypes.length > 0 && (
-                        <div className="mt-4 pt-4 border-t border-gray-200">
-                          <h4 className="text-sm font-semibold text-gray-700 mb-3">Room Types & Availability</h4>
-                          <div className="grid md:grid-cols-3 gap-4">
-                            {listing.roomTypes.map((roomType, idx) => (
-                              <div key={idx} className="bg-gray-50 rounded-lg p-3">
-                                <div className="flex justify-between items-start mb-2">
-                                  <span className="font-medium text-gray-900">{roomType.type}</span>
-                                  <span className="text-primary-600 font-semibold">${roomType.pricePerNight}/night</span>
-                                </div>
-                                <div className="text-sm text-gray-600">
-                                  Available: {roomType.availableCount || 0} rooms
-                                </div>
-                              </div>
-                            ))}
-                          </div>
-                          <div className="mt-3 text-sm text-gray-600">
-                            Total Rooms: <span className="font-semibold">{listing.totalRooms || 0}</span> | 
-                            Available: <span className="font-semibold">{listing.availableRooms || 0}</span>
-                          </div>
-                        </div>
-                      )}
-
-                      {/* Availability Dates */}
-                      {(listing.availableFrom || listing.availableTo) && (
-                        <div className="flex items-center space-x-2 text-sm text-gray-600 mt-3">
-                          <Calendar className="w-4 h-4" />
-                          <span>
-                            Available from {listing.availableFrom ? new Date(listing.availableFrom).toLocaleDateString() : 'N/A'} 
-                            {' '}to {listing.availableTo ? new Date(listing.availableTo).toLocaleDateString() : 'N/A'}
-                          </span>
-                        </div>
-                      )}
-                    </>
-                  ) : (
-                    <>
-                      {/* Flight specific details */}
-                      {listing.type === 'Flight' && (
-                        <div className="text-sm text-gray-600 space-y-1">
-                          <p><strong>Route:</strong> {listing.departureAirport} → {listing.arrivalAirport}</p>
-                          <p><strong>Class:</strong> {listing.flightClass} | <strong>Price:</strong> ${listing.ticketPrice}</p>
-                          <p><strong>Available Seats:</strong> {listing.availableSeats} / {listing.totalSeats}</p>
-                        </div>
-                      )}
-                      
-                      {/* Car specific details */}
-                      {listing.type === 'Car' && (
-                        <div className="text-sm text-gray-600 space-y-1">
-                          <p><strong>Type:</strong> {listing.carType} | <strong>Transmission:</strong> {listing.transmissionType}</p>
-                          <p><strong>Seats:</strong> {listing.numberOfSeats} | <strong>Daily Rate:</strong> ${listing.dailyRentalPrice}</p>
-                          <p><strong>Status:</strong> {listing.availabilityStatus}</p>
-                          <div className="mt-2 pt-2 border-t border-gray-200">
-                            <p><strong>Location:</strong></p>
-                            {listing.neighbourhood && (
-                              <p className="ml-4"><strong>Neighbourhood:</strong> {listing.neighbourhood}</p>
-                            )}
-                            <p className="ml-4"><strong>City:</strong> {listing.city || 'N/A'}</p>
-                            <p className="ml-4"><strong>State:</strong> {listing.state || 'N/A'}</p>
-                            <p className="ml-4"><strong>Country:</strong> {listing.country || 'USA'}</p>
-                          </div>
-                        </div>
-                      )}
-                    </>
                   )}
                 </div>
               </div>
+            )}
+
+            {showFlightSearch && (
+              <div className="mt-4 flex space-x-3">
+                <button
+                  onClick={handleFlightSearch}
+                  className="btn-primary bg-purple-600 hover:bg-purple-700"
+                >
+                  <Search className="w-4 h-4 mr-2" />
+                  Search
+                </button>
+                <button
+                  onClick={handleResetSearch}
+                  className="btn-secondary"
+                >
+                  Reset
+                </button>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Listings Display */}
+        <div className="p-6">
+          {loading ? (
+            <div className="text-center py-12">
+              <p className="text-gray-600 text-lg">Loading listings...</p>
+            </div>
+          ) : filteredListings.length === 0 ? (
+            <div className="text-center py-12">
+              <p className="text-gray-600 text-lg">
+                {showFlightSearch ? 'No flights found matching your search criteria.' : 'No approved listings found.'}
+              </p>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {activeListingTab === 'flights' && filteredListings.map((flight) => (
+                <FlightCard
+                  key={flight.flightId}
+                  flight={flight}
+                  onEdit={() => handleEdit(flight, 'Flight')}
+                />
+              ))}
+              
+              {activeListingTab === 'hotels' && filteredListings.map((hotel) => (
+                <HotelCard
+                  key={hotel.hotelId}
+                  hotel={hotel}
+                  onEdit={() => handleEdit(hotel, 'Hotel')}
+                />
+              ))}
+              
+              {activeListingTab === 'cars' && filteredListings.map((car) => (
+                <CarCard
+                  key={car.carId}
+                  car={car}
+                  onEdit={() => handleEdit(car, 'Car')}
+                />
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Edit Modal */}
+      {editModal.isOpen && editModal.listingType === 'Flight' && (
+        <EditFlightModal
+          flight={editModal.listing}
+          onClose={handleCloseEdit}
+          onSave={handleSaveEdit}
+        />
+      )}
+    </div>
+  )
+}
+
+const FlightCard = ({ flight, onEdit }) => {
+  const imageSrc = flight.image ? getImageSrc(flight.image) : null
+  
+  return (
+    <div className="card">
+      <div className="flex items-start justify-between">
+        <div className="flex items-start space-x-4 flex-1">
+          {/* Flight Image */}
+          {imageSrc ? (
+            <div className="w-24 h-24 flex-shrink-0">
+              <img
+                src={imageSrc}
+                alt={flight.flightId}
+                className="w-full h-full object-cover rounded-lg border border-gray-200"
+                onError={(e) => {
+                  e.target.style.display = 'none'
+                  e.target.nextSibling?.classList.remove('hidden')
+                }}
+              />
+              <div className="hidden w-24 h-24 bg-green-100 rounded-lg flex items-center justify-center">
+                <Plane className="w-6 h-6 text-green-600" />
+              </div>
+            </div>
+          ) : (
+            <div className="w-24 h-24 bg-green-100 rounded-lg flex items-center justify-center flex-shrink-0">
+              <Plane className="w-6 h-6 text-green-600" />
+            </div>
+          )}
+
+          <div className="flex-1">
+            <div className="flex items-center space-x-3 mb-2">
+              <h3 className="text-xl font-semibold">
+                {flight.departureAirport} → {flight.arrivalAirport}
+              </h3>
+              <span className="bg-green-100 text-green-800 px-3 py-1 rounded-full text-xs font-medium flex items-center space-x-1">
+                <CheckCircle className="w-3 h-3" />
+                <span>Active</span>
+              </span>
+              {flight.flightId && (
+                <span className="text-xs text-gray-500">ID: {flight.flightId}</span>
+              )}
+            </div>
+
+            <div className="space-y-2 text-sm text-gray-600">
+              <div className="flex items-center space-x-2">
+                <span className="font-medium">Provider:</span>
+                <span>{flight.providerName || flight.providerId}</span>
+              </div>
+
+              {flight.departureTime && flight.arrivalTime && (
+                <div className="flex items-center space-x-4">
+                  <div className="flex items-center space-x-2">
+                    <Clock className="w-4 h-4 text-blue-500" />
+                    <span><span className="font-medium">Departure:</span> {flight.departureTime}</span>
+                  </div>
+                  <span className="text-gray-300">→</span>
+                  <div className="flex items-center space-x-2">
+                    <Clock className="w-4 h-4 text-green-500" />
+                    <span><span className="font-medium">Arrival:</span> {flight.arrivalTime}</span>
+                  </div>
+                  {flight.duration && (
+                    <span className="text-gray-500 bg-gray-100 px-2 py-1 rounded">
+                      {Math.floor(flight.duration / 60)}h {flight.duration % 60}m
+                    </span>
+                  )}
+                </div>
+              )}
+
+              {flight.operatingDays && flight.operatingDays.length > 0 && (
+                <div className="flex flex-wrap gap-2 items-center">
+                  <span className="text-xs font-medium text-gray-600">Operating Days:</span>
+                  {flight.operatingDays.map((day, idx) => (
+                    <span key={idx} className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">
+                      {day}
+                    </span>
+                  ))}
+                </div>
+              )}
+
+              {(flight.availableFrom || flight.availableTo) && (
+                <div className="flex items-center space-x-2">
+                  <Calendar className="w-4 h-4" />
+                  <span>
+                    Available from {flight.availableFrom ? new Date(flight.availableFrom).toLocaleDateString() : 'N/A'} 
+                    {' '}to {flight.availableTo ? new Date(flight.availableTo).toLocaleDateString() : 'N/A'}
+                  </span>
+                </div>
+              )}
+
+              {/* Seat Types */}
+              {flight.seatTypes && flight.seatTypes.length > 0 ? (
+                <div className="mt-3 pt-3 border-t border-gray-200">
+                  <h4 className="text-sm font-semibold text-gray-700 mb-2">Seat Types & Pricing</h4>
+                  <div className="grid md:grid-cols-3 gap-3">
+                    {flight.seatTypes.map((seatType, idx) => (
+                      <div key={idx} className="bg-gray-50 rounded-lg p-3">
+                        <div className="flex justify-between items-start mb-1">
+                          <span className="font-medium text-gray-900">{seatType.type}</span>
+                          <span className="text-purple-600 font-semibold">${seatType.ticketPrice || 0}</span>
+                        </div>
+                        <div className="text-xs text-gray-600">
+                          Total Seats: <span className="font-semibold">{seatType.totalSeats || 0}</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ) : (
+                <div className="text-sm">
+                  <p><strong>Class:</strong> {flight.flightClass || 'N/A'} | <strong>Price:</strong> ${flight.ticketPrice || 0}</p>
+                  <p><strong>Available Seats:</strong> {flight.availableSeats || 0} / {flight.totalSeats || 0}</p>
+                </div>
+              )}
             </div>
           </div>
-        )
-      })}
+        </div>
+
+        <button
+          onClick={onEdit}
+          className="btn-secondary flex items-center space-x-2 self-start"
+        >
+          <Edit2 className="w-4 h-4" />
+          <span>Edit</span>
+        </button>
+      </div>
+    </div>
+  )
+}
+
+const HotelCard = ({ hotel, onEdit }) => {
+  const imageSrc = hotel.images && hotel.images.length > 0 ? getImageSrc(hotel.images[0]) : null
+  
+  return (
+    <div className="card overflow-hidden">
+      <div className="flex flex-col md:flex-row gap-4">
+        {imageSrc ? (
+          <div className="md:w-64 h-48 md:h-auto flex-shrink-0 rounded-lg overflow-hidden bg-gray-200">
+            <img
+              src={imageSrc}
+              alt={hotel.hotelName}
+              className="w-full h-full object-cover"
+              onError={(e) => {
+                e.target.style.display = 'none'
+                e.target.nextSibling?.classList.remove('hidden')
+              }}
+            />
+            <div className="hidden w-full h-full flex items-center justify-center text-gray-400">
+              <Hotel className="w-12 h-12" />
+            </div>
+          </div>
+        ) : (
+          <div className="md:w-64 h-48 md:h-auto flex-shrink-0 bg-green-100 rounded-lg flex items-center justify-center">
+            <Hotel className="w-12 h-12 text-green-600" />
+          </div>
+        )}
+
+        <div className="flex-1">
+          <div className="flex items-center space-x-3 mb-3">
+            <h3 className="text-xl font-semibold">{hotel.hotelName}</h3>
+            <span className="bg-green-100 text-green-800 px-3 py-1 rounded-full text-xs font-medium flex items-center space-x-1">
+              <CheckCircle className="w-3 h-3" />
+              <span>Active</span>
+            </span>
+          </div>
+          
+          <p className="text-sm text-gray-500 mb-3">
+            Provider: <span className="font-medium text-gray-700">{hotel.providerName || 'N/A'}</span> | 
+            ID: <span className="font-medium text-gray-700">{hotel.hotelId}</span>
+          </p>
+
+          <div className="space-y-2 mb-4">
+            <div className="flex items-center space-x-2 text-gray-600">
+              <MapPin className="w-4 h-4" />
+              <span>{hotel.address}, {hotel.city}, {hotel.state} {hotel.zipCode}</span>
+            </div>
+          </div>
+
+          <button
+            onClick={onEdit}
+            className="btn-secondary flex items-center space-x-2"
+          >
+            <Edit2 className="w-4 h-4" />
+            <span>Edit</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+const CarCard = ({ car, onEdit }) => {
+  const imageSrc = car.image ? getImageSrc(car.image) : null
+  
+  return (
+    <div className="card">
+      <div className="flex items-start justify-between">
+        <div className="flex items-start space-x-4 flex-1">
+          {imageSrc ? (
+            <div className="w-24 h-24 flex-shrink-0">
+              <img
+                src={imageSrc}
+                alt={car.model}
+                className="w-full h-full object-cover rounded-lg border border-gray-200"
+                onError={(e) => {
+                  e.target.style.display = 'none'
+                  e.target.nextSibling?.classList.remove('hidden')
+                }}
+              />
+              <div className="hidden w-24 h-24 bg-green-100 rounded-lg flex items-center justify-center">
+                <Car className="w-6 h-6 text-green-600" />
+              </div>
+            </div>
+          ) : (
+            <div className="w-24 h-24 bg-green-100 rounded-lg flex items-center justify-center flex-shrink-0">
+              <Car className="w-6 h-6 text-green-600" />
+            </div>
+          )}
+
+          <div className="flex-1">
+            <div className="flex items-center space-x-3 mb-2">
+              <h3 className="text-xl font-semibold">{car.model} ({car.year})</h3>
+              <span className="bg-green-100 text-green-800 px-3 py-1 rounded-full text-xs font-medium flex items-center space-x-1">
+                <CheckCircle className="w-3 h-3" />
+                <span>Active</span>
+              </span>
+            </div>
+
+            <p className="text-sm text-gray-500 mb-2">
+              Provider: <span className="font-medium text-gray-700">{car.providerName || 'N/A'}</span> | 
+              ID: <span className="font-medium text-gray-700">{car.carId}</span>
+            </p>
+
+            <div className="text-sm text-gray-600">
+              <p><strong>Type:</strong> {car.carType} | <strong>Daily Rate:</strong> ${car.dailyRentalPrice}</p>
+            </div>
+          </div>
+        </div>
+
+        <button
+          onClick={onEdit}
+          className="btn-secondary flex items-center space-x-2 self-start"
+        >
+          <Edit2 className="w-4 h-4" />
+          <span>Edit</span>
+        </button>
+      </div>
+    </div>
+  )
+}
+
+const EditFlightModal = ({ flight, onClose, onSave }) => {
+  const [formData, setFormData] = useState({
+    departureAirport: flight.departureAirport || '',
+    arrivalAirport: flight.arrivalAirport || '',
+    departureTime: flight.departureTime || '',
+    arrivalTime: flight.arrivalTime || '',
+    operatingDays: flight.operatingDays || [],
+    seatTypes: flight.seatTypes || [],
+    availableFrom: flight.availableFrom ? new Date(flight.availableFrom).toISOString().split('T')[0] : '',
+    availableTo: flight.availableTo ? new Date(flight.availableTo).toISOString().split('T')[0] : '',
+  })
+  const [loading, setLoading] = useState(false)
+
+  const DAYS_OF_WEEK = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
+
+  const handleSubmit = async (e) => {
+    e.preventDefault()
+    setLoading(true)
+    
+    try {
+      // Calculate duration if times are provided
+      if (formData.departureTime && formData.arrivalTime) {
+        const [depHours, depMins] = formData.departureTime.split(':').map(Number)
+        const [arrHours, arrMins] = formData.arrivalTime.split(':').map(Number)
+        const depMinutes = depHours * 60 + depMins
+        const arrMinutes = arrHours * 60 + arrMins
+        const duration = arrMinutes >= depMinutes 
+          ? arrMinutes - depMinutes 
+          : (24 * 60) - depMinutes + arrMinutes
+        formData.duration = duration
+      }
+
+      // Prepare seat types data
+      const seatTypes = formData.seatTypes.map(st => ({
+        type: st.type,
+        ticketPrice: Number(st.ticketPrice) || 0,
+        totalSeats: Number(st.totalSeats) || 0,
+        availableSeats: Number(st.totalSeats) || 0 // Keep same as total for now
+      }))
+
+      const updateData = {
+        departureAirport: formData.departureAirport.toUpperCase(),
+        arrivalAirport: formData.arrivalAirport.toUpperCase(),
+        departureTime: formData.departureTime,
+        arrivalTime: formData.arrivalTime,
+        operatingDays: formData.operatingDays,
+        seatTypes: seatTypes,
+        availableFrom: formData.availableFrom ? new Date(formData.availableFrom).toISOString() : undefined,
+        availableTo: formData.availableTo ? new Date(formData.availableTo).toISOString() : undefined,
+        duration: formData.duration
+      }
+
+      await onSave(updateData)
+    } catch (err) {
+      console.error('Error in form submission:', err)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleSeatTypeChange = (index, field, value) => {
+    const updatedSeatTypes = [...formData.seatTypes]
+    updatedSeatTypes[index] = {
+      ...updatedSeatTypes[index],
+      [field]: field === 'ticketPrice' || field === 'totalSeats' ? Number(value) || 0 : value
+    }
+    setFormData({ ...formData, seatTypes: updatedSeatTypes })
+  }
+
+  const toggleOperatingDay = (day) => {
+    const updatedDays = formData.operatingDays.includes(day)
+      ? formData.operatingDays.filter(d => d !== day)
+      : [...formData.operatingDays, day]
+    setFormData({ ...formData, operatingDays: updatedDays })
+  }
+
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+      <div className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+        <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex justify-between items-center">
+          <h2 className="text-2xl font-bold">Edit Flight</h2>
+          <button
+            onClick={onClose}
+            className="text-gray-400 hover:text-gray-600"
+          >
+            <X className="w-6 h-6" />
+          </button>
+        </div>
+
+        <form onSubmit={handleSubmit} className="p-6 space-y-6">
+          {/* Route */}
+          <div className="grid md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Departure Airport *
+              </label>
+              <select
+                value={formData.departureAirport}
+                onChange={(e) => setFormData({ ...formData, departureAirport: e.target.value })}
+                required
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+              >
+                <option value="">Select Airport</option>
+                {US_AIRPORTS.map(airport => (
+                  <option key={airport.code} value={airport.code}>
+                    {airport.code} - {airport.city}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Arrival Airport *
+              </label>
+              <select
+                value={formData.arrivalAirport}
+                onChange={(e) => setFormData({ ...formData, arrivalAirport: e.target.value })}
+                required
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+              >
+                <option value="">Select Airport</option>
+                {US_AIRPORTS.map(airport => (
+                  <option key={airport.code} value={airport.code}>
+                    {airport.code} - {airport.city}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+
+          {/* Times */}
+          <div className="grid md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Departure Time (HH:MM) *
+              </label>
+              <input
+                type="time"
+                value={formData.departureTime}
+                onChange={(e) => setFormData({ ...formData, departureTime: e.target.value })}
+                required
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Arrival Time (HH:MM) *
+              </label>
+              <input
+                type="time"
+                value={formData.arrivalTime}
+                onChange={(e) => setFormData({ ...formData, arrivalTime: e.target.value })}
+                required
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+              />
+            </div>
+          </div>
+
+          {/* Operating Days */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Operating Days *
+            </label>
+            <div className="flex flex-wrap gap-2">
+              {DAYS_OF_WEEK.map(day => (
+                <button
+                  key={day}
+                  type="button"
+                  onClick={() => toggleOperatingDay(day)}
+                  className={`px-4 py-2 rounded-lg border-2 transition-colors ${
+                    formData.operatingDays.includes(day)
+                      ? 'bg-purple-600 text-white border-purple-600'
+                      : 'bg-white text-gray-700 border-gray-300 hover:border-purple-500'
+                  }`}
+                >
+                  {day}
+                </button>
+              ))}
+            </div>
+            {formData.operatingDays.length === 0 && (
+              <p className="text-red-500 text-sm mt-1">Please select at least one operating day</p>
+            )}
+          </div>
+
+          {/* Availability Dates */}
+          <div className="grid md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Available From *
+              </label>
+              <input
+                type="date"
+                value={formData.availableFrom}
+                onChange={(e) => setFormData({ ...formData, availableFrom: e.target.value })}
+                required
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Available To *
+              </label>
+              <input
+                type="date"
+                value={formData.availableTo}
+                onChange={(e) => setFormData({ ...formData, availableTo: e.target.value })}
+                required
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+              />
+            </div>
+          </div>
+
+          {/* Seat Types */}
+          {formData.seatTypes && formData.seatTypes.length > 0 && (
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Seat Types & Pricing *
+              </label>
+              <div className="space-y-4">
+                {formData.seatTypes.map((seatType, index) => (
+                  <div key={index} className="grid md:grid-cols-3 gap-4 p-4 bg-gray-50 rounded-lg">
+                    <div>
+                      <label className="block text-xs font-medium text-gray-700 mb-1">Seat Type</label>
+                      <input
+                        type="text"
+                        value={seatType.type}
+                        readOnly
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-100 text-gray-600"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-medium text-gray-700 mb-1">Price ($)</label>
+                      <input
+                        type="number"
+                        min="0"
+                        step="0.01"
+                        value={seatType.ticketPrice || 0}
+                        onChange={(e) => handleSeatTypeChange(index, 'ticketPrice', e.target.value)}
+                        required
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-medium text-gray-700 mb-1">Total Seats</label>
+                      <input
+                        type="number"
+                        min="0"
+                        value={seatType.totalSeats || 0}
+                        onChange={(e) => handleSeatTypeChange(index, 'totalSeats', e.target.value)}
+                        required
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                      />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Note */}
+          <div className="bg-purple-50 border border-purple-200 rounded-lg p-4">
+            <p className="text-sm text-purple-800">
+              <strong>Note:</strong> Image and Provider Name cannot be edited. Only locations, prices, seat counts, times, and operating days can be modified.
+            </p>
+          </div>
+
+          {/* Actions */}
+          <div className="flex justify-end space-x-3 pt-4 border-t border-gray-200">
+            <button
+              type="button"
+              onClick={onClose}
+              className="btn-secondary"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              disabled={loading || formData.operatingDays.length === 0}
+              className="btn-primary bg-purple-600 hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {loading ? 'Saving...' : 'Save Changes'}
+            </button>
+          </div>
+        </form>
+      </div>
     </div>
   )
 }
 
 export default ApprovedListingsTab
-

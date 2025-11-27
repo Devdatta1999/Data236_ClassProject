@@ -123,19 +123,22 @@ async function startServer() {
     await getRedisClient();
     logger.info('Redis connected successfully');
     
-    // Setup Kafka consumer for user events
+    // Setup Kafka consumer for user events (automatic reconnection is built-in)
     logger.info('Setting up Kafka consumer...');
     await createConsumer(
       'user-service-group',
       ['user-events'],
       handleUserEvent
     );
-    logger.info('Kafka consumer subscribed to: user-events');
+    logger.info('Kafka consumer subscribed to: user-events (with automatic reconnection enabled)');
     
     // Add readiness probe endpoint AFTER MongoDB is connected
     app.get('/readyz', (req, res) => {
       const { mongoose } = require('../../shared/config/database');
+      const { getConsumerStatus, getProducerStatus } = require('../../shared/config/kafka');
       const readyState = mongoose.connection.readyState;
+      const kafkaConsumerStatus = getConsumerStatus('user-service-group');
+      const kafkaProducerStatus = getProducerStatus();
       
       // Only return 200 if explicitly connected (1)
       // Return 503 for disconnected (0), connecting (2), or disconnecting (3)
@@ -147,6 +150,10 @@ async function startServer() {
             readyState: readyState,
             state: readyState === 0 ? 'disconnected' : readyState === 2 ? 'connecting' : 'disconnecting',
             hasDb: !!mongoose.connection.db
+          },
+          kafka: {
+            consumer: kafkaConsumerStatus,
+            producer: kafkaProducerStatus
           }
         });
       }
@@ -160,6 +167,27 @@ async function startServer() {
             readyState: readyState,
             state: 'connected but db object missing',
             hasDb: false
+          },
+          kafka: {
+            consumer: kafkaConsumerStatus,
+            producer: kafkaProducerStatus
+          }
+        });
+      }
+      
+      // Check Kafka consumer connection
+      if (!kafkaConsumerStatus.connected) {
+        return res.status(503).json({ 
+          status: 'not ready', 
+          service: 'user-service',
+          mongoDB: {
+            readyState: readyState,
+            state: 'connected',
+            dbName: mongoose.connection.db.databaseName
+          },
+          kafka: {
+            consumer: kafkaConsumerStatus,
+            producer: kafkaProducerStatus
           }
         });
       }
@@ -171,6 +199,10 @@ async function startServer() {
           readyState: readyState,
           state: 'connected',
           dbName: mongoose.connection.db.databaseName
+        },
+        kafka: {
+          consumer: kafkaConsumerStatus,
+          producer: kafkaProducerStatus
         }
       });
     });
