@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { useLocation } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
 import { setPendingListings, setSelectedTab, setAnalytics, setLoading } from '../../store/slices/adminSlice'
 import api from '../../services/apiService'
@@ -8,16 +9,27 @@ import ApprovedListingsTab from '../../components/admin/ApprovedListingsTab'
 import CreateListingTab from '../../components/admin/CreateListingTab'
 import AdminAnalyticsTab from '../../components/admin/AdminAnalyticsTab'
 import HostAnalyticsTab from '../../components/admin/HostAnalyticsTab'
+import UserManagementTab from '../../components/admin/UserManagementTab'
 
 const AdminDashboard = () => {
   const dispatch = useDispatch()
+  const location = useLocation()
   const { selectedTab, pendingListings, analytics } = useSelector((state) => state.admin)
   const [loading, setLoadingState] = useState(false)
 
   useEffect(() => {
     fetchPendingListings()
     fetchAnalytics()
-  }, [])
+    
+    // Check if we're returning from a navigation with a tab specified
+    if (location.state?.tab) {
+      dispatch(setSelectedTab(location.state.tab))
+      // Clear the state to avoid it persisting on refresh
+      window.history.replaceState({}, document.title)
+    }
+    // Note: Tab persistence is handled by Redux initial state reading from localStorage
+    // and setSelectedTab action saving to localStorage
+  }, [location, dispatch])
 
   const fetchPendingListings = async () => {
     setLoadingState(true)
@@ -51,6 +63,7 @@ const AdminDashboard = () => {
     { id: 'requests', label: 'Pending Requests', icon: CheckCircle },
     { id: 'approved', label: 'Approved Listings', icon: ListChecks },
     { id: 'create', label: 'Create Listing', icon: Plus },
+    { id: 'users', label: 'User Management', icon: Users },
     { id: 'admin-dashboard', label: 'Admin Dashboard', icon: BarChart3 },
     { id: 'host-dashboard', label: 'Host Dashboard', icon: TrendingUp },
   ]
@@ -95,6 +108,7 @@ const AdminDashboard = () => {
         {selectedTab === 'requests' && <PendingRequestsTab onRefresh={fetchPendingListings} />}
         {selectedTab === 'approved' && <ApprovedListingsTab onRefresh={fetchPendingListings} />}
         {selectedTab === 'create' && <CreateListingTab />}
+        {selectedTab === 'users' && <UserManagementTab />}
         {selectedTab === 'admin-dashboard' && <AdminAnalyticsTab analytics={analytics} />}
         {selectedTab === 'host-dashboard' && <HostAnalyticsTab />}
       </div>

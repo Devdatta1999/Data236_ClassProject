@@ -148,6 +148,63 @@ const signup = asyncHandler(async (req, res) => {
 });
 
 /**
+ * Search users by name or ID
+ */
+const searchUsers = asyncHandler(async (req, res) => {
+  const { q } = req.query;
+
+  if (!q || q.trim().length === 0) {
+    return res.json({
+      success: true,
+      data: {
+        users: [],
+        count: 0
+      }
+    });
+  }
+
+  const searchTerm = q.trim();
+
+  // Build search query - search by userId (SSN format) or by firstName/lastName
+  const searchQuery = {
+    isDeleted: { $ne: true },
+    $or: [
+      { userId: { $regex: searchTerm, $options: 'i' } },
+      { firstName: { $regex: searchTerm, $options: 'i' } },
+      { lastName: { $regex: searchTerm, $options: 'i' } },
+      { email: { $regex: searchTerm, $options: 'i' } },
+      { $expr: { 
+        $regexMatch: { 
+          input: { $concat: ['$firstName', ' ', '$lastName'] }, 
+          regex: searchTerm, 
+          options: 'i' 
+        } 
+      }}
+    ]
+  };
+
+  try {
+    const users = await User.find(searchQuery)
+      .limit(20) // Limit to 20 results
+      .sort({ firstName: 1, lastName: 1 });
+
+    // Convert to safe objects (mask card numbers)
+    const safeUsers = users.map(user => user.toSafeObject());
+
+    res.json({
+      success: true,
+      data: {
+        users: safeUsers,
+        count: safeUsers.length
+      }
+    });
+  } catch (error) {
+    logger.error('Error searching users:', error);
+    throw error;
+  }
+});
+
+/**
  * Get user details
  */
 const getUser = asyncHandler(async (req, res) => {
@@ -782,6 +839,7 @@ const deleteSavedCard = asyncHandler(async (req, res) => {
 module.exports = {
   login,
   signup,
+  searchUsers,
   getUser,
   updateUser,
   deleteUser,

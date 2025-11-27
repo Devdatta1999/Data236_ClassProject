@@ -1,5 +1,14 @@
 import { createSlice } from '@reduxjs/toolkit'
 
+// Safely get selected tab from localStorage
+const getInitialTab = () => {
+  try {
+    return localStorage.getItem('adminSelectedTab') || 'requests'
+  } catch (e) {
+    return 'requests'
+  }
+}
+
 const initialState = {
   pendingListings: {
     flights: [],
@@ -12,7 +21,7 @@ const initialState = {
     totalRevenue: 0,
     activeListings: 0,
   },
-  selectedTab: 'requests', // 'requests', 'create', 'admin-dashboard', 'host-dashboard'
+  selectedTab: getInitialTab(), // 'requests', 'create', 'admin-dashboard', 'host-dashboard'
   loading: false,
   error: null,
 }
@@ -37,6 +46,13 @@ const adminSlice = createSlice({
     },
     setSelectedTab: (state, action) => {
       state.selectedTab = action.payload
+      // Persist selected tab to localStorage
+      try {
+        localStorage.setItem('adminSelectedTab', action.payload)
+      } catch (e) {
+        // Ignore localStorage errors (e.g., quota exceeded, private browsing)
+        console.warn('Failed to save selected tab to localStorage:', e)
+      }
     },
     setLoading: (state, action) => {
       state.loading = action.payload

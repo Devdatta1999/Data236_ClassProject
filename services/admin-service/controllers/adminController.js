@@ -292,6 +292,56 @@ const rejectListing = asyncHandler(async (req, res) => {
 });
 
 /**
+ * Search users by name or ID
+ */
+const searchUsers = asyncHandler(async (req, res) => {
+  const { query } = req.query;
+
+  if (!query || query.trim().length === 0) {
+    return res.json({
+      success: true,
+      data: {
+        users: [],
+        count: 0
+      }
+    });
+  }
+
+  const searchTerm = query.trim();
+
+  try {
+    // Call user service to search users
+    // Pass admin's auth token to user service
+    const authHeader = req.headers.authorization;
+    const response = await axios.get(
+      `${USER_SERVICE_URL}/api/users/search?q=${encodeURIComponent(searchTerm)}`,
+      {
+        timeout: 10000,
+        headers: authHeader ? { Authorization: authHeader } : {}
+      }
+    );
+
+    res.json({
+      success: true,
+      data: response.data.data || { users: [], count: 0 }
+    });
+  } catch (error) {
+    if (error.response?.status === 404) {
+      // User service might not have search endpoint yet, return empty
+      return res.json({
+        success: true,
+        data: {
+          users: [],
+          count: 0
+        }
+      });
+    }
+    logger.error('Error searching users:', error);
+    throw error;
+  }
+});
+
+/**
  * List users
  */
 const listUsers = asyncHandler(async (req, res) => {
@@ -313,17 +363,63 @@ const listUsers = asyncHandler(async (req, res) => {
 });
 
 /**
+ * Get user by ID
+ */
+const getUser = asyncHandler(async (req, res) => {
+  const { userId } = req.params;
+
+  try {
+    // Pass admin's auth token to user service
+    const authHeader = req.headers.authorization;
+    const response = await axios.get(
+      `${USER_SERVICE_URL}/api/users/${userId}`,
+      {
+        timeout: 10000,
+        headers: authHeader ? { Authorization: authHeader } : {}
+      }
+    );
+    res.json({
+      success: true,
+      data: response.data.data
+    });
+  } catch (error) {
+    if (error.response?.status === 404) {
+      throw new NotFoundError('User');
+    }
+    logger.error('Error fetching user:', error);
+    throw error;
+  }
+});
+
+/**
  * Modify user
  */
 const modifyUser = asyncHandler(async (req, res) => {
   const { userId } = req.params;
   const updates = req.body;
 
+  // Don't allow updating userId, email, password, or SSN for security
+  const restrictedFields = ['userId', 'email', 'password', 'ssn'];
+  for (const field of restrictedFields) {
+    if (updates[field] !== undefined) {
+      delete updates[field];
+    }
+  }
+
   // Call user service to update user
+  // Pass admin's auth token to user service
   try {
+    const authHeader = req.headers.authorization;
     const response = await axios.put(
       `${USER_SERVICE_URL}/api/users/${userId}`,
-      updates
+      updates,
+      {
+        timeout: 10000,
+        headers: {
+          'Content-Type': 'application/json',
+          ...(authHeader ? { Authorization: authHeader } : {})
+        }
+      }
     );
     res.json({
       success: true,
@@ -334,6 +430,7 @@ const modifyUser = asyncHandler(async (req, res) => {
     if (error.response?.status === 404) {
       throw new NotFoundError('User');
     }
+    logger.error('Error updating user:', error);
     throw error;
   }
 });
@@ -390,6 +487,23 @@ const getRevenueAnalytics = asyncHandler(async (req, res) => {
 });
 
 /**
+ * Get general analytics (aggregated)
+ */
+const getAnalytics = asyncHandler(async (req, res) => {
+  // Return basic analytics for the dashboard
+  // This is a simplified version - you can enhance it later
+  res.json({
+    success: true,
+    data: {
+      totalUsers: 0,
+      totalBookings: 0,
+      totalRevenue: 0,
+      activeListings: 0
+    }
+  });
+});
+
+/**
  * Get provider analytics
  */
 const getProviderAnalytics = asyncHandler(async (req, res) => {
@@ -431,7 +545,10 @@ module.exports = {
   approveListing,
   rejectListing,
   listUsers,
+  searchUsers,
+  getUser,
   modifyUser,
+  getAnalytics,
   getRevenueAnalytics,
   getProviderAnalytics
 };

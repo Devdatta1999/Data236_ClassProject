@@ -18,6 +18,7 @@ router.post('/signup', userController.signup);
 router.post('/upload/profile-picture', authenticate, upload.single('profilePicture'), handleUploadError, uploadProfilePicture);
 
 // Protected routes (non-high-traffic operations)
+router.get('/search', authenticate, userController.searchUsers); // Must be before /:userId
 router.get('/:userId', authenticate, userController.getUser);
 router.put('/:userId', authenticate, userController.updateUser);
 router.delete('/:userId', authenticate, userController.deleteUser);

@@ -26,6 +26,7 @@ import PaymentPage from './pages/traveler/PaymentPage'
 import MyBookings from './pages/traveler/MyBookings'
 import ProfilePage from './pages/traveler/ProfilePage'
 import AdminDashboard from './pages/admin/AdminDashboard'
+import EditUserPage from './pages/admin/EditUserPage'
 import HostDashboard from './pages/host/HostDashboard'
 import HostProfilePage from './pages/host/HostProfilePage'
 
@@ -150,6 +151,14 @@ function App() {
           element={
             <ProtectedRoute userType="admin">
               <AdminDashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/users/:userId/edit"
+          element={
+            <ProtectedRoute userType="admin">
+              <EditUserPage />
             </ProtectedRoute>
           }
         />

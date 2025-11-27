@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { removePendingListing } from '../../store/slices/adminSlice'
 import api from '../../services/apiService'
@@ -27,6 +27,7 @@ const PendingRequestsTab = ({ onRefresh }) => {
   const { pendingListings } = useSelector((state) => state.admin)
   const [processing, setProcessing] = useState({})
   const [notification, setNotification] = useState(null)
+  const [imageLoadKey, setImageLoadKey] = useState(0)
 
   const handleApprove = async (listingId, listingType) => {
     setProcessing({ [listingId]: 'approving' })
@@ -57,6 +58,18 @@ const PendingRequestsTab = ({ onRefresh }) => {
       setProcessing({})
     }
   }
+
+  // Force image reload when listings change - this ensures images render on every load
+  // Use requestAnimationFrame to ensure state is ready before rendering images
+  useEffect(() => {
+    const totalListings = pendingListings.flights.length + pendingListings.hotels.length + pendingListings.cars.length
+    if (totalListings > 0) {
+      requestAnimationFrame(() => {
+        // Update key whenever listings are available to force image re-render
+        setImageLoadKey(Date.now())
+      })
+    }
+  }, [pendingListings.flights.length, pendingListings.hotels.length, pendingListings.cars.length])
 
   const allListings = [
     ...pendingListings.flights.map(l => ({ ...l, type: 'Flight', icon: Plane })),
@@ -113,15 +126,23 @@ const PendingRequestsTab = ({ onRefresh }) => {
                 
                 if (imageSrc) {
                   return (
-                    <div className="md:w-64 h-48 md:h-auto flex-shrink-0 rounded-lg overflow-hidden bg-gray-200 flex items-center justify-center">
+                    <div key={`img-container-${listingId}-${imageLoadKey}`} className="md:w-64 h-48 md:h-auto flex-shrink-0 rounded-lg overflow-hidden bg-gray-200 flex items-center justify-center">
                       <img
+                        key={`img-${listingId}-${imageSrc}-${imageLoadKey}`}
                         src={imageSrc}
                         alt={imageAlt}
                         className="w-full h-full object-cover"
+                        loading="eager"
+                        decoding="async"
                         onError={(e) => {
                           console.error('Image failed to load:', imageSrc)
                           e.target.style.display = 'none'
                           if (e.target.nextSibling) e.target.nextSibling.classList.remove('hidden')
+                        }}
+                        onLoad={(e) => {
+                          // Ensure image is visible when loaded
+                          e.target.style.opacity = '1'
+                          e.target.style.display = 'block'
                         }}
                       />
                       <div className="hidden w-full h-full flex items-center justify-center text-gray-400">
