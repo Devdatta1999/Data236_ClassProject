@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useMemo } from 'react'
-import { Plane, Hotel, Car, Search, Edit2, X, MapPin, Clock, Calendar, CheckCircle, Star } from 'lucide-react'
+import { Plane, Hotel, Car, Search, Edit2, X, MapPin, Clock, Calendar, CheckCircle, Star, Trash2 } from 'lucide-react'
 import api from '../../services/apiService'
 import { US_AIRPORTS } from '../../utils/usAirports'
 import { US_STATES } from '../../utils/usStates'
@@ -19,8 +19,24 @@ const getImageSrc = (imagePath) => {
   return `${API_BASE_URL}/api/listings/images/${encodedFilename}`
 }
 
+// Helper function to get initial tab from localStorage
+const getInitialListingTab = () => {
+  try {
+    return localStorage.getItem('adminApprovedListingsTab') || 'flights'
+  } catch (e) {
+    return 'flights'
+  }
+}
+
 const ApprovedListingsTab = ({ onRefresh }) => {
-  const [activeListingTab, setActiveListingTab] = useState('flights') // 'flights', 'hotels', 'cars'
+  // Use lazy initialization for useState to ensure localStorage is read on mount
+  const [activeListingTab, setActiveListingTab] = useState(() => {
+    try {
+      return localStorage.getItem('adminApprovedListingsTab') || 'flights'
+    } catch (e) {
+      return 'flights'
+    }
+  }) // 'flights', 'hotels', 'cars'
   const [approvedListings, setApprovedListings] = useState({
     flights: [],
     hotels: [],
@@ -62,9 +78,22 @@ const ApprovedListingsTab = ({ onRefresh }) => {
   
   // Edit modal state
   const [editModal, setEditModal] = useState({ isOpen: false, listing: null, listingType: null })
+  
+  // Delete confirmation modal state
+  const [deleteModal, setDeleteModal] = useState({ isOpen: false, listing: null, listingType: null })
 
   useEffect(() => {
     fetchApprovedListings()
+    
+    // Restore tab from localStorage on mount
+    try {
+      const savedTab = localStorage.getItem('adminApprovedListingsTab')
+      if (savedTab && ['flights', 'hotels', 'cars'].includes(savedTab)) {
+        setActiveListingTab(savedTab)
+      }
+    } catch (e) {
+      console.error('Failed to read tab from localStorage:', e)
+    }
   }, [])
 
   // Use useMemo to compute filtered listings to avoid race conditions
@@ -362,6 +391,44 @@ const ApprovedListingsTab = ({ onRefresh }) => {
     setEditModal({ isOpen: false, listing: null, listingType: null })
   }
 
+  const handleDeleteClick = (listing, listingType) => {
+    setDeleteModal({ isOpen: true, listing, listingType })
+  }
+
+  const handleCloseDeleteModal = () => {
+    setDeleteModal({ isOpen: false, listing: null, listingType: null })
+  }
+
+  const handleConfirmDelete = async () => {
+    const { listing, listingType } = deleteModal
+    
+    if (!listing || !listingType) return
+
+    try {
+      const listingId = listing.flightId || listing.hotelId || listing.carId
+      const endpoint = `/api/listings/${listingType.toLowerCase()}s/${listingId}`
+      
+      await api.delete(endpoint)
+      
+      setNotification({ 
+        type: 'success', 
+        message: `${listingType} deleted successfully!` 
+      })
+      
+      // Close modal
+      handleCloseDeleteModal()
+      
+      // Refresh listings after deletion
+      fetchApprovedListings()
+    } catch (err) {
+      console.error('Error deleting listing:', err)
+      setNotification({ 
+        type: 'error', 
+        message: err.response?.data?.error?.message || 'Failed to delete listing' 
+      })
+    }
+  }
+
   const handleSaveEdit = async (updatedData) => {
     try {
       const { listing, listingType } = editModal
@@ -406,8 +473,16 @@ const ApprovedListingsTab = ({ onRefresh }) => {
         <div className="flex border-b border-gray-200">
           <button
             onClick={() => {
-              setActiveListingTab('flights')
+              const newTab = 'flights'
+              setActiveListingTab(newTab)
               setShowFlightSearch(false)
+              setSearchActive(false)
+              // Persist to localStorage
+              try {
+                localStorage.setItem('adminApprovedListingsTab', newTab)
+              } catch (e) {
+                console.error('Failed to save tab to localStorage:', e)
+              }
             }}
             className={`flex items-center space-x-2 px-6 py-4 border-b-2 transition-colors ${
               activeListingTab === 'flights'
@@ -425,9 +500,16 @@ const ApprovedListingsTab = ({ onRefresh }) => {
           </button>
           <button
             onClick={() => {
-              setActiveListingTab('hotels')
+              const newTab = 'hotels'
+              setActiveListingTab(newTab)
               setShowHotelSearch(false)
               setSearchActive(false)
+              // Persist to localStorage
+              try {
+                localStorage.setItem('adminApprovedListingsTab', newTab)
+              } catch (e) {
+                console.error('Failed to save tab to localStorage:', e)
+              }
             }}
             className={`flex items-center space-x-2 px-6 py-4 border-b-2 transition-colors ${
               activeListingTab === 'hotels'
@@ -445,9 +527,16 @@ const ApprovedListingsTab = ({ onRefresh }) => {
           </button>
           <button
             onClick={() => {
-              setActiveListingTab('cars')
+              const newTab = 'cars'
+              setActiveListingTab(newTab)
               setShowCarSearch(false)
               setSearchActive(false)
+              // Persist to localStorage
+              try {
+                localStorage.setItem('adminApprovedListingsTab', newTab)
+              } catch (e) {
+                console.error('Failed to save tab to localStorage:', e)
+              }
             }}
             className={`flex items-center space-x-2 px-6 py-4 border-b-2 transition-colors ${
               activeListingTab === 'cars'
@@ -822,6 +911,7 @@ const ApprovedListingsTab = ({ onRefresh }) => {
                   key={`flight-${flight.flightId}-${imageLoadKey}`}
                   flight={flight}
                   onEdit={() => handleEdit(flight, 'Flight')}
+                  onDelete={() => handleDeleteClick(flight, 'Flight')}
                 />
               ))}
               
@@ -830,6 +920,7 @@ const ApprovedListingsTab = ({ onRefresh }) => {
                   key={`hotel-${hotel.hotelId}-${imageLoadKey}`}
                   hotel={hotel}
                   onEdit={() => handleEdit(hotel, 'Hotel')}
+                  onDelete={() => handleDeleteClick(hotel, 'Hotel')}
                 />
               ))}
               
@@ -838,6 +929,7 @@ const ApprovedListingsTab = ({ onRefresh }) => {
                   key={`car-${car.carId}-${imageLoadKey}`}
                   car={car}
                   onEdit={() => handleEdit(car, 'Car')}
+                  onDelete={() => handleDeleteClick(car, 'Car')}
                 />
               ))}
             </div>
@@ -871,11 +963,21 @@ const ApprovedListingsTab = ({ onRefresh }) => {
           onSave={handleSaveEdit}
         />
       )}
+
+      {/* Delete Confirmation Modal */}
+      {deleteModal.isOpen && (
+        <DeleteConfirmationModal
+          listing={deleteModal.listing}
+          listingType={deleteModal.listingType}
+          onClose={handleCloseDeleteModal}
+          onConfirm={handleConfirmDelete}
+        />
+      )}
     </div>
   )
 }
 
-const FlightCard = ({ flight, onEdit }) => {
+const FlightCard = ({ flight, onEdit, onDelete }) => {
   const imageSrc = flight.image ? getImageSrc(flight.image) : null
   
   return (
@@ -999,19 +1101,28 @@ const FlightCard = ({ flight, onEdit }) => {
           </div>
         </div>
 
-        <button
-          onClick={onEdit}
-          className="btn-secondary flex items-center space-x-2 self-start"
-        >
-          <Edit2 className="w-4 h-4" />
-          <span>Edit</span>
-        </button>
+        <div className="flex items-center space-x-2 self-start">
+          <button
+            onClick={onEdit}
+            className="btn-secondary flex items-center space-x-2"
+          >
+            <Edit2 className="w-4 h-4" />
+            <span>Edit</span>
+          </button>
+          <button
+            onClick={onDelete}
+            className="btn-secondary flex items-center space-x-2 bg-red-50 hover:bg-red-100 text-red-600 border-red-200 hover:border-red-300"
+          >
+            <Trash2 className="w-4 h-4" />
+            <span>Delete</span>
+          </button>
+        </div>
       </div>
     </div>
   )
 }
 
-const HotelCard = ({ hotel, onEdit }) => {
+const HotelCard = ({ hotel, onEdit, onDelete }) => {
   const imageSrc = hotel.images && hotel.images.length > 0 ? getImageSrc(hotel.images[0]) : null
   
   return (
@@ -1066,20 +1177,29 @@ const HotelCard = ({ hotel, onEdit }) => {
             </div>
           </div>
 
-          <button
-            onClick={onEdit}
-            className="btn-secondary flex items-center space-x-2"
-          >
-            <Edit2 className="w-4 h-4" />
-            <span>Edit</span>
-          </button>
+          <div className="flex items-center space-x-2">
+            <button
+              onClick={onEdit}
+              className="btn-secondary flex items-center space-x-2"
+            >
+              <Edit2 className="w-4 h-4" />
+              <span>Edit</span>
+            </button>
+            <button
+              onClick={onDelete}
+              className="btn-secondary flex items-center space-x-2 bg-red-50 hover:bg-red-100 text-red-600 border-red-200 hover:border-red-300"
+            >
+              <Trash2 className="w-4 h-4" />
+              <span>Delete</span>
+            </button>
+          </div>
         </div>
       </div>
     </div>
   )
 }
 
-const CarCard = ({ car, onEdit }) => {
+const CarCard = ({ car, onEdit, onDelete }) => {
   const imageSrc = car.image ? getImageSrc(car.image) : null
   
   return (
@@ -1134,13 +1254,22 @@ const CarCard = ({ car, onEdit }) => {
           </div>
         </div>
 
-        <button
-          onClick={onEdit}
-          className="btn-secondary flex items-center space-x-2 self-start"
-        >
-          <Edit2 className="w-4 h-4" />
-          <span>Edit</span>
-        </button>
+        <div className="flex items-center space-x-2 self-start">
+          <button
+            onClick={onEdit}
+            className="btn-secondary flex items-center space-x-2"
+          >
+            <Edit2 className="w-4 h-4" />
+            <span>Edit</span>
+          </button>
+          <button
+            onClick={onDelete}
+            className="btn-secondary flex items-center space-x-2 bg-red-50 hover:bg-red-100 text-red-600 border-red-200 hover:border-red-300"
+          >
+            <Trash2 className="w-4 h-4" />
+            <span>Delete</span>
+          </button>
+        </div>
       </div>
     </div>
   )
@@ -1983,6 +2112,55 @@ const EditCarModal = ({ car, onClose, onSave }) => {
             </button>
           </div>
         </form>
+      </div>
+    </div>
+  )
+}
+
+const DeleteConfirmationModal = ({ listing, listingType, onClose, onConfirm }) => {
+  if (!listing) return null
+
+  const listingDisplay = listingType === 'Flight' 
+    ? `Flight ${listing.flightId}`
+    : listingType === 'Hotel'
+    ? `Hotel ${listing.hotelName}`
+    : `Car ${listing.model || listing.carModel}`
+
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+      <div className="bg-white rounded-lg max-w-md w-full shadow-xl">
+        <div className="p-6">
+          <div className="flex items-center space-x-4 mb-4">
+            <div className="flex-shrink-0 w-12 h-12 rounded-full bg-red-100 flex items-center justify-center">
+              <Trash2 className="w-6 h-6 text-red-600" />
+            </div>
+            <div>
+              <h2 className="text-xl font-bold text-gray-900">Delete {listingType}?</h2>
+              <p className="text-sm text-gray-500">This action cannot be undone</p>
+            </div>
+          </div>
+
+          <p className="text-gray-700 mb-6">
+            Are you sure you want to delete <span className="font-semibold">{listingDisplay}</span>? 
+            This will permanently remove the listing from the system.
+          </p>
+
+          <div className="flex justify-end space-x-3">
+            <button
+              onClick={onClose}
+              className="px-4 py-2 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={onConfirm}
+              className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors flex items-center space-x-2"
+            >
+              <Trash2 className="w-4 h-4" />
+              <span>Delete</span>
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   )

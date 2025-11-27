@@ -9,6 +9,21 @@ import { format, differenceInDays } from 'date-fns'
 
 const API_BASE_URL = import.meta.env.VITE_API_GATEWAY_URL || 'http://localhost:8080'
 
+// Helper function to get image source - handles various image path formats
+const getImageSrc = (imagePath) => {
+  if (!imagePath) return ''
+  // If it's already a full URL (http/https), return as is
+  if (imagePath.startsWith('http')) return imagePath
+  // If it already starts with /api/, prepend API_BASE_URL (handles both listings/images and providers/profile-pictures)
+  if (imagePath.startsWith('/api/')) {
+    return `${API_BASE_URL}${imagePath}`
+  }
+  // Otherwise, extract filename and construct the path (assume listings/images)
+  const filename = imagePath.split('/').pop()
+  const encodedFilename = encodeURIComponent(filename)
+  return `${API_BASE_URL}/api/listings/images/${encodedFilename}`
+}
+
 // Flight Card Component
 const FlightCard = ({ item, searchParams, searchType, onViewDetails }) => {
   const formatTime = (dateTime) => {
@@ -47,18 +62,28 @@ const FlightCard = ({ item, searchParams, searchType, onViewDetails }) => {
         <div className="flex-1 flex items-start space-x-4">
           {/* Flight Image */}
           <div className="w-24 h-24 flex-shrink-0 rounded-lg overflow-hidden bg-gray-200 flex items-center justify-center">
-            {item.image ? (
-              <img
-                src={`${API_BASE_URL}${item.image}`}
-                alt={item.providerName || item.flightId}
-                className="w-full h-full object-cover"
-                onError={(e) => {
-                  e.target.style.display = 'none'
-                  if (e.target.nextSibling) e.target.nextSibling.classList.remove('hidden')
-                }}
-              />
-            ) : null}
-            <div className={`w-full h-full flex items-center justify-center text-gray-400 ${item.image ? 'hidden' : ''}`}>
+            {(() => {
+              const imageSrc = item.image ? getImageSrc(item.image) : null
+              return imageSrc ? (
+                <img
+                  key={`img-flight-${item.flightId}-${imageSrc}`}
+                  src={imageSrc}
+                  alt={item.providerName || item.flightId}
+                  className="w-full h-full object-cover"
+                  loading="eager"
+                  decoding="async"
+                  onError={(e) => {
+                    e.target.style.display = 'none'
+                    e.target.nextSibling?.classList.remove('hidden')
+                  }}
+                  onLoad={(e) => {
+                    e.target.style.opacity = '1'
+                    e.target.style.display = 'block'
+                  }}
+                />
+              ) : null
+            })()}
+            <div className="hidden w-full h-full flex items-center justify-center text-gray-400">
               <Plane className="w-8 h-8" />
             </div>
           </div>
@@ -140,24 +165,8 @@ const HotelCard = ({ item, location, navigate }) => {
       ? Math.min(...item.roomTypes.map((rt) => rt.pricePerNight))
       : 0
 
-  // Compute image source once
-  const getImageSrc = () => {
-    if (!item.images || item.images.length === 0) return ''
-    const imagePath = item.images[0]
-    if (!imagePath) return ''
-    // If it's already a full URL (http/https), return as is
-    if (imagePath.startsWith('http')) return imagePath
-    // If it already starts with /api/listings/images/, prepend API_BASE_URL
-    if (imagePath.startsWith('/api/listings/images/')) {
-      return `${API_BASE_URL}${imagePath}`
-    }
-    // Otherwise, extract filename and construct the path
-    const filename = imagePath.split('/').pop()
-    const encodedFilename = encodeURIComponent(filename)
-    return `${API_BASE_URL}/api/listings/images/${encodedFilename}`
-  }
-  
-  const imageSrc = getImageSrc()
+  // Compute image source once using the shared helper function
+  const imageSrc = item.images && item.images.length > 0 ? getImageSrc(item.images[0]) : null
 
   return (
     <div
@@ -179,20 +188,23 @@ const HotelCard = ({ item, location, navigate }) => {
         <div className="w-32 h-32 flex-shrink-0 mr-4 rounded-lg overflow-hidden bg-gray-200 flex items-center justify-center">
           {imageSrc ? (
             <img
+              key={`img-hotel-${item.hotelId}-${imageSrc}`}
               src={imageSrc}
               alt={item.hotelName}
               className="w-full h-full object-cover"
+              loading="eager"
+              decoding="async"
               onError={(e) => {
                 e.target.style.display = 'none'
-                if (e.target.nextSibling) e.target.nextSibling.classList.remove('hidden')
+                e.target.nextSibling?.classList.remove('hidden')
+              }}
+              onLoad={(e) => {
+                e.target.style.opacity = '1'
+                e.target.style.display = 'block'
               }}
             />
           ) : null}
-          <div
-            className={`w-full h-full flex items-center justify-center text-gray-400 ${
-              imageSrc ? 'hidden' : ''
-            }`}
-          >
+          <div className="hidden w-full h-full flex items-center justify-center text-gray-400">
             <svg
               className="w-12 h-12"
               fill="none"
@@ -317,18 +329,28 @@ const CarCard = ({ item, location, navigate }) => {
         <div className="flex-1 flex items-start space-x-4">
           {/* Car Image */}
           <div className="w-24 h-24 flex-shrink-0 rounded-lg overflow-hidden bg-gray-200 flex items-center justify-center">
-            {item.image ? (
-              <img
-                src={`${API_BASE_URL}${item.image}`}
-                alt={item.providerName || item.model || item.carModel}
-                className="w-full h-full object-cover"
-                onError={(e) => {
-                  e.target.style.display = 'none'
-                  if (e.target.nextSibling) e.target.nextSibling.classList.remove('hidden')
-                }}
-              />
-            ) : null}
-            <div className={`w-full h-full flex items-center justify-center text-gray-400 ${item.image ? 'hidden' : ''}`}>
+            {(() => {
+              const imageSrc = item.image ? getImageSrc(item.image) : null
+              return imageSrc ? (
+                <img
+                  key={`img-car-${item.carId || item.model}-${imageSrc}`}
+                  src={imageSrc}
+                  alt={item.providerName || item.model || item.carModel}
+                  className="w-full h-full object-cover"
+                  loading="eager"
+                  decoding="async"
+                  onError={(e) => {
+                    e.target.style.display = 'none'
+                    e.target.nextSibling?.classList.remove('hidden')
+                  }}
+                  onLoad={(e) => {
+                    e.target.style.opacity = '1'
+                    e.target.style.display = 'block'
+                  }}
+                />
+              ) : null
+            })()}
+            <div className="hidden w-full h-full flex items-center justify-center text-gray-400">
               <Car className="w-8 h-8" />
             </div>
           </div>
@@ -436,6 +458,8 @@ const SearchResults = () => {
   const { searchResults, searchType, loading } = useSelector((state) => state.search)
   const { items: cartItems } = useSelector((state) => state.cart)
   const [results, setResults] = useState([])
+  const [imageLoadKey, setImageLoadKey] = useState(0)
+  const [resultsReady, setResultsReady] = useState(false)
   const lastSearchKey = useRef(null)
   const isSearching = useRef(false)
 
@@ -449,6 +473,11 @@ const SearchResults = () => {
         const existingResults = searchResults[currentSearchType] || []
         if (existingResults.length > 0) {
           setResults(existingResults)
+          setResultsReady(false)
+          requestAnimationFrame(() => {
+            setImageLoadKey(Date.now())
+            setResultsReady(true)
+          })
           dispatch(setLoading(false))
           return
         }
@@ -469,6 +498,11 @@ const SearchResults = () => {
         const cachedResults = searchResults[type] || []
         if (cachedResults.length > 0) {
           setResults(cachedResults)
+          setResultsReady(false)
+          requestAnimationFrame(() => {
+            setImageLoadKey(Date.now())
+            setResultsReady(true)
+          })
           dispatch(setLoading(false))
           return
         }
@@ -563,7 +597,17 @@ const SearchResults = () => {
 
         console.log(`Search results for ${type}:`, items)
         dispatch(setSearchResults({ type, results: items }))
+        
+        // Set results first
         setResults(items)
+        setResultsReady(false) // Reset ready state
+        
+        // Use requestAnimationFrame to ensure state is updated before setting imageLoadKey
+        requestAnimationFrame(() => {
+          setImageLoadKey(Date.now()) // Force image re-render
+          setResultsReady(true) // Mark results as ready
+        })
+        
         isSearching.current = false
         dispatch(setLoading(false))
       } catch (err) {

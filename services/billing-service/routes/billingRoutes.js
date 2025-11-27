@@ -14,10 +14,11 @@ router.post('/checkout', billingController.checkout);
 router.post('/payment', billingController.processPayment);
 
 // Non-high-traffic operations
-router.get('/:billingId', authenticate, billingController.getBilling);
-router.get('/user/:userId', authenticate, billingController.getUserBillingHistory);
+// IMPORTANT: More specific routes must come before parameterized routes
 router.get('/search', authenticate, requireAdmin, billingController.searchBills);
+router.get('/user/:userId', authenticate, billingController.getUserBillingHistory);
 router.get('/invoice/:billingId', authenticate, billingController.getInvoice);
+router.get('/:billingId', authenticate, billingController.getBilling);
 
 module.exports = router;
 

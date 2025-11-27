@@ -3,13 +3,14 @@ import { useLocation } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
 import { setPendingListings, setSelectedTab, setAnalytics, setLoading } from '../../store/slices/adminSlice'
 import api from '../../services/apiService'
-import { CheckCircle, XCircle, Plus, BarChart3, Users, TrendingUp, ListChecks } from 'lucide-react'
+import { CheckCircle, XCircle, Plus, BarChart3, Users, TrendingUp, ListChecks, Receipt } from 'lucide-react'
 import PendingRequestsTab from '../../components/admin/PendingRequestsTab'
 import ApprovedListingsTab from '../../components/admin/ApprovedListingsTab'
 import CreateListingTab from '../../components/admin/CreateListingTab'
 import AdminAnalyticsTab from '../../components/admin/AdminAnalyticsTab'
 import HostAnalyticsTab from '../../components/admin/HostAnalyticsTab'
 import UserManagementTab from '../../components/admin/UserManagementTab'
+import BillManagementTab from '../../components/admin/BillManagementTab'
 
 const AdminDashboard = () => {
   const dispatch = useDispatch()
@@ -64,6 +65,7 @@ const AdminDashboard = () => {
     { id: 'approved', label: 'Approved Listings', icon: ListChecks },
     { id: 'create', label: 'Create Listing', icon: Plus },
     { id: 'users', label: 'User Management', icon: Users },
+    { id: 'bills', label: 'Bill Management', icon: Receipt },
     { id: 'admin-dashboard', label: 'Admin Dashboard', icon: BarChart3 },
     { id: 'host-dashboard', label: 'Host Dashboard', icon: TrendingUp },
   ]
@@ -109,6 +111,7 @@ const AdminDashboard = () => {
         {selectedTab === 'approved' && <ApprovedListingsTab onRefresh={fetchPendingListings} />}
         {selectedTab === 'create' && <CreateListingTab />}
         {selectedTab === 'users' && <UserManagementTab />}
+        {selectedTab === 'bills' && <BillManagementTab />}
         {selectedTab === 'admin-dashboard' && <AdminAnalyticsTab analytics={analytics} />}
         {selectedTab === 'host-dashboard' && <HostAnalyticsTab />}
       </div>

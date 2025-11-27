@@ -6,6 +6,21 @@ import api from '../../services/apiService'
 import { Building2, Mail, Phone, MapPin, ArrowLeft, Camera, X } from 'lucide-react'
 import { US_STATES } from '../../utils/usStates'
 
+const API_BASE_URL = import.meta.env.VITE_API_GATEWAY_URL || 'http://localhost:8080'
+
+// Helper function to get image source - handles various image path formats
+const getImageSrc = (imagePath) => {
+  if (!imagePath) return ''
+  // If it's already a full URL (http/https), return as is
+  if (imagePath.startsWith('http')) return imagePath
+  // If it already starts with /api/, prepend API_BASE_URL
+  if (imagePath.startsWith('/api/')) {
+    return `${API_BASE_URL}${imagePath}`
+  }
+  // Otherwise, construct the path
+  return `${API_BASE_URL}${imagePath}`
+}
+
 const HostProfilePage = () => {
   const navigate = useNavigate()
   const dispatch = useDispatch()
@@ -28,6 +43,7 @@ const HostProfilePage = () => {
   const [profilePicturePreview, setProfilePicturePreview] = useState(null)
   const [uploadingPicture, setUploadingPicture] = useState(false)
   const [currentProfileImage, setCurrentProfileImage] = useState(null)
+  const [imageLoadKey, setImageLoadKey] = useState(0)
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -51,6 +67,10 @@ const HostProfilePage = () => {
         if (providerData?.profileImage) {
           setCurrentProfileImage(providerData.profileImage)
           setProfilePicturePreview(providerData.profileImage)
+          // Use requestAnimationFrame to ensure image loads properly
+          requestAnimationFrame(() => {
+            setImageLoadKey(Date.now())
+          })
         }
         // Don't update Redux here to avoid infinite loops - Redux already has user data from login
         // Only update Redux when user explicitly makes changes (upload picture, update profile)
@@ -118,12 +138,20 @@ const HostProfilePage = () => {
       setProfilePicturePreview(imageUrl)
       setSuccess('Profile picture updated successfully!')
       
+      // Use requestAnimationFrame to ensure image loads properly
+      requestAnimationFrame(() => {
+        setImageLoadKey(Date.now())
+      })
+      
       // Refresh profile data to ensure everything is in sync
       const providerResponse = await api.get('/api/providers/me')
       const freshProviderData = providerResponse.data.data?.provider
       if (freshProviderData?.profileImage) {
         setCurrentProfileImage(freshProviderData.profileImage)
         setProfilePicturePreview(freshProviderData.profileImage)
+        requestAnimationFrame(() => {
+          setImageLoadKey(Date.now())
+        })
       }
       dispatch(updateUser(freshProviderData)) // Update Redux with fresh data including profileImage
     } catch (err) {
@@ -174,6 +202,9 @@ const HostProfilePage = () => {
       if (freshProviderData?.profileImage) {
         setCurrentProfileImage(freshProviderData.profileImage)
         setProfilePicturePreview(freshProviderData.profileImage)
+        requestAnimationFrame(() => {
+          setImageLoadKey(Date.now())
+        })
       }
       dispatch(updateUser(freshProviderData)) // Update Redux with fresh data including profileImage
     } catch (err) {
@@ -226,12 +257,18 @@ const HostProfilePage = () => {
               <div className="relative">
                 {profilePicturePreview && !profilePicturePreview.startsWith('data:') ? (
                   <img
-                    src={`${import.meta.env.VITE_API_GATEWAY_URL || 'http://localhost:8080'}${profilePicturePreview}`}
+                    key={`profile-preview-${imageLoadKey}-${profilePicturePreview}`}
+                    src={getImageSrc(profilePicturePreview)}
                     alt="Profile"
                     className="w-24 h-24 rounded-full object-cover border-2 border-gray-300"
-                    key={profilePicturePreview} // Force re-render when image changes
+                    loading="eager"
+                    decoding="async"
                     onError={(e) => {
                       e.target.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"%3E%3Cpath fill="%23999" d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/%3E%3C/svg%3E'
+                    }}
+                    onLoad={(e) => {
+                      e.target.style.opacity = '1'
+                      e.target.style.display = 'block'
                     }}
                   />
                 ) : profilePicturePreview ? (
@@ -240,6 +277,8 @@ const HostProfilePage = () => {
                       src={profilePicturePreview}
                       alt="Profile preview"
                       className="w-24 h-24 rounded-full object-cover border-2 border-gray-300"
+                      loading="eager"
+                      decoding="async"
                     />
                     <button
                       type="button"
@@ -249,6 +288,22 @@ const HostProfilePage = () => {
                       <X className="w-4 h-4" />
                     </button>
                   </div>
+                ) : currentProfileImage ? (
+                  <img
+                    key={`profile-current-${imageLoadKey}-${currentProfileImage}`}
+                    src={getImageSrc(currentProfileImage)}
+                    alt="Profile"
+                    className="w-24 h-24 rounded-full object-cover border-2 border-gray-300"
+                    loading="eager"
+                    decoding="async"
+                    onError={(e) => {
+                      e.target.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"%3E%3Cpath fill="%23999" d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/%3E%3C/svg%3E'
+                    }}
+                    onLoad={(e) => {
+                      e.target.style.opacity = '1'
+                      e.target.style.display = 'block'
+                    }}
+                  />
                 ) : (
                   <div className="w-24 h-24 rounded-full bg-gray-200 flex items-center justify-center border-2 border-dashed border-gray-300">
                     <Camera className="w-8 h-8 text-gray-400" />

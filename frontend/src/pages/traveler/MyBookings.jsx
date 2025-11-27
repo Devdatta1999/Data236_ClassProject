@@ -8,6 +8,23 @@ import { format } from 'date-fns'
 import Notification from '../../components/common/Notification'
 import ReviewModal from '../../components/common/ReviewModal'
 
+const API_BASE_URL = import.meta.env.VITE_API_GATEWAY_URL || 'http://localhost:8080'
+
+// Helper function to get image source - handles various image path formats
+const getImageSrc = (imagePath) => {
+  if (!imagePath) return ''
+  // If it's already a full URL (http/https), return as is
+  if (imagePath.startsWith('http')) return imagePath
+  // If it already starts with /api/, prepend API_BASE_URL (handles both listings/images and providers/profile-pictures)
+  if (imagePath.startsWith('/api/')) {
+    return `${API_BASE_URL}${imagePath}`
+  }
+  // Otherwise, extract filename and construct the path (assume listings/images)
+  const filename = imagePath.split('/').pop()
+  const encodedFilename = encodeURIComponent(filename)
+  return `${API_BASE_URL}/api/listings/images/${encodedFilename}`
+}
+
 const MyBookings = () => {
   const navigate = useNavigate()
   const location = useLocation()
@@ -19,6 +36,8 @@ const MyBookings = () => {
   const [reviewModal, setReviewModal] = useState({ isOpen: false, booking: null, listing: null, listingType: null })
   const [userReviews, setUserReviews] = useState([]) // Store user's reviews to check if already reviewed
   const [activeTab, setActiveTab] = useState('flights') // 'flights', 'hotels', 'cars'
+  const [imageLoadKey, setImageLoadKey] = useState(0)
+  const [bookingsReady, setBookingsReady] = useState(false)
 
   useEffect(() => {
     // Show payment success notification only once and clear state immediately
@@ -58,6 +77,13 @@ const MyBookings = () => {
 
       // Backend now includes listing and provider details, so we can use bookings directly
       setBookingsWithDetails(bookingsData)
+      setBookingsReady(false) // Reset ready state
+      
+      // Use requestAnimationFrame to ensure state is updated before setting imageLoadKey
+      requestAnimationFrame(() => {
+        setImageLoadKey(Date.now()) // Force image re-render
+        setBookingsReady(true) // Mark bookings as ready
+      })
     } catch (err) {
       dispatch(setError(err.message))
       console.error('Error fetching bookings:', err)
@@ -332,27 +358,28 @@ const MyBookings = () => {
                           {/* Hotel Image */}
                           {(listing?.images && listing.images.length > 0) || provider?.profileImage ? (
                             <div className="w-24 h-24 flex-shrink-0 rounded-lg overflow-hidden bg-gray-200 flex items-center justify-center">
-                              {listing?.images && listing.images.length > 0 ? (
-                                <img
-                                  src={`${import.meta.env.VITE_API_GATEWAY_URL || 'http://localhost:8080'}/api/listings/images/${encodeURIComponent(listing.images[0].split('/').pop())}`}
-                                  alt={listingName}
-                                  className="w-full h-full object-cover"
-                                  onError={(e) => {
-                                    e.target.style.display = 'none'
-                                    if (e.target.nextSibling) e.target.nextSibling.classList.remove('hidden')
-                                  }}
-                                />
-                              ) : provider?.profileImage ? (
-                                <img
-                                  src={`${import.meta.env.VITE_API_GATEWAY_URL || 'http://localhost:8080'}${provider.profileImage}`}
-                                  alt={provider.providerName || provider.name}
-                                  className="w-full h-full object-cover"
-                                  onError={(e) => {
-                                    e.target.style.display = 'none'
-                                    if (e.target.nextSibling) e.target.nextSibling.classList.remove('hidden')
-                                  }}
-                                />
-                              ) : null}
+                              {(() => {
+                                const imagePath = listing?.images && listing.images.length > 0 ? listing.images[0] : provider?.profileImage
+                                const imageSrc = imagePath ? getImageSrc(imagePath) : null
+                                return imageSrc ? (
+                                  <img
+                                    key={`img-hotel-${billingId}-${imageLoadKey}-${imageSrc}`}
+                                    src={imageSrc}
+                                    alt={listingName}
+                                    className="w-full h-full object-cover"
+                                    loading="eager"
+                                    decoding="async"
+                                    onError={(e) => {
+                                      e.target.style.display = 'none'
+                                      e.target.nextSibling?.classList.remove('hidden')
+                                    }}
+                                    onLoad={(e) => {
+                                      e.target.style.opacity = '1'
+                                      e.target.style.display = 'block'
+                                    }}
+                                  />
+                                ) : null
+                              })()}
                               <div className="hidden w-full h-full flex items-center justify-center text-gray-400">
                                 <Building2 className="w-8 h-8" />
                               </div>
@@ -503,41 +530,42 @@ const MyBookings = () => {
                     <div className="flex-1 flex items-start space-x-4">
                       {/* Listing Image */}
                       {(() => {
-                        let imageUrl = null
+                        let imagePath = null
                         if (booking.listingType === 'Flight' && (listing?.image || provider?.profileImage)) {
-                          imageUrl = listing?.image || provider?.profileImage
+                          imagePath = listing?.image || provider?.profileImage
                         } else if (booking.listingType === 'Car' && (listing?.image || provider?.profileImage)) {
-                          imageUrl = listing?.image || provider?.profileImage
+                          imagePath = listing?.image || provider?.profileImage
                         } else if (booking.listingType === 'Hotel' && ((listing?.images && listing.images.length > 0) || provider?.profileImage)) {
-                          if (listing?.images && listing.images.length > 0) {
-                            const imagePath = listing.images[0]
-                            imageUrl = `/api/listings/images/${encodeURIComponent(imagePath.split('/').pop())}`
-                          } else {
-                            imageUrl = provider?.profileImage
-                          }
+                          imagePath = listing?.images && listing.images.length > 0 ? listing.images[0] : provider?.profileImage
                         }
                         
-                        if (!imageUrl) return null
+                        if (!imagePath) return null
+                        
+                        const imageSrc = getImageSrc(imagePath)
+                        const Icon = booking.listingType === 'Flight' ? Plane : booking.listingType === 'Car' ? Car : Building2
                         
                         return (
                           <div className="w-24 h-24 flex-shrink-0 rounded-lg overflow-hidden bg-gray-200 flex items-center justify-center">
-                            <img
-                              src={`${import.meta.env.VITE_API_GATEWAY_URL || 'http://localhost:8080'}${imageUrl}`}
-                              alt={listingName || booking.bookingId}
-                              className="w-full h-full object-cover"
-                              onError={(e) => {
-                                e.target.style.display = 'none'
-                                if (e.target.nextSibling) e.target.nextSibling.classList.remove('hidden')
-                              }}
-                            />
+                            {imageSrc ? (
+                              <img
+                                key={`img-booking-${booking.bookingId}-${imageLoadKey}-${imageSrc}`}
+                                src={imageSrc}
+                                alt={listingName || booking.bookingId}
+                                className="w-full h-full object-cover"
+                                loading="eager"
+                                decoding="async"
+                                onError={(e) => {
+                                  e.target.style.display = 'none'
+                                  e.target.nextSibling?.classList.remove('hidden')
+                                }}
+                                onLoad={(e) => {
+                                  e.target.style.opacity = '1'
+                                  e.target.style.display = 'block'
+                                }}
+                              />
+                            ) : null}
                             <div className="hidden w-full h-full flex items-center justify-center text-gray-400">
-                              {booking.listingType === 'Flight' ? (
-                                <Plane className="w-8 h-8" />
-                              ) : booking.listingType === 'Car' ? (
-                                <Car className="w-8 h-8" />
-                              ) : (
-                                <Building2 className="w-8 h-8" />
-                              )}
+                              <Icon className="w-8 h-8" />
                             </div>
                           </div>
                         )

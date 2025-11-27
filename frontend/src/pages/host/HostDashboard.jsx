@@ -11,12 +11,29 @@ const HostDashboard = () => {
   const dispatch = useDispatch()
   const { provider, listings, profitability } = useSelector((state) => state.host)
   const { user } = useSelector((state) => state.auth)
-  const [activeTab, setActiveTab] = useState('overview')
+  // Use lazy initialization for useState to ensure localStorage is read on mount
+  const [activeTab, setActiveTab] = useState(() => {
+    try {
+      return localStorage.getItem('hostDashboardTab') || 'overview'
+    } catch (e) {
+      return 'overview'
+    }
+  })
 
   useEffect(() => {
     fetchProviderData()
     fetchListings()
     fetchProfitability()
+    
+    // Restore tab from localStorage on mount
+    try {
+      const savedTab = localStorage.getItem('hostDashboardTab')
+      if (savedTab && ['overview', 'listings', 'create', 'profitability'].includes(savedTab)) {
+        setActiveTab(savedTab)
+      }
+    } catch (e) {
+      console.error('Failed to read tab from localStorage:', e)
+    }
   }, [])
 
   const fetchProviderData = async () => {
@@ -83,7 +100,16 @@ const HostDashboard = () => {
               return (
                 <button
                   key={tab.id}
-                  onClick={() => setActiveTab(tab.id)}
+                  onClick={() => {
+                    const newTab = tab.id
+                    setActiveTab(newTab)
+                    // Persist to localStorage
+                    try {
+                      localStorage.setItem('hostDashboardTab', newTab)
+                    } catch (e) {
+                      console.error('Failed to save tab to localStorage:', e)
+                    }
+                  }}
                   className={`flex items-center space-x-2 px-6 py-4 border-b-2 transition-colors ${
                     activeTab === tab.id
                       ? 'border-blue-600 text-blue-600'

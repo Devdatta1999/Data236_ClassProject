@@ -6,6 +6,21 @@ import { logout } from '../../store/slices/authSlice'
 import { clearCart } from '../../store/slices/cartSlice'
 import api from '../../services/apiService'
 
+const API_BASE_URL = import.meta.env.VITE_API_GATEWAY_URL || 'http://localhost:8080'
+
+// Helper function to get image source - handles various image path formats
+const getImageSrc = (imagePath) => {
+  if (!imagePath) return ''
+  // If it's already a full URL (http/https), return as is
+  if (imagePath.startsWith('http')) return imagePath
+  // If it already starts with /api/, prepend API_BASE_URL
+  if (imagePath.startsWith('/api/')) {
+    return `${API_BASE_URL}${imagePath}`
+  }
+  // Otherwise, construct the path
+  return `${API_BASE_URL}${imagePath}`
+}
+
 const Navbar = () => {
   const navigate = useNavigate()
   const dispatch = useDispatch()
@@ -144,15 +159,21 @@ const Navbar = () => {
                   >
                     {user?.profileImage ? (
                       <img
-                        src={`${import.meta.env.VITE_API_GATEWAY_URL || 'http://localhost:8080'}${user.profileImage}`}
+                        key={`navbar-profile-${user.profileImage}`}
+                        src={getImageSrc(user.profileImage)}
                         alt="Profile"
                         className="w-8 h-8 rounded-full object-cover border-2 border-gray-300"
+                        loading="eager"
+                        decoding="async"
                         onError={(e) => {
                           e.target.style.display = 'none'
                           const icon = e.target.parentElement.querySelector('.profile-icon-fallback')
                           if (icon) icon.style.display = 'block'
                         }}
-                        key={user.profileImage} // Force re-render when profileImage changes
+                        onLoad={(e) => {
+                          e.target.style.opacity = '1'
+                          e.target.style.display = 'block'
+                        }}
                       />
                     ) : null}
                     <User className={`w-5 h-5 profile-icon-fallback ${user?.profileImage ? 'hidden' : ''}`} />

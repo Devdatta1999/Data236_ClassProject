@@ -1,9 +1,24 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { Plane, Hotel, Car, Trash2, AlertCircle, Star, MapPin, Calendar, Users, Clock, MapPin as MapIcon } from 'lucide-react'
 import api from '../../services/apiService'
 import Notification from '../common/Notification'
 
 const API_BASE_URL = import.meta.env.VITE_API_GATEWAY_URL || 'http://localhost:8080'
+
+// Helper function to get image source - handles various image path formats
+const getImageSrc = (imagePath) => {
+  if (!imagePath) return ''
+  // If it's already a full URL (http/https), return as is
+  if (imagePath.startsWith('http')) return imagePath
+  // If it already starts with /api/, prepend API_BASE_URL (handles both listings/images and providers/profile-pictures)
+  if (imagePath.startsWith('/api/')) {
+    return `${API_BASE_URL}${imagePath}`
+  }
+  // Otherwise, extract filename and construct the path (assume listings/images)
+  const filename = imagePath.split('/').pop()
+  const encodedFilename = encodeURIComponent(filename)
+  return `${API_BASE_URL}/api/listings/images/${encodedFilename}`
+}
 
 const MyListingsTab = ({ onRefresh }) => {
   const [listings, setListings] = useState([])
@@ -11,19 +26,40 @@ const MyListingsTab = ({ onRefresh }) => {
   const [deleting, setDeleting] = useState({})
   const [notification, setNotification] = useState(null)
   const [confirmDelete, setConfirmDelete] = useState(null) // { listingId, listingType }
+  const [imageLoadKey, setImageLoadKey] = useState(0)
+  const [listingsReady, setListingsReady] = useState(false)
 
   useEffect(() => {
     fetchListings()
   }, [])
 
+  // Group listings by status - use useMemo to ensure consistency
+  // IMPORTANT: Must be called before any conditional returns to follow Rules of Hooks
+  const groupedListings = useMemo(() => ({
+    Active: listings.filter(l => l.status === 'Active'),
+    Pending: listings.filter(l => l.status === 'Pending'),
+    Inactive: listings.filter(l => l.status === 'Inactive')
+  }), [listings])
+
   const fetchListings = async () => {
     setLoading(true)
+    setListingsReady(false) // Reset ready state before fetching
     try {
       const response = await api.get('/api/providers/listings')
       const data = response.data.data?.listings || []
+      
+      // Set listings first
       setListings(data)
+      
+      // Use requestAnimationFrame to ensure state is updated before setting imageLoadKey
+      // This prevents race conditions where images try to render before data is ready
+      requestAnimationFrame(() => {
+        setImageLoadKey(Date.now()) // Force image re-render
+        setListingsReady(true) // Mark listings as ready
+      })
     } catch (err) {
       console.error('Error fetching listings:', err)
+      setListingsReady(false)
     } finally {
       setLoading(false)
     }
@@ -150,13 +186,6 @@ const MyListingsTab = ({ onRefresh }) => {
     )
   }
 
-  // Group listings by status
-  const groupedListings = {
-    Active: listings.filter(l => l.status === 'Active'),
-    Pending: listings.filter(l => l.status === 'Pending'),
-    Inactive: listings.filter(l => l.status === 'Inactive')
-  }
-
   return (
     <div className="space-y-6">
       {notification && (
@@ -220,8 +249,9 @@ const MyListingsTab = ({ onRefresh }) => {
       </div>
 
       {/* All Listings */}
-      <div className="space-y-6">
-        {listings.map((listing) => {
+      {listingsReady && imageLoadKey > 0 ? (
+        <div className="space-y-6">
+          {listings.map((listing) => {
           const Icon = getListingIcon(listing.listingType)
           const isDeleting = deleting[listing.listingId]
           const isHotel = listing.listingType === 'Hotel'
@@ -231,23 +261,31 @@ const MyListingsTab = ({ onRefresh }) => {
               <div className={`flex ${isHotel ? 'flex-col md:flex-row' : 'items-start'} justify-between gap-4`}>
                 {/* Hotel Image (if available) */}
                 {isHotel && listing.images && listing.images.length > 0 && (
-                  <div className="md:w-64 h-48 md:h-auto flex-shrink-0">
-                    <img
-                      src={(() => {
-                        const imagePath = listing.images[0]
-                        if (!imagePath) return ''
-                        if (imagePath.startsWith('http')) return imagePath
-                        // Extract filename and encode it to handle spaces
-                        const filename = imagePath.split('/').pop()
-                        const encodedFilename = encodeURIComponent(filename)
-                        return `${API_BASE_URL}/api/listings/images/${encodedFilename}`
-                      })()}
-                      alt={listing.hotelName || 'Hotel'}
-                      className="w-full h-full object-cover rounded-lg"
-                      onError={(e) => {
-                        e.target.style.display = 'none'
-                      }}
-                    />
+                  <div className="md:w-64 h-48 md:h-auto flex-shrink-0 rounded-lg overflow-hidden bg-gray-200 flex items-center justify-center">
+                    {(() => {
+                      const imageSrc = getImageSrc(listing.images[0])
+                      return imageSrc ? (
+                        <img
+                          key={`img-${listing.listingId}-${imageLoadKey}-${imageSrc}`}
+                          src={imageSrc}
+                          alt={listing.hotelName || 'Hotel'}
+                          className="w-full h-full object-cover"
+                          loading="eager"
+                          decoding="async"
+                          onError={(e) => {
+                            e.target.style.display = 'none'
+                            e.target.nextSibling?.classList.remove('hidden')
+                          }}
+                          onLoad={(e) => {
+                            e.target.style.opacity = '1'
+                            e.target.style.display = 'block'
+                          }}
+                        />
+                      ) : null
+                    })()}
+                    <div className="hidden w-full h-full flex items-center justify-center text-gray-400">
+                      <Hotel className="w-12 h-12" />
+                    </div>
                   </div>
                 )}
 
@@ -255,44 +293,52 @@ const MyListingsTab = ({ onRefresh }) => {
                   {!isHotel && (
                     <>
                       {/* Show provider profile image for flights and cars */}
-                      {listing.image && (
-                        <div className="w-16 h-16 flex-shrink-0">
-                          <img
-                            src={`${API_BASE_URL}${listing.image}`}
-                            alt={listing.providerName || 'Provider'}
-                            className="w-full h-full object-cover rounded-lg border border-gray-200"
-                            onError={(e) => {
-                              // Fallback to icon if image fails to load
-                              e.target.style.display = 'none'
-                              e.target.nextSibling.style.display = 'flex'
-                            }}
-                          />
-                          <div className={`hidden w-16 h-16 p-3 rounded-lg ${
+                      {(() => {
+                        const imageSrc = listing.image ? getImageSrc(listing.image) : null
+                        return imageSrc ? (
+                          <div className="w-16 h-16 flex-shrink-0 rounded-lg overflow-hidden bg-gray-200 flex items-center justify-center">
+                            <img
+                              key={`img-${listing.listingId}-${imageLoadKey}-${imageSrc}`}
+                              src={imageSrc}
+                              alt={listing.providerName || 'Provider'}
+                              className="w-full h-full object-cover border border-gray-200"
+                              loading="eager"
+                              decoding="async"
+                              onError={(e) => {
+                                e.target.style.display = 'none'
+                                e.target.nextSibling?.classList.remove('hidden')
+                              }}
+                              onLoad={(e) => {
+                                e.target.style.opacity = '1'
+                                e.target.style.display = 'block'
+                              }}
+                            />
+                            <div className={`hidden w-16 h-16 p-3 rounded-lg ${
+                              listing.status === 'Active' ? 'bg-green-100' :
+                              listing.status === 'Pending' ? 'bg-yellow-100' :
+                              'bg-gray-100'
+                            } items-center justify-center`}>
+                              <Icon className={`w-6 h-6 ${
+                                listing.status === 'Active' ? 'text-green-600' :
+                                listing.status === 'Pending' ? 'text-yellow-600' :
+                                'text-gray-600'
+                              }`} />
+                            </div>
+                          </div>
+                        ) : (
+                          <div className={`p-3 rounded-lg ${
                             listing.status === 'Active' ? 'bg-green-100' :
                             listing.status === 'Pending' ? 'bg-yellow-100' :
                             'bg-gray-100'
-                          } items-center justify-center`}>
+                          }`}>
                             <Icon className={`w-6 h-6 ${
                               listing.status === 'Active' ? 'text-green-600' :
                               listing.status === 'Pending' ? 'text-yellow-600' :
                               'text-gray-600'
                             }`} />
                           </div>
-                        </div>
-                      )}
-                      {!listing.image && (
-                        <div className={`p-3 rounded-lg ${
-                          listing.status === 'Active' ? 'bg-green-100' :
-                          listing.status === 'Pending' ? 'bg-yellow-100' :
-                          'bg-gray-100'
-                        }`}>
-                          <Icon className={`w-6 h-6 ${
-                            listing.status === 'Active' ? 'text-green-600' :
-                            listing.status === 'Pending' ? 'text-yellow-600' :
-                            'text-gray-600'
-                          }`} />
-                        </div>
-                      )}
+                        )
+                      })()}
                     </>
                   )}
                   <div className="flex-1">
@@ -492,7 +538,12 @@ const MyListingsTab = ({ onRefresh }) => {
             </div>
           )
         })}
-      </div>
+        </div>
+      ) : (
+        <div className="text-center py-12">
+          <p className="text-gray-600 text-lg">Preparing listings...</p>
+        </div>
+      )}
     </div>
   )
 }

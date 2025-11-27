@@ -7,6 +7,21 @@ import api from '../../services/apiService'
 import { US_STATES } from '../../utils/usStates'
 import { User, Mail, Phone, MapPin, CreditCard, ArrowLeft, Save, Plus, Trash2, Camera, X } from 'lucide-react'
 
+const API_BASE_URL = import.meta.env.VITE_API_GATEWAY_URL || 'http://localhost:8080'
+
+// Helper function to get image source - handles various image path formats
+const getImageSrc = (imagePath) => {
+  if (!imagePath) return ''
+  // If it's already a full URL (http/https), return as is
+  if (imagePath.startsWith('http')) return imagePath
+  // If it already starts with /api/, prepend API_BASE_URL
+  if (imagePath.startsWith('/api/')) {
+    return `${API_BASE_URL}${imagePath}`
+  }
+  // Otherwise, construct the path
+  return `${API_BASE_URL}${imagePath}`
+}
+
 const ProfilePage = () => {
   const navigate = useNavigate()
   const dispatch = useDispatch()
@@ -44,6 +59,7 @@ const ProfilePage = () => {
   const [profilePicturePreview, setProfilePicturePreview] = useState(null)
   const [uploadingPicture, setUploadingPicture] = useState(false)
   const [currentProfileImage, setCurrentProfileImage] = useState(null)
+  const [imageLoadKey, setImageLoadKey] = useState(0)
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -68,6 +84,10 @@ const ProfilePage = () => {
         if (userData?.profileImage) {
           setCurrentProfileImage(userData.profileImage)
           setProfilePicturePreview(userData.profileImage)
+          // Use requestAnimationFrame to ensure image loads properly
+          requestAnimationFrame(() => {
+            setImageLoadKey(Date.now())
+          })
         }
         // Don't update Redux here to avoid infinite loops - Redux already has user data from login
         // Only update Redux when user explicitly makes changes (upload picture, update profile)
@@ -356,12 +376,20 @@ const ProfilePage = () => {
       setProfilePicturePreview(imageUrl) // Set preview to the uploaded image URL
       setSuccess('Profile picture updated successfully!')
       
+      // Use requestAnimationFrame to ensure image loads properly
+      requestAnimationFrame(() => {
+        setImageLoadKey(Date.now())
+      })
+      
       // Refresh profile data to ensure everything is in sync
       const userResponse = await api.get(`/api/users/${user.userId}`)
       const freshUserData = userResponse.data.data?.user
       if (freshUserData?.profileImage) {
         setCurrentProfileImage(freshUserData.profileImage)
         setProfilePicturePreview(freshUserData.profileImage)
+        requestAnimationFrame(() => {
+          setImageLoadKey(Date.now())
+        })
       }
       dispatch(setProfile(freshUserData))
       dispatch(updateUser(freshUserData)) // Update Redux with fresh data including profileImage
@@ -402,6 +430,9 @@ const ProfilePage = () => {
       if (freshUserData?.profileImage) {
         setCurrentProfileImage(freshUserData.profileImage)
         setProfilePicturePreview(freshUserData.profileImage)
+        requestAnimationFrame(() => {
+          setImageLoadKey(Date.now())
+        })
       }
       dispatch(setProfile(freshUserData))
       dispatch(updateUser(freshUserData)) // Update Redux with fresh data including profileImage
@@ -460,6 +491,8 @@ const ProfilePage = () => {
                         src={profilePicturePreview}
                         alt="Profile preview"
                         className="w-24 h-24 rounded-full object-cover border-2 border-gray-300"
+                        loading="eager"
+                        decoding="async"
                       />
                       <button
                         type="button"
@@ -471,23 +504,35 @@ const ProfilePage = () => {
                     </div>
                   ) : (
                     <img
-                      src={`${import.meta.env.VITE_API_GATEWAY_URL || 'http://localhost:8080'}${profilePicturePreview}`}
+                      key={`profile-preview-${imageLoadKey}-${profilePicturePreview}`}
+                      src={getImageSrc(profilePicturePreview)}
                       alt="Profile"
                       className="w-24 h-24 rounded-full object-cover border-2 border-gray-300"
-                      key={profilePicturePreview} // Force re-render when image changes
+                      loading="eager"
+                      decoding="async"
                       onError={(e) => {
                         e.target.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"%3E%3Cpath fill="%23999" d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/%3E%3C/svg%3E'
+                      }}
+                      onLoad={(e) => {
+                        e.target.style.opacity = '1'
+                        e.target.style.display = 'block'
                       }}
                     />
                   )
                 ) : currentProfileImage ? (
                   <img
-                    src={`${import.meta.env.VITE_API_GATEWAY_URL || 'http://localhost:8080'}${currentProfileImage}`}
+                    key={`profile-current-${imageLoadKey}-${currentProfileImage}`}
+                    src={getImageSrc(currentProfileImage)}
                     alt="Profile"
                     className="w-24 h-24 rounded-full object-cover border-2 border-gray-300"
-                    key={currentProfileImage} // Force re-render when image changes
+                    loading="eager"
+                    decoding="async"
                     onError={(e) => {
                       e.target.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"%3E%3Cpath fill="%23999" d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/%3E%3C/svg%3E'
+                    }}
+                    onLoad={(e) => {
+                      e.target.style.opacity = '1'
+                      e.target.style.display = 'block'
                     }}
                   />
                 ) : (
