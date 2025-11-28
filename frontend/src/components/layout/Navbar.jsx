@@ -1,7 +1,7 @@
 import { Link, useNavigate } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
-import { ShoppingCart, User, LogOut, Menu } from 'lucide-react'
-import { useState } from 'react'
+import { ShoppingCart, User, LogOut, Menu, ChevronDown } from 'lucide-react'
+import { useState, useRef, useEffect } from 'react'
 import { logout } from '../../store/slices/authSlice'
 import { clearCart } from '../../store/slices/cartSlice'
 import api from '../../services/apiService'
@@ -27,6 +27,8 @@ const Navbar = () => {
   const { isAuthenticated, user, userType } = useSelector((state) => state.auth)
   const { items } = useSelector((state) => state.cart)
   const [showMenu, setShowMenu] = useState(false)
+  const [showSignupDropdown, setShowSignupDropdown] = useState(false)
+  const signupDropdownRef = useRef(null)
 
   const handleLogout = () => {
     dispatch(logout())
@@ -73,6 +75,23 @@ const Navbar = () => {
 
   const cartCount = items.reduce((sum, item) => sum + item.quantity, 0)
 
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (signupDropdownRef.current && !signupDropdownRef.current.contains(event.target)) {
+        setShowSignupDropdown(false)
+      }
+    }
+
+    if (showSignupDropdown) {
+      document.addEventListener('mousedown', handleClickOutside)
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [showSignupDropdown])
+
   return (
     <nav className="bg-white shadow-md sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -85,43 +104,42 @@ const Navbar = () => {
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-6">
             {!isAuthenticated ? (
-              <>
-                <Link to="/" className="text-gray-700 hover:text-primary-600 transition-colors">
-                  Flights
+              <div className="flex items-center space-x-4">
+                <Link
+                  to="/login"
+                  className="text-gray-700 hover:text-primary-600 transition-colors"
+                >
+                  Login
                 </Link>
-                <Link to="/" className="text-gray-700 hover:text-primary-600 transition-colors">
-                  Hotels
-                </Link>
-                <Link to="/" className="text-gray-700 hover:text-primary-600 transition-colors">
-                  Cars
-                </Link>
-                <div className="flex items-center space-x-4">
-                  <Link
-                    to="/login"
-                    className="text-gray-700 hover:text-primary-600 transition-colors"
+                {/* Sign Up Dropdown */}
+                <div className="relative" ref={signupDropdownRef}>
+                  <button
+                    onClick={() => setShowSignupDropdown(!showSignupDropdown)}
+                    className="btn-primary flex items-center space-x-1"
                   >
-                    Login
-                  </Link>
-                  <Link
-                    to="/host/register"
-                    className="text-gray-700 hover:text-primary-600 transition-colors"
-                  >
-                    Host Register
-                  </Link>
-                  <Link
-                    to="/admin/register"
-                    className="text-gray-700 hover:text-primary-600 transition-colors"
-                  >
-                    Admin Register
-                  </Link>
-                  <Link
-                    to="/signup"
-                    className="btn-primary"
-                  >
-                    Sign Up
-                  </Link>
+                    <span>Sign Up</span>
+                    <ChevronDown className={`w-4 h-4 transition-transform ${showSignupDropdown ? 'rotate-180' : ''}`} />
+                  </button>
+                  {showSignupDropdown && (
+                    <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50">
+                      <Link
+                        to="/signup"
+                        onClick={() => setShowSignupDropdown(false)}
+                        className="block px-4 py-2 text-gray-700 hover:bg-gray-100 transition-colors"
+                      >
+                        Traveler
+                      </Link>
+                      <Link
+                        to="/host/register"
+                        onClick={() => setShowSignupDropdown(false)}
+                        className="block px-4 py-2 text-gray-700 hover:bg-gray-100 transition-colors"
+                      >
+                        Host
+                      </Link>
+                    </div>
+                  )}
                 </div>
-              </>
+              </div>
             ) : (
               <>
                 {userType === 'traveler' && (
@@ -205,27 +223,30 @@ const Navbar = () => {
           <div className="md:hidden py-4 space-y-4">
             {!isAuthenticated ? (
               <>
-                <Link to="/" className="block text-gray-700 hover:text-primary-600">
-                  Flights
-                </Link>
-                <Link to="/" className="block text-gray-700 hover:text-primary-600">
-                  Hotels
-                </Link>
-                <Link to="/" className="block text-gray-700 hover:text-primary-600">
-                  Cars
-                </Link>
-                <Link to="/login" className="block text-gray-700 hover:text-primary-600">
+                <Link 
+                  to="/login" 
+                  onClick={() => setShowMenu(false)}
+                  className="block text-gray-700 hover:text-primary-600"
+                >
                   Login
                 </Link>
-                <Link to="/host/register" className="block text-gray-700 hover:text-primary-600">
-                  Host Register
-                </Link>
-                <Link to="/admin/register" className="block text-gray-700 hover:text-primary-600">
-                  Admin Register
-                </Link>
-                <Link to="/signup" className="block btn-primary text-center">
-                  Sign Up
-                </Link>
+                <div className="border-t border-gray-200 pt-4 space-y-2">
+                  <p className="text-sm font-medium text-gray-500 px-2">Sign Up as:</p>
+                  <Link 
+                    to="/signup" 
+                    onClick={() => setShowMenu(false)}
+                    className="block px-4 py-2 text-gray-700 hover:bg-gray-100 rounded transition-colors"
+                  >
+                    Traveler
+                  </Link>
+                  <Link 
+                    to="/host/register" 
+                    onClick={() => setShowMenu(false)}
+                    className="block px-4 py-2 text-gray-700 hover:bg-gray-100 rounded transition-colors"
+                  >
+                    Host
+                  </Link>
+                </div>
               </>
             ) : (
               <>

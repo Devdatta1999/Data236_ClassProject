@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo } from 'react'
 import { Plane, Hotel, Car, Trash2, AlertCircle, Star, MapPin, Calendar, Users, Clock, MapPin as MapIcon } from 'lucide-react'
 import api from '../../services/apiService'
 import Notification from '../common/Notification'
+import Pagination from '../common/Pagination'
 
 const API_BASE_URL = import.meta.env.VITE_API_GATEWAY_URL || 'http://localhost:8080'
 
@@ -28,6 +29,8 @@ const MyListingsTab = ({ onRefresh }) => {
   const [confirmDelete, setConfirmDelete] = useState(null) // { listingId, listingType }
   const [imageLoadKey, setImageLoadKey] = useState(0)
   const [listingsReady, setListingsReady] = useState(false)
+  const [currentPage, setCurrentPage] = useState(1)
+  const itemsPerPage = 10
 
   useEffect(() => {
     fetchListings()
@@ -40,6 +43,22 @@ const MyListingsTab = ({ onRefresh }) => {
     Pending: listings.filter(l => l.status === 'Pending'),
     Inactive: listings.filter(l => l.status === 'Inactive')
   }), [listings])
+
+  // Pagination logic
+  const paginatedListings = useMemo(() => {
+    const start = (currentPage - 1) * itemsPerPage
+    const end = start + itemsPerPage
+    return {
+      items: listings.slice(start, end),
+      totalPages: Math.ceil(listings.length / itemsPerPage),
+      totalItems: listings.length
+    }
+  }, [listings, currentPage, itemsPerPage])
+
+  // Reset to page 1 when listings change
+  useEffect(() => {
+    setCurrentPage(1)
+  }, [listings.length])
 
   const fetchListings = async () => {
     setLoading(true)
@@ -251,7 +270,7 @@ const MyListingsTab = ({ onRefresh }) => {
       {/* All Listings */}
       {listingsReady && imageLoadKey > 0 ? (
         <div className="space-y-6">
-          {listings.map((listing) => {
+          {paginatedListings.items.map((listing) => {
           const Icon = getListingIcon(listing.listingType)
           const isDeleting = deleting[listing.listingId]
           const isHotel = listing.listingType === 'Hotel'
@@ -538,6 +557,17 @@ const MyListingsTab = ({ onRefresh }) => {
             </div>
           )
         })}
+
+        {/* Pagination */}
+        {paginatedListings.totalPages > 1 && (
+          <Pagination
+            currentPage={currentPage}
+            totalPages={paginatedListings.totalPages}
+            totalItems={paginatedListings.totalItems}
+            itemsPerPage={itemsPerPage}
+            onPageChange={setCurrentPage}
+          />
+        )}
         </div>
       ) : (
         <div className="text-center py-12">

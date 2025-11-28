@@ -436,6 +436,37 @@ const modifyUser = asyncHandler(async (req, res) => {
 });
 
 /**
+ * Delete user (admin only)
+ */
+const deleteUser = asyncHandler(async (req, res) => {
+  const { userId } = req.params;
+
+  // Call user service to delete user
+  // Pass admin's auth token to user service
+  try {
+    const authHeader = req.headers.authorization;
+    const response = await axios.delete(
+      `${USER_SERVICE_URL}/api/users/${userId}`,
+      {
+        timeout: 10000,
+        headers: authHeader ? { Authorization: authHeader } : {}
+      }
+    );
+    res.json({
+      success: true,
+      message: 'User deleted successfully',
+      data: response.data
+    });
+  } catch (error) {
+    if (error.response?.status === 404) {
+      throw new NotFoundError('User');
+    }
+    logger.error('Error deleting user:', error);
+    throw error;
+  }
+});
+
+/**
  * Get revenue analytics
  */
 const getRevenueAnalytics = asyncHandler(async (req, res) => {
@@ -548,6 +579,7 @@ module.exports = {
   searchUsers,
   getUser,
   modifyUser,
+  deleteUser,
   getAnalytics,
   getRevenueAnalytics,
   getProviderAnalytics

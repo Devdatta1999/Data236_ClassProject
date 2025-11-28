@@ -327,9 +327,10 @@ const updateUser = asyncHandler(async (req, res) => {
 const deleteUser = asyncHandler(async (req, res) => {
   const { userId } = req.params;
   const requestingUserId = req.user?.userId; // From authentication middleware
+  const requestingUserRole = req.user?.role; // From authentication middleware (user/admin)
 
-  // Verify user can only delete their own profile
-  if (requestingUserId !== userId) {
+  // Allow admins to delete any user, or users to delete their own profile
+  if (requestingUserRole !== 'admin' && requestingUserId !== userId) {
     throw new ValidationError('You can only delete your own profile');
   }
 
@@ -352,11 +353,15 @@ const deleteUser = asyncHandler(async (req, res) => {
   await deleteCachePattern(`user:${userId}:*`);
   await deleteCache(`user:email:${user.email}`);
 
-  logger.info(`User soft-deleted: ${userId}`);
+  logger.info(`User soft-deleted: ${userId} by ${requestingUserId} (${requestingUserRole || 'user'})`);
+
+  const message = requestingUserRole === 'admin' 
+    ? 'User has been deleted successfully'
+    : 'Your profile has been deleted successfully';
 
   res.json({
     success: true,
-    message: 'Your profile has been deleted successfully'
+    message
   });
 });
 

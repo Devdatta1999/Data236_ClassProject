@@ -1,8 +1,9 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import api from '../../services/apiService'
 import { Search, Calendar, FileText, DollarSign, User, CheckCircle, XCircle, Clock, CreditCard, Download } from 'lucide-react'
 import Notification from '../common/Notification'
 import { format } from 'date-fns'
+import Pagination from '../common/Pagination'
 
 const BillManagementTab = () => {
   const [searchType, setSearchType] = useState('date') // 'date' or 'month'
@@ -14,6 +15,8 @@ const BillManagementTab = () => {
   const [selectedBill, setSelectedBill] = useState(null)
   const [loading, setLoading] = useState(false)
   const [notification, setNotification] = useState(null)
+  const [currentPage, setCurrentPage] = useState(1)
+  const itemsPerPage = 10
 
   const handleSearch = async () => {
     setLoading(true)
@@ -79,6 +82,22 @@ const BillManagementTab = () => {
   const handleCloseBillDetails = () => {
     setSelectedBill(null)
   }
+
+  // Pagination logic
+  const paginatedResults = useMemo(() => {
+    const start = (currentPage - 1) * itemsPerPage
+    const end = start + itemsPerPage
+    return {
+      items: searchResults.slice(start, end),
+      totalPages: Math.ceil(searchResults.length / itemsPerPage),
+      totalItems: searchResults.length
+    }
+  }, [searchResults, currentPage, itemsPerPage])
+
+  // Reset to page 1 when search results change
+  useEffect(() => {
+    setCurrentPage(1)
+  }, [searchResults.length])
 
   const getStatusIcon = (status) => {
     switch (status) {
@@ -278,7 +297,7 @@ const BillManagementTab = () => {
             Search Results ({searchResults.length} bill{searchResults.length !== 1 ? 's' : ''})
           </h3>
           <div className="space-y-3">
-            {searchResults.map((bill) => (
+            {paginatedResults.items.map((bill) => (
               <div
                 key={bill.billing_id}
                 className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow cursor-pointer"
@@ -331,6 +350,17 @@ const BillManagementTab = () => {
               </div>
             ))}
           </div>
+
+          {/* Pagination */}
+          {paginatedResults.totalPages > 1 && (
+            <Pagination
+              currentPage={currentPage}
+              totalPages={paginatedResults.totalPages}
+              totalItems={paginatedResults.totalItems}
+              itemsPerPage={itemsPerPage}
+              onPageChange={setCurrentPage}
+            />
+          )}
         </div>
       )}
 

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import api from '../../services/apiService'
-import { ArrowLeft, Save, Loader2, AlertCircle, CheckCircle2, User } from 'lucide-react'
+import { ArrowLeft, Save, Loader2, AlertCircle, CheckCircle2, User, Trash2 } from 'lucide-react'
 
 const EditUserPage = () => {
   const { userId } = useParams()
@@ -9,8 +9,10 @@ const EditUserPage = () => {
   const [user, setUser] = useState(null)
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
+  const [deleting, setDeleting] = useState(false)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -18,8 +20,7 @@ const EditUserPage = () => {
     city: '',
     state: '',
     zipCode: '',
-    phoneNumber: '',
-    profileImage: ''
+    phoneNumber: ''
   })
 
   useEffect(() => {
@@ -41,8 +42,7 @@ const EditUserPage = () => {
           city: userData.city || '',
           state: userData.state || '',
           zipCode: userData.zipCode || '',
-          phoneNumber: userData.phoneNumber || '',
-          profileImage: userData.profileImage || ''
+          phoneNumber: userData.phoneNumber || ''
         })
       }
     } catch (err) {
@@ -92,6 +92,38 @@ const EditUserPage = () => {
 
   const handleCancel = () => {
     navigate('/admin', { state: { tab: 'users' } })
+  }
+
+  const handleDeleteClick = () => {
+    setShowDeleteConfirm(true)
+  }
+
+  const handleDeleteCancel = () => {
+    setShowDeleteConfirm(false)
+  }
+
+  const handleDeleteConfirm = async () => {
+    if (!user) return
+
+    setDeleting(true)
+    setError('')
+    setSuccess('')
+
+    try {
+      await api.delete(`/api/admin/users/${userId}`)
+      setSuccess('User deleted successfully!')
+      
+      // Navigate back after a short delay
+      setTimeout(() => {
+        navigate('/admin', { state: { tab: 'users' } })
+      }, 1500)
+    } catch (err) {
+      console.error('Error deleting user:', err)
+      setError(err.response?.data?.error || err.response?.data?.message || 'Failed to delete user')
+      setShowDeleteConfirm(false)
+    } finally {
+      setDeleting(false)
+    }
   }
 
   const API_BASE_URL = import.meta.env.VITE_API_GATEWAY_URL || 'http://localhost:8080'
@@ -291,19 +323,6 @@ const EditUserPage = () => {
               />
             </div>
 
-            <div className="md:col-span-2">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Profile Image URL
-              </label>
-              <input
-                type="text"
-                name="profileImage"
-                value={formData.profileImage}
-                onChange={handleInputChange}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                placeholder="/api/users/profile-pictures/filename.jpg"
-              />
-            </div>
           </div>
 
           <div className="mt-8 pt-6 border-t border-gray-200">
@@ -316,14 +335,14 @@ const EditUserPage = () => {
               <div className="flex items-center space-x-4">
                 <button
                   onClick={handleCancel}
-                  disabled={saving}
+                  disabled={saving || deleting}
                   className="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   Cancel
                 </button>
                 <button
                   onClick={handleSave}
-                  disabled={saving}
+                  disabled={saving || deleting}
                   className="btn-primary flex items-center space-x-2"
                 >
                   {saving ? (
@@ -342,6 +361,65 @@ const EditUserPage = () => {
             </div>
           </div>
         </div>
+
+        {/* Delete User Button */}
+        <div className="card mt-6">
+          <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
+            <h3 className="text-lg font-semibold text-red-800 mb-2">Danger Zone</h3>
+            <p className="text-sm text-red-700 mb-4">
+              Deleting a user will permanently remove their account. This action cannot be undone.
+            </p>
+            <button
+              onClick={handleDeleteClick}
+              disabled={deleting || saving}
+              className="btn-primary bg-red-600 hover:bg-red-700 text-white flex items-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <Trash2 className="w-4 h-4" />
+              <span>Delete User</span>
+            </button>
+          </div>
+        </div>
+
+        {/* Delete User Confirmation Dialog */}
+        {showDeleteConfirm && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
+              <h3 className="text-lg font-semibold mb-4 text-red-700">Delete User</h3>
+              <p className="text-gray-600 mb-4">
+                Are you sure you want to delete this user? This action cannot be undone.
+              </p>
+              <div className="bg-yellow-50 border border-yellow-200 rounded p-3 mb-4">
+                <p className="text-sm text-yellow-800">
+                  <strong>Warning:</strong> The user's bookings, reviews, and billing history will be preserved, 
+                  but the user will no longer be able to access their account.
+                </p>
+              </div>
+              <div className="flex justify-end space-x-3">
+                <button
+                  onClick={handleDeleteCancel}
+                  disabled={deleting}
+                  className="btn-secondary disabled:opacity-50"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleDeleteConfirm}
+                  disabled={deleting}
+                  className="btn-primary bg-red-600 hover:bg-red-700 disabled:opacity-50"
+                >
+                  {deleting ? (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin inline mr-2" />
+                      Deleting...
+                    </>
+                  ) : (
+                    'Yes, Delete User'
+                  )}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   )

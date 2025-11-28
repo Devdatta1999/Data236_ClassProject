@@ -17,6 +17,7 @@ router.put('/listings/:listingId/reject', authenticate, requireAdmin, adminContr
 router.get('/users/search', authenticate, requireAdmin, adminController.searchUsers);
 router.get('/users/:userId', authenticate, requireAdmin, adminController.getUser);
 router.put('/users/:userId', authenticate, requireAdmin, adminController.modifyUser);
+router.delete('/users/:userId', authenticate, requireAdmin, adminController.deleteUser);
 router.get('/users', authenticate, requireAdmin, adminController.listUsers);
 // Analytics routes - general analytics endpoint must come before specific ones
 router.get('/analytics', authenticate, requireAdmin, adminController.getAnalytics);

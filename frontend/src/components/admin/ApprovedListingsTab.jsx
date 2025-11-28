@@ -4,6 +4,7 @@ import api from '../../services/apiService'
 import { US_AIRPORTS } from '../../utils/usAirports'
 import { US_STATES } from '../../utils/usStates'
 import Notification from '../common/Notification'
+import Pagination from '../common/Pagination'
 
 const API_BASE_URL = import.meta.env.VITE_API_GATEWAY_URL || 'http://localhost:8080'
 
@@ -46,6 +47,8 @@ const ApprovedListingsTab = ({ onRefresh }) => {
   const [notification, setNotification] = useState(null)
   const [imageLoadKey, setImageLoadKey] = useState(0)
   const [listingsReady, setListingsReady] = useState(false)
+  const [currentPage, setCurrentPage] = useState(1)
+  const itemsPerPage = 10
   
   // Flight search filters
   const [showFlightSearch, setShowFlightSearch] = useState(false)
@@ -184,6 +187,22 @@ const ApprovedListingsTab = ({ onRefresh }) => {
     carSearchQuery,
     selectedCarProvider
   ])
+
+  // Pagination logic for filtered listings
+  const paginatedListings = useMemo(() => {
+    const start = (currentPage - 1) * itemsPerPage
+    const end = start + itemsPerPage
+    return {
+      items: filteredListings.slice(start, end),
+      totalPages: Math.ceil(filteredListings.length / itemsPerPage),
+      totalItems: filteredListings.length
+    }
+  }, [filteredListings, currentPage, itemsPerPage])
+
+  // Reset to page 1 when tab or filters change
+  useEffect(() => {
+    setCurrentPage(1)
+  }, [activeListingTab, searchActive, departureAirport, arrivalAirport, selectedProvider, hotelSearchQuery, selectedHotelProvider, carSearchQuery, selectedCarProvider])
 
   // Close provider dropdowns when clicking outside
   useEffect(() => {
@@ -906,7 +925,7 @@ const ApprovedListingsTab = ({ onRefresh }) => {
             </div>
           ) : listingsReady && imageLoadKey > 0 ? (
             <div className="space-y-4">
-              {activeListingTab === 'flights' && filteredListings.map((flight) => (
+              {activeListingTab === 'flights' && paginatedListings.items.map((flight) => (
                 <FlightCard
                   key={`flight-${flight.flightId}-${imageLoadKey}`}
                   flight={flight}
@@ -915,7 +934,7 @@ const ApprovedListingsTab = ({ onRefresh }) => {
                 />
               ))}
               
-              {activeListingTab === 'hotels' && filteredListings.map((hotel) => (
+              {activeListingTab === 'hotels' && paginatedListings.items.map((hotel) => (
                 <HotelCard
                   key={`hotel-${hotel.hotelId}-${imageLoadKey}`}
                   hotel={hotel}
@@ -924,7 +943,7 @@ const ApprovedListingsTab = ({ onRefresh }) => {
                 />
               ))}
               
-              {activeListingTab === 'cars' && filteredListings.map((car) => (
+              {activeListingTab === 'cars' && paginatedListings.items.map((car) => (
                 <CarCard
                   key={`car-${car.carId}-${imageLoadKey}`}
                   car={car}
@@ -939,6 +958,19 @@ const ApprovedListingsTab = ({ onRefresh }) => {
             </div>
           )}
         </div>
+
+        {/* Pagination */}
+        {!loading && filteredListings.length > 0 && paginatedListings.totalPages > 1 && (
+          <div className="px-6 pb-6">
+            <Pagination
+              currentPage={currentPage}
+              totalPages={paginatedListings.totalPages}
+              totalItems={paginatedListings.totalItems}
+              itemsPerPage={itemsPerPage}
+              onPageChange={setCurrentPage}
+            />
+          </div>
+        )}
       </div>
 
       {/* Edit Modals */}

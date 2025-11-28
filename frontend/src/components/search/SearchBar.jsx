@@ -62,8 +62,8 @@ const SearchBar = ({ type, onSearch }) => {
           </button>
         </div>
 
-        <div className="grid md:grid-cols-4 gap-4">
-          <div>
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div className="md:col-span-1">
             <label className="block text-sm font-medium text-gray-700 mb-1">
               From
             </label>
@@ -72,7 +72,7 @@ const SearchBar = ({ type, onSearch }) => {
               <select
                 value={params.departureAirport}
                 onChange={(e) => setParams({ ...params, departureAirport: e.target.value })}
-                className="input-field pl-10 text-gray-900"
+                className="input-field pl-10 text-gray-900 w-full"
                 required
               >
                 <option value="">Select Departure Airport</option>
@@ -84,7 +84,7 @@ const SearchBar = ({ type, onSearch }) => {
               </select>
             </div>
           </div>
-          <div>
+          <div className="md:col-span-1">
             <label className="block text-sm font-medium text-gray-700 mb-1">
               To
             </label>
@@ -93,7 +93,7 @@ const SearchBar = ({ type, onSearch }) => {
               <select
                 value={params.arrivalAirport}
                 onChange={(e) => setParams({ ...params, arrivalAirport: e.target.value })}
-                className="input-field pl-10 text-gray-900"
+                className="input-field pl-10 text-gray-900 w-full"
                 required
               >
                 <option value="">Select Arrival Airport</option>
@@ -105,7 +105,7 @@ const SearchBar = ({ type, onSearch }) => {
               </select>
             </div>
           </div>
-          <div>
+          <div className="md:col-span-1">
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Departure Date
             </label>
@@ -115,13 +115,13 @@ const SearchBar = ({ type, onSearch }) => {
                 type="date"
                 value={params.departureDate}
                 onChange={(e) => setParams({ ...params, departureDate: e.target.value })}
-                className="input-field pl-10 text-gray-900"
+                className="input-field pl-10 text-gray-900 w-full"
                 required
                 min={new Date().toISOString().split('T')[0]}
               />
             </div>
           </div>
-          <div>
+          <div className="md:col-span-1">
             <label className="block text-sm font-medium text-gray-700 mb-1">
               {params.tripType === 'round-trip' ? 'Return Date' : 'Travelers'}
             </label>
@@ -132,7 +132,7 @@ const SearchBar = ({ type, onSearch }) => {
                   type="date"
                   value={params.returnDate}
                   onChange={(e) => setParams({ ...params, returnDate: e.target.value })}
-                  className="input-field pl-10 text-gray-900"
+                  className="input-field pl-10 text-gray-900 w-full"
                   required
                   min={params.departureDate || new Date().toISOString().split('T')[0]}
                 />
@@ -145,7 +145,7 @@ const SearchBar = ({ type, onSearch }) => {
                   min="1"
                   value={params.numberOfPassengers}
                   onChange={(e) => setParams({ ...params, numberOfPassengers: parseInt(e.target.value) || 1, quantity: parseInt(e.target.value) || 1 })}
-                  className="input-field pl-10 text-gray-900"
+                  className="input-field pl-10 text-gray-900 w-full"
                   required
                 />
               </div>
@@ -153,11 +153,11 @@ const SearchBar = ({ type, onSearch }) => {
           </div>
         </div>
         {params.tripType === 'round-trip' && (
-          <div className="grid md:grid-cols-4 gap-4">
-            <div></div>
-            <div></div>
-            <div></div>
-            <div>
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div className="md:col-span-1"></div>
+            <div className="md:col-span-1"></div>
+            <div className="md:col-span-1"></div>
+            <div className="md:col-span-1">
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Travelers
               </label>
@@ -168,7 +168,7 @@ const SearchBar = ({ type, onSearch }) => {
                   min="1"
                   value={params.numberOfPassengers}
                   onChange={(e) => setParams({ ...params, numberOfPassengers: parseInt(e.target.value) || 1, quantity: parseInt(e.target.value) || 1 })}
-                  className="input-field pl-10 text-gray-900"
+                  className="input-field pl-10 text-gray-900 w-full"
                   required
                 />
               </div>
@@ -186,9 +186,9 @@ const SearchBar = ({ type, onSearch }) => {
   if (type === 'hotels') {
     return (
       <form onSubmit={handleSubmit} className="space-y-4">
-        <div className="grid md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           {/* Location */}
-          <div>
+          <div className="md:col-span-1">
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Location
             </label>
@@ -219,14 +219,14 @@ const SearchBar = ({ type, onSearch }) => {
                     })
                   }
                 }}
-                className="input-field pl-10 text-gray-900"
+                className="input-field pl-10 text-gray-900 w-full"
                 required
               />
             </div>
           </div>
 
           {/* Check-in */}
-          <div>
+          <div className="md:col-span-1">
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Check-in
             </label>
@@ -236,7 +236,7 @@ const SearchBar = ({ type, onSearch }) => {
                 type="date"
                 value={params.checkInDate}
                 onChange={(e) => setParams({ ...params, checkInDate: e.target.value })}
-                className="input-field pl-10 text-gray-900"
+                className="input-field pl-10 text-gray-900 w-full"
                 required
                 min={new Date().toISOString().split('T')[0]}
               />
@@ -244,7 +244,7 @@ const SearchBar = ({ type, onSearch }) => {
           </div>
 
           {/* Check-out */}
-          <div>
+          <div className="md:col-span-1">
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Check-out
             </label>
@@ -254,7 +254,7 @@ const SearchBar = ({ type, onSearch }) => {
                 type="date"
                 value={params.checkOutDate}
                 onChange={(e) => setParams({ ...params, checkOutDate: e.target.value })}
-                className="input-field pl-10 text-gray-900"
+                className="input-field pl-10 text-gray-900 w-full"
                 required
                 min={params.checkInDate || new Date().toISOString().split('T')[0]}
               />
@@ -262,7 +262,7 @@ const SearchBar = ({ type, onSearch }) => {
           </div>
 
           {/* Rooms & Guests */}
-          <div className="relative">
+          <div className="md:col-span-1 relative">
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Rooms & Guests
             </label>
@@ -274,18 +274,18 @@ const SearchBar = ({ type, onSearch }) => {
               }}
               className="input-field w-full text-left flex items-center justify-between cursor-pointer"
             >
-              <span>{params.numberOfRooms} {params.numberOfRooms === 1 ? 'room' : 'rooms'} · {params.numberOfAdults} {params.numberOfAdults === 1 ? 'adult' : 'adults'}</span>
-              <Users className="w-5 h-5 text-gray-400" />
+              <span className="truncate">{params.numberOfRooms} {params.numberOfRooms === 1 ? 'room' : 'rooms'} · {params.numberOfAdults} {params.numberOfAdults === 1 ? 'adult' : 'adults'}</span>
+              <Users className="w-5 h-5 text-gray-400 flex-shrink-0 ml-2" />
             </button>
             
-            {/* Dropdown */}
+            {/* Dropdown - Positioned to be fully visible */}
             {params.showRoomGuests && (
               <>
                 <div 
                   className="fixed inset-0 z-40"
                   onClick={() => setParams({ ...params, showRoomGuests: false })}
                 ></div>
-                <div className="absolute z-50 mt-1 left-0 md:right-0 w-[320px] md:w-[300px] bg-white border border-gray-200 rounded-lg shadow-xl p-4" onClick={(e) => e.stopPropagation()}>
+                <div className="absolute z-50 mt-1 left-0 md:right-0 w-full md:w-[320px] bg-white border border-gray-200 rounded-lg shadow-xl p-4" onClick={(e) => e.stopPropagation()}>
                   <div className="space-y-4">
                     {/* Rooms */}
                     <div className="flex items-center justify-between">
@@ -373,8 +373,8 @@ const SearchBar = ({ type, onSearch }) => {
   if (type === 'cars') {
     return (
       <form onSubmit={handleSubmit} className="space-y-4">
-        <div className="grid md:grid-cols-4 gap-4">
-          <div>
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div className="md:col-span-1">
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Location
             </label>
@@ -385,18 +385,18 @@ const SearchBar = ({ type, onSearch }) => {
                 placeholder="City, State, or Neighbourhood"
                 value={params.location || ''}
                 onChange={(e) => setParams({ ...params, location: e.target.value })}
-                className="input-field pl-10 text-gray-900"
+                className="input-field pl-10 text-gray-900 w-full"
               />
             </div>
           </div>
-          <div>
+          <div className="md:col-span-1">
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Car Type
             </label>
             <select
               value={params.carType}
               onChange={(e) => setParams({ ...params, carType: e.target.value })}
-              className="input-field text-gray-900"
+              className="input-field text-gray-900 w-full"
             >
               <option value="">Any</option>
               <option value="SUV">SUV</option>
@@ -408,7 +408,7 @@ const SearchBar = ({ type, onSearch }) => {
               <option value="Van">Van</option>
             </select>
           </div>
-          <div>
+          <div className="md:col-span-1">
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Pickup Date
             </label>
@@ -418,13 +418,13 @@ const SearchBar = ({ type, onSearch }) => {
                 type="date"
                 value={params.pickupDate}
                 onChange={(e) => setParams({ ...params, pickupDate: e.target.value })}
-                className="input-field pl-10 text-gray-900"
+                className="input-field pl-10 text-gray-900 w-full"
                 required
                 min={new Date().toISOString().split('T')[0]}
               />
             </div>
           </div>
-          <div>
+          <div className="md:col-span-1">
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Return Date
             </label>
@@ -434,7 +434,7 @@ const SearchBar = ({ type, onSearch }) => {
                 type="date"
                 value={params.returnDate}
                 onChange={(e) => setParams({ ...params, returnDate: e.target.value })}
-                className="input-field pl-10 text-gray-900"
+                className="input-field pl-10 text-gray-900 w-full"
                 required
                 min={params.pickupDate || new Date().toISOString().split('T')[0]}
               />

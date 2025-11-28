@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useMemo } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
 import { setBookings, setLoading, setError } from '../../store/slices/bookingSlice'
@@ -7,6 +7,7 @@ import { Calendar, MapPin, CheckCircle, Clock, XCircle, ArrowLeft, Car, Building
 import { format } from 'date-fns'
 import Notification from '../../components/common/Notification'
 import ReviewModal from '../../components/common/ReviewModal'
+import Pagination from '../../components/common/Pagination'
 
 const API_BASE_URL = import.meta.env.VITE_API_GATEWAY_URL || 'http://localhost:8080'
 
@@ -38,6 +39,8 @@ const MyBookings = () => {
   const [activeTab, setActiveTab] = useState('flights') // 'flights', 'hotels', 'cars'
   const [imageLoadKey, setImageLoadKey] = useState(0)
   const [bookingsReady, setBookingsReady] = useState(false)
+  const [currentPage, setCurrentPage] = useState(1)
+  const itemsPerPage = 10
 
   useEffect(() => {
     // Show payment success notification only once and clear state immediately
@@ -208,6 +211,63 @@ const MyBookings = () => {
     )
   }
 
+  // Pagination logic for filtered bookings
+  const paginatedBookings = useMemo(() => {
+    const typeMap = {
+      flights: 'Flight',
+      hotels: 'Hotel',
+      cars: 'Car'
+    }
+    const filteredBookings = bookingsWithDetails.filter(b => b.listingType === typeMap[activeTab])
+
+    // Group hotel bookings by billingId
+    const grouped = {}
+    const ungrouped = []
+    
+    filteredBookings.forEach((booking) => {
+      if (booking.listingType === 'Hotel' && booking.billingId) {
+        const key = booking.billingId
+        if (!grouped[key]) {
+          grouped[key] = []
+        }
+        grouped[key].push(booking)
+      } else {
+        ungrouped.push(booking)
+      }
+    })
+    
+    // Create flat array: grouped hotel bookings first, then individual bookings
+    const allItems = [
+      ...Object.entries(grouped).map(([billingId, groupBookings]) => ({
+        type: 'group',
+        billingId,
+        bookings: groupBookings
+      })),
+      ...ungrouped.map(booking => ({
+        type: 'individual',
+        booking
+      }))
+    ]
+
+    // Paginate
+    const start = (currentPage - 1) * itemsPerPage
+    const end = start + itemsPerPage
+    const paginatedItems = allItems.slice(start, end)
+
+    return {
+      items: paginatedItems,
+      totalPages: Math.ceil(allItems.length / itemsPerPage),
+      totalItems: allItems.length,
+      grouped,
+      ungrouped
+    }
+  }, [bookingsWithDetails, activeTab, currentPage, itemsPerPage])
+
+  // Reset page when tab changes
+  useEffect(() => {
+    setCurrentPage(1)
+  }, [activeTab])
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -288,71 +348,36 @@ const MyBookings = () => {
               Start Searching
             </button>
           </div>
+        ) : paginatedBookings.totalItems === 0 && !loading ? (
+          <div className="text-center py-12">
+            <p className="text-gray-600 text-lg mb-4">
+              You don't have any {activeTab.slice(0, -1)} bookings yet.
+            </p>
+            <button
+              onClick={() => navigate('/dashboard')}
+              className="btn-primary"
+            >
+              Start Searching
+            </button>
+          </div>
         ) : (
           <div className="space-y-4">
-            {(() => {
-              // Filter bookings by active tab
-              const typeMap = {
-                flights: 'Flight',
-                hotels: 'Hotel',
-                cars: 'Car'
-              }
-              const filteredBookings = bookingsWithDetails.filter(b => b.listingType === typeMap[activeTab])
-
-              // Show empty state for filtered tab
-              if (filteredBookings.length === 0 && !loading) {
-                const tabLabels = {
-                  flights: 'flight',
-                  hotels: 'hotel',
-                  cars: 'car'
-                }
+            {paginatedBookings.items.map((item) => {
+              if (item.type === 'group') {
+                // Render grouped hotel booking
+                const { billingId, bookings: groupBookings } = item
+                const firstBooking = groupBookings[0]
+                const listing = firstBooking.listing
+                const provider = firstBooking.provider
+                const listingName = listing?.hotelName || 'Hotel'
+                const totalAmount = groupBookings.reduce((sum, b) => sum + (b.totalAmount || 0), 0)
+                
                 return (
-                  <div className="text-center py-12">
-                    <p className="text-gray-600 text-lg mb-4">
-                      You don't have any {tabLabels[activeTab]} bookings yet.
-                    </p>
-                    <button
-                      onClick={() => navigate('/dashboard')}
-                      className="btn-primary"
-                    >
-                      Start Searching
-                    </button>
-                  </div>
-                )
-              }
-
-              // Group hotel bookings by listingId and billingId (same hotel, same checkout = one bill)
-              const grouped = {}
-              const ungrouped = []
-              
-              filteredBookings.forEach((booking) => {
-                if (booking.listingType === 'Hotel' && booking.billingId) {
-                  // Group by billingId (same bill = same checkout)
-                  const key = booking.billingId
-                  if (!grouped[key]) {
-                    grouped[key] = []
-                  }
-                  grouped[key].push(booking)
-                } else {
-                  ungrouped.push(booking)
-                }
-              })
-              
-              // Render grouped hotel bookings first, then individual bookings
-              return [
-                ...Object.entries(grouped).map(([billingId, groupBookings]) => {
-                  const firstBooking = groupBookings[0]
-                  const listing = firstBooking.listing
-                  const provider = firstBooking.provider
-                  const listingName = listing?.hotelName || 'Hotel'
-                  const totalAmount = groupBookings.reduce((sum, b) => sum + (b.totalAmount || 0), 0)
-                  
-                  return (
-                    <div 
-                      key={billingId} 
-                      className="card hover:shadow-lg transition-shadow cursor-pointer"
-                      onClick={() => navigate(`/booking-group/${billingId}`)}
-                    >
+                  <div 
+                    key={billingId} 
+                    className="card hover:shadow-lg transition-shadow cursor-pointer"
+                    onClick={() => navigate(`/booking-group/${billingId}`)}
+                  >
                       <div className="flex justify-between items-start mb-4">
                         <div className="flex-1 flex items-start space-x-4">
                           {/* Hotel Image */}
@@ -503,31 +528,32 @@ const MyBookings = () => {
                           </div>
                         )
                       })()}
-                    </div>
-                  )
-                }),
-                ...ungrouped.map((booking) => {
-                  const listing = booking.listing
-                  const provider = booking.provider
-                  
-                  // Get listing name/title based on type
-                  let listingName = ''
-                  if (booking.listingType === 'Car' && listing) {
-                    listingName = `${listing.model || listing.carModel || 'Car'} ${listing.year ? `(${listing.year})` : ''}`
-                  } else if (booking.listingType === 'Flight' && listing) {
-                    listingName = `${listing.departureAirport || ''} → ${listing.arrivalAirport || ''}`
-                  } else if (booking.listingType === 'Hotel' && listing) {
-                    listingName = listing.hotelName || 'Hotel'
-                  }
+                  </div>
+                )
+              } else {
+                // Render individual booking
+                const { booking } = item
+                const listing = booking.listing
+                const provider = booking.provider
+                
+                // Get listing name/title based on type
+                let listingName = ''
+                if (booking.listingType === 'Car' && listing) {
+                  listingName = `${listing.model || listing.carModel || 'Car'} ${listing.year ? `(${listing.year})` : ''}`
+                } else if (booking.listingType === 'Flight' && listing) {
+                  listingName = `${listing.departureAirport || ''} → ${listing.arrivalAirport || ''}`
+                } else if (booking.listingType === 'Hotel' && listing) {
+                  listingName = listing.hotelName || 'Hotel'
+                }
 
-                  return (
-                <div
-                  key={booking.bookingId}
-                  className="card hover:shadow-lg transition-shadow cursor-pointer"
-                  onClick={() => navigate(`/booking/${booking.bookingId}`)}
-                >
-                  <div className="flex justify-between items-start">
-                    <div className="flex-1 flex items-start space-x-4">
+                return (
+                  <div
+                    key={booking.bookingId}
+                    className="card hover:shadow-lg transition-shadow cursor-pointer"
+                    onClick={() => navigate(`/booking/${booking.bookingId}`)}
+                  >
+                    <div className="flex justify-between items-start">
+                      <div className="flex-1 flex items-start space-x-4">
                       {/* Listing Image */}
                       {(() => {
                         let imagePath = null
@@ -708,11 +734,21 @@ const MyBookings = () => {
                     </div>
                   </div>
                 </div>
-              )
-            })
-              ]
-            })()}
+                )
+              }
+            })}
           </div>
+        )}
+
+        {/* Pagination */}
+        {paginatedBookings.totalPages > 1 && (
+          <Pagination
+            currentPage={currentPage}
+            totalPages={paginatedBookings.totalPages}
+            totalItems={paginatedBookings.totalItems}
+            itemsPerPage={itemsPerPage}
+            onPageChange={setCurrentPage}
+          />
         )}
 
         {/* Review Modal */}

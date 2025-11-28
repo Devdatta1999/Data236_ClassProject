@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from 'react'
+import { useEffect, useState, useRef, useMemo } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import { setSearchResults, setLoading, setError, setSearchType } from '../../store/slices/searchSlice'
@@ -6,6 +6,7 @@ import { addToCart } from '../../store/slices/cartSlice'
 import { sendEventAndWait } from '../../services/kafkaService'
 import { ShoppingCart, Star, MapPin, Calendar, Users, Check, Plane, Car } from 'lucide-react'
 import { format, differenceInDays } from 'date-fns'
+import Pagination from '../../components/common/Pagination'
 
 const API_BASE_URL = import.meta.env.VITE_API_GATEWAY_URL || 'http://localhost:8080'
 
@@ -462,6 +463,8 @@ const SearchResults = () => {
   const [resultsReady, setResultsReady] = useState(false)
   const lastSearchKey = useRef(null)
   const isSearching = useRef(false)
+  const [currentPage, setCurrentPage] = useState(1)
+  const itemsPerPage = 10
 
   useEffect(() => {
     const performSearch = async () => {
@@ -495,9 +498,10 @@ const SearchResults = () => {
           dispatch(setLoading(false))
           return
         }
-        const cachedResults = searchResults[type] || []
+          const cachedResults = searchResults[type] || []
         if (cachedResults.length > 0) {
           setResults(cachedResults)
+          setCurrentPage(1) // Reset to first page on new search
           setResultsReady(false)
           requestAnimationFrame(() => {
             setImageLoadKey(Date.now())
@@ -720,6 +724,61 @@ const SearchResults = () => {
     return getCartItemForCar(item) !== null
   }
 
+  // Pagination logic
+  const getPaginatedResults = useMemo(() => {
+    if (searchType === 'flights' && results && typeof results === 'object' && results.outbound) {
+      // For flights with outbound/return structure
+      if (results.tripType === 'round-trip') {
+        // Round trip: paginate both outbound and return separately
+        const outboundStart = (currentPage - 1) * itemsPerPage
+        const outboundEnd = outboundStart + itemsPerPage
+        const paginatedOutbound = results.outbound.slice(outboundStart, outboundEnd)
+        const returnStart = (currentPage - 1) * itemsPerPage
+        const returnEnd = returnStart + itemsPerPage
+        const paginatedReturn = results.return ? results.return.slice(returnStart, returnEnd) : []
+        
+        return {
+          outbound: paginatedOutbound,
+          return: paginatedReturn,
+          tripType: 'round-trip',
+          totalPages: Math.ceil(Math.max(results.outbound.length, results.return?.length || 0) / itemsPerPage),
+          totalItems: Math.max(results.outbound.length, results.return?.length || 0)
+        }
+      } else {
+        // One-way: paginate outbound
+        const start = (currentPage - 1) * itemsPerPage
+        const end = start + itemsPerPage
+        const paginatedOutbound = results.outbound.slice(start, end)
+        
+        return {
+          outbound: paginatedOutbound,
+          return: null,
+          tripType: 'one-way',
+          totalPages: Math.ceil(results.outbound.length / itemsPerPage),
+          totalItems: results.outbound.length
+        }
+      }
+    } else if (Array.isArray(results)) {
+      // For hotels, cars, or simple flight arrays
+      const start = (currentPage - 1) * itemsPerPage
+      const end = start + itemsPerPage
+      const paginatedResults = results.slice(start, end)
+      
+      return {
+        items: paginatedResults,
+        totalPages: Math.ceil(results.length / itemsPerPage),
+        totalItems: results.length
+      }
+    }
+    
+    return null
+  }, [results, searchType, currentPage, itemsPerPage])
+
+  // Reset to page 1 when results change
+  useEffect(() => {
+    setCurrentPage(1)
+  }, [results])
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -762,11 +821,8 @@ const SearchResults = () => {
         </div>
 
         <div className="space-y-4">
-          {searchType === 'flights' &&
-          results &&
-          typeof results === 'object' &&
-          results.outbound ? (
-            results.tripType === 'round-trip' ? (
+          {getPaginatedResults && searchType === 'flights' && getPaginatedResults.outbound ? (
+            getPaginatedResults.tripType === 'round-trip' ? (
               <div className="space-y-6">
                 <div className="text-center mb-4">
                   <h3 className="text-xl font-bold text-gray-900">
@@ -783,8 +839,8 @@ const SearchResults = () => {
                     <h4 className="text-lg font-semibold text-gray-800 mb-3">
                       Outbound - Departure
                     </h4>
-                    {results.outbound.length > 0 ? (
-                      results.outbound.map((item) => (
+                    {getPaginatedResults.outbound.length > 0 ? (
+                      getPaginatedResults.outbound.map((item) => (
                         <FlightCard
                           key={item.flightId}
                           item={item}
@@ -815,8 +871,8 @@ const SearchResults = () => {
                     <h4 className="text-lg font-semibold text-gray-800 mb-3">
                       Return
                     </h4>
-                    {results.return && results.return.length > 0 ? (
-                      results.return.map((item) => (
+                    {getPaginatedResults.return && getPaginatedResults.return.length > 0 ? (
+                      getPaginatedResults.return.map((item) => (
                         <FlightCard
                           key={item.flightId}
                           item={item}
@@ -846,8 +902,8 @@ const SearchResults = () => {
               </div>
             ) : (
               <div className="space-y-4">
-                {results.outbound.length > 0 ? (
-                  results.outbound.map((item) => (
+                {getPaginatedResults.outbound.length > 0 ? (
+                  getPaginatedResults.outbound.map((item) => (
                     <FlightCard
                       key={item.flightId}
                       item={item}
@@ -872,27 +928,11 @@ const SearchResults = () => {
                 )}
               </div>
             )
-          ) : searchType === 'flights' && Array.isArray(results) ? (
-            results.map((item) => (
-              <FlightCard
-                key={item.flightId}
-                item={item}
-                searchParams={location.state?.searchParams}
-                searchType={searchType}
-                onViewDetails={(flight) =>
-                  navigate(`/flight/${flight.flightId}`, {
-                    state: {
-                      flight,
-                      searchParams: location.state?.searchParams,
-                    },
-                  })
-                }
-              />
-            ))
-          ) : searchType !== 'flights' ? (
-            results.map((item) => {
+          ) : getPaginatedResults && getPaginatedResults.items ? (
+            getPaginatedResults.items.map((item) => {
               const key =
                 item[`${searchType.slice(0, -1)}Id`] ||
+                item.flightId ||
                 item.hotelId ||
                 item.carId
               if (searchType === 'hotels') {
@@ -915,10 +955,39 @@ const SearchResults = () => {
                   />
                 )
               }
+              if (searchType === 'flights') {
+                return (
+                  <FlightCard
+                    key={key}
+                    item={item}
+                    searchParams={location.state?.searchParams}
+                    searchType={searchType}
+                    onViewDetails={(flight) =>
+                      navigate(`/flight/${flight.flightId}`, {
+                        state: {
+                          flight,
+                          searchParams: location.state?.searchParams,
+                        },
+                      })
+                    }
+                  />
+                )
+              }
               return null
             })
           ) : null}
         </div>
+
+        {/* Pagination */}
+        {getPaginatedResults && getPaginatedResults.totalPages > 1 && (
+          <Pagination
+            currentPage={currentPage}
+            totalPages={getPaginatedResults.totalPages}
+            totalItems={getPaginatedResults.totalItems}
+            itemsPerPage={itemsPerPage}
+            onPageChange={setCurrentPage}
+          />
+        )}
 
         {((searchType === 'flights' &&
           results.outbound &&

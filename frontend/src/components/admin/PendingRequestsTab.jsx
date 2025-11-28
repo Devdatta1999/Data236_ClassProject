@@ -1,9 +1,10 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { removePendingListing } from '../../store/slices/adminSlice'
 import api from '../../services/apiService'
 import { CheckCircle, XCircle, Plane, Hotel, Car, Star, MapPin, Calendar, Clock, Building2 } from 'lucide-react'
 import Notification from '../common/Notification'
+import Pagination from '../common/Pagination'
 
 const API_BASE_URL = import.meta.env.VITE_API_GATEWAY_URL || 'http://localhost:8080'
 
@@ -28,6 +29,8 @@ const PendingRequestsTab = ({ onRefresh }) => {
   const [processing, setProcessing] = useState({})
   const [notification, setNotification] = useState(null)
   const [imageLoadKey, setImageLoadKey] = useState(0)
+  const [currentPage, setCurrentPage] = useState(1)
+  const itemsPerPage = 10
 
   const handleApprove = async (listingId, listingType) => {
     setProcessing({ [listingId]: 'approving' })
@@ -71,11 +74,27 @@ const PendingRequestsTab = ({ onRefresh }) => {
     }
   }, [pendingListings.flights.length, pendingListings.hotels.length, pendingListings.cars.length])
 
-  const allListings = [
+  const allListings = useMemo(() => [
     ...pendingListings.flights.map(l => ({ ...l, type: 'Flight', icon: Plane })),
     ...pendingListings.hotels.map(l => ({ ...l, type: 'Hotel', icon: Hotel })),
     ...pendingListings.cars.map(l => ({ ...l, type: 'Car', icon: Car })),
-  ]
+  ], [pendingListings.flights, pendingListings.hotels, pendingListings.cars])
+
+  // Pagination logic
+  const paginatedListings = useMemo(() => {
+    const start = (currentPage - 1) * itemsPerPage
+    const end = start + itemsPerPage
+    return {
+      items: allListings.slice(start, end),
+      totalPages: Math.ceil(allListings.length / itemsPerPage),
+      totalItems: allListings.length
+    }
+  }, [allListings, currentPage, itemsPerPage])
+
+  // Reset to page 1 when listings change
+  useEffect(() => {
+    setCurrentPage(1)
+  }, [allListings.length])
 
   if (allListings.length === 0) {
     return (
@@ -94,7 +113,7 @@ const PendingRequestsTab = ({ onRefresh }) => {
           onClose={() => setNotification(null)}
         />
       )}
-      {allListings.map((listing) => {
+      {paginatedListings.items.map((listing) => {
         const Icon = listing.icon
         const listingId = listing.flightId || listing.hotelId || listing.carId
         const isProcessing = processing[listingId]
@@ -400,6 +419,17 @@ const PendingRequestsTab = ({ onRefresh }) => {
           </div>
         )
       })}
+
+      {/* Pagination */}
+      {paginatedListings.totalPages > 1 && (
+        <Pagination
+          currentPage={currentPage}
+          totalPages={paginatedListings.totalPages}
+          totalItems={paginatedListings.totalItems}
+          itemsPerPage={itemsPerPage}
+          onPageChange={setCurrentPage}
+        />
+      )}
     </div>
   )
 }

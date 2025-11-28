@@ -1,7 +1,8 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import api from '../../services/apiService'
 import { Search, User, Loader2, AlertCircle } from 'lucide-react'
+import Pagination from '../common/Pagination'
 
 const UserManagementTab = () => {
   const navigate = useNavigate()
@@ -9,6 +10,8 @@ const UserManagementTab = () => {
   const [searchResults, setSearchResults] = useState([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const [currentPage, setCurrentPage] = useState(1)
+  const itemsPerPage = 10
 
   // Debounced search
   useEffect(() => {
@@ -49,6 +52,22 @@ const UserManagementTab = () => {
     navigate(`/admin/users/${user.userId}/edit`)
   }
 
+  // Pagination logic
+  const paginatedResults = useMemo(() => {
+    const start = (currentPage - 1) * itemsPerPage
+    const end = start + itemsPerPage
+    return {
+      items: searchResults.slice(start, end),
+      totalPages: Math.ceil(searchResults.length / itemsPerPage),
+      totalItems: searchResults.length
+    }
+  }, [searchResults, currentPage, itemsPerPage])
+
+  // Reset to page 1 when search results change
+  useEffect(() => {
+    setCurrentPage(1)
+  }, [searchResults.length])
+
   const API_BASE_URL = import.meta.env.VITE_API_GATEWAY_URL || 'http://localhost:8080'
 
   return (
@@ -86,8 +105,8 @@ const UserManagementTab = () => {
         {searchResults.length > 0 && (
           <div className="mb-6">
             <h3 className="text-lg font-semibold mb-3">Search Results ({searchResults.length})</h3>
-            <div className="space-y-2 max-h-64 overflow-y-auto">
-              {searchResults.map((user) => (
+            <div className="space-y-2">
+              {paginatedResults.items.map((user) => (
                 <div
                   key={user.userId}
                   onClick={() => handleSelectUser(user)}
@@ -121,6 +140,17 @@ const UserManagementTab = () => {
                 </div>
               ))}
             </div>
+
+            {/* Pagination */}
+            {paginatedResults.totalPages > 1 && (
+              <Pagination
+                currentPage={currentPage}
+                totalPages={paginatedResults.totalPages}
+                totalItems={paginatedResults.totalItems}
+                itemsPerPage={itemsPerPage}
+                onPageChange={setCurrentPage}
+              />
+            )}
           </div>
         )}
 
