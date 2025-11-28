@@ -29,6 +29,7 @@ const PendingRequestsTab = ({ onRefresh }) => {
   const [processing, setProcessing] = useState({})
   const [notification, setNotification] = useState(null)
   const [imageLoadKey, setImageLoadKey] = useState(0)
+  const [listingsReady, setListingsReady] = useState(false)
   const [currentPage, setCurrentPage] = useState(1)
   const itemsPerPage = 10
 
@@ -62,23 +63,43 @@ const PendingRequestsTab = ({ onRefresh }) => {
     }
   }
 
-  // Force image reload when listings change - this ensures images render on every load
-  // Use requestAnimationFrame to ensure state is ready before rendering images
-  useEffect(() => {
-    const totalListings = pendingListings.flights.length + pendingListings.hotels.length + pendingListings.cars.length
-    if (totalListings > 0) {
-      requestAnimationFrame(() => {
-        // Update key whenever listings are available to force image re-render
-        setImageLoadKey(Date.now())
-      })
-    }
-  }, [pendingListings.flights.length, pendingListings.hotels.length, pendingListings.cars.length])
-
+  // Compute all listings first
   const allListings = useMemo(() => [
     ...pendingListings.flights.map(l => ({ ...l, type: 'Flight', icon: Plane })),
     ...pendingListings.hotels.map(l => ({ ...l, type: 'Hotel', icon: Hotel })),
     ...pendingListings.cars.map(l => ({ ...l, type: 'Car', icon: Car })),
   ], [pendingListings.flights, pendingListings.hotels, pendingListings.cars])
+
+  // Track image data signatures to detect when listing images actually change
+  const imageDataSignature = useMemo(() => {
+    return allListings.map(l => {
+      const id = l.flightId || l.hotelId || l.carId
+      const image = l.type === 'Hotel' ? (l.images?.[0] || '') : (l.image || '')
+      return `${id}:${image}`
+    }).join('|')
+  }, [allListings])
+
+  // Force image reload when listings actually change - ensure listings are ready before rendering images
+  // This prevents race conditions where images try to render before listing data is fully populated
+  useEffect(() => {
+    setListingsReady(false) // Reset ready state when listings change
+    
+    const totalListings = allListings.length
+    
+    if (totalListings > 0) {
+      // Use double requestAnimationFrame to ensure DOM is ready and state is fully propagated
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          // Update key whenever listings are available to force image re-render
+          setImageLoadKey(Date.now())
+          setListingsReady(true) // Mark listings as ready for image rendering
+        })
+      })
+    } else {
+      // No listings, mark as ready anyway to show empty state
+      setListingsReady(true)
+    }
+  }, [allListings.length, imageDataSignature])
 
   // Pagination logic
   const paginatedListings = useMemo(() => {
@@ -95,6 +116,14 @@ const PendingRequestsTab = ({ onRefresh }) => {
   useEffect(() => {
     setCurrentPage(1)
   }, [allListings.length])
+
+  if (!listingsReady) {
+    return (
+      <div className="text-center py-12">
+        <p className="text-gray-600 text-lg">Loading listings...</p>
+      </div>
+    )
+  }
 
   if (allListings.length === 0) {
     return (
@@ -124,57 +153,61 @@ const PendingRequestsTab = ({ onRefresh }) => {
             <div className={`flex ${isHotel ? 'flex-col md:flex-row' : 'items-start'} justify-between gap-4`}>
               {/* Listing Image */}
               {(() => {
+                // Compute image source outside of conditional rendering to ensure consistency
                 let imageSrc = null
                 let imageAlt = ''
                 
                 // Check for hotel images
                 if (isHotel && listing.images && listing.images.length > 0 && listing.images[0]) {
-                  imageSrc = getImageSrc(listing.images[0])
+                  const rawImage = listing.images[0]
+                  imageSrc = rawImage ? getImageSrc(rawImage) : null
                   imageAlt = listing.hotelName || 'Hotel'
                 } 
                 // Check for flight image (can be null, empty string, or URL)
                 else if (listing.type === 'Flight' && listing.image && listing.image.trim()) {
-                  imageSrc = getImageSrc(listing.image)
+                  const rawImage = listing.image.trim()
+                  imageSrc = rawImage ? getImageSrc(rawImage) : null
                   imageAlt = listing.flightId || 'Flight'
                 } 
                 // Check for car image
                 else if (listing.type === 'Car' && listing.image && listing.image.trim()) {
-                  imageSrc = getImageSrc(listing.image)
+                  const rawImage = listing.image.trim()
+                  imageSrc = rawImage ? getImageSrc(rawImage) : null
                   imageAlt = listing.model || listing.carModel || 'Car'
                 }
                 
-                if (imageSrc) {
-                  return (
-                    <div key={`img-container-${listingId}-${imageLoadKey}`} className="md:w-64 h-48 md:h-auto flex-shrink-0 rounded-lg overflow-hidden bg-gray-200 flex items-center justify-center">
+                // Always render the container for consistent layout
+                const imageKey = `${listingId}-${imageSrc || 'placeholder'}-${imageLoadKey}`
+                
+                return (
+                  <div key={`img-container-${imageKey}`} className="md:w-64 h-48 md:h-auto flex-shrink-0 rounded-lg overflow-hidden bg-gray-200 flex items-center justify-center">
+                    {imageSrc ? (
                       <img
-                        key={`img-${listingId}-${imageSrc}-${imageLoadKey}`}
+                        key={`img-${imageKey}`}
                         src={imageSrc}
                         alt={imageAlt}
                         className="w-full h-full object-cover"
                         loading="eager"
                         decoding="async"
+                        crossOrigin="anonymous"
                         onError={(e) => {
-                          console.error('Image failed to load:', imageSrc)
+                          console.error('Image failed to load:', imageSrc, 'for listing:', listingId)
                           e.target.style.display = 'none'
-                          if (e.target.nextSibling) e.target.nextSibling.classList.remove('hidden')
+                          const placeholder = e.target.parentElement.querySelector('.image-placeholder')
+                          if (placeholder) placeholder.classList.remove('hidden')
                         }}
                         onLoad={(e) => {
                           // Ensure image is visible when loaded
                           e.target.style.opacity = '1'
                           e.target.style.display = 'block'
+                          const placeholder = e.target.parentElement.querySelector('.image-placeholder')
+                          if (placeholder) placeholder.classList.add('hidden')
                         }}
                       />
-                      <div className="hidden w-full h-full flex items-center justify-center text-gray-400">
-                        <Icon className="w-12 h-12" />
-                      </div>
+                    ) : null}
+                    <div className={`image-placeholder w-full h-full flex items-center justify-center text-gray-400 ${imageSrc ? 'hidden' : ''}`}>
+                      <Icon className="w-12 h-12" />
                     </div>
-                  )
-                }
-                
-                // Show placeholder icon if no image
-                return (
-                  <div className="md:w-64 h-48 md:h-auto flex-shrink-0 bg-purple-100 rounded-lg flex items-center justify-center">
-                    <Icon className="w-12 h-12 text-purple-600" />
                   </div>
                 )
               })()}

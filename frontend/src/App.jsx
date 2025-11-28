@@ -32,7 +32,7 @@ import HostProfilePage from './pages/host/HostProfilePage'
 
 function App() {
   const dispatch = useDispatch()
-  const { isAuthenticated } = useSelector((state) => state.auth)
+  const { isAuthenticated, userType } = useSelector((state) => state.auth)
 
   useEffect(() => {
     // Restore auth state from localStorage
@@ -49,7 +49,16 @@ function App() {
     <div className="min-h-screen bg-gray-50">
       <Navbar />
       <Routes>
-        <Route path="/" element={<LandingPage />} />
+        <Route 
+          path="/" 
+          element={
+            isAuthenticated && (userType === 'admin' || userType === 'host') ? (
+              <Navigate to={userType === 'admin' ? '/admin' : '/host'} replace />
+            ) : (
+              <LandingPage />
+            )
+          } 
+        />
         <Route path="/login" element={!isAuthenticated ? <LoginPage /> : <Navigate to="/dashboard" />} />
         <Route path="/signup" element={!isAuthenticated ? <SignupPage /> : <Navigate to="/dashboard" />} />
         <Route path="/host/register" element={!isAuthenticated ? <HostSignupPage /> : <Navigate to="/host" />} />

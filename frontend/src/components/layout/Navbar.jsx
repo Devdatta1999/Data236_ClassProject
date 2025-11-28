@@ -97,9 +97,15 @@ const Navbar = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
-          <Link to="/" className="flex items-center space-x-2">
-            <div className="text-2xl font-bold text-primary-600">Aerive</div>
-          </Link>
+          {(userType === 'admin' || userType === 'host') ? (
+            <div className="flex items-center space-x-2 cursor-default">
+              <div className="text-2xl font-bold text-primary-600">Aerive</div>
+            </div>
+          ) : (
+            <Link to="/" className="flex items-center space-x-2">
+              <div className="text-2xl font-bold text-primary-600">Aerive</div>
+            </Link>
+          )}
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-6">
@@ -146,15 +152,9 @@ const Navbar = () => {
                   <>
                     <Link
                       to="/dashboard"
-                      className="text-gray-700 hover:text-primary-600 transition-colors"
+                      className="text-gray-700 hover:text-primary-600 transition-colors font-medium"
                     >
-                      Search
-                    </Link>
-                    <Link
-                      to="/my-bookings"
-                      className="text-gray-700 hover:text-primary-600 transition-colors"
-                    >
-                      My Bookings
+                      Dashboard
                     </Link>
                     <Link
                       to="/checkout"
@@ -163,7 +163,7 @@ const Navbar = () => {
                     >
                       <ShoppingCart className="w-6 h-6" />
                       {cartCount > 0 && (
-                        <span className="absolute -top-2 -right-2 bg-primary-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                        <span className="absolute -top-2 -right-2 bg-primary-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-semibold">
                           {cartCount}
                         </span>
                       )}
@@ -175,34 +175,36 @@ const Navbar = () => {
                     to={userType === 'traveler' ? '/profile' : userType === 'admin' ? '/admin' : '/host/profile'}
                     className="flex items-center space-x-2 text-gray-700 hover:text-primary-600 transition-colors"
                   >
-                    {user?.profileImage ? (
-                      <img
-                        key={`navbar-profile-${user.profileImage}`}
-                        src={getImageSrc(user.profileImage)}
-                        alt="Profile"
-                        className="w-8 h-8 rounded-full object-cover border-2 border-gray-300"
-                        loading="eager"
-                        decoding="async"
-                        onError={(e) => {
-                          e.target.style.display = 'none'
-                          const icon = e.target.parentElement.querySelector('.profile-icon-fallback')
-                          if (icon) icon.style.display = 'block'
-                        }}
-                        onLoad={(e) => {
-                          e.target.style.opacity = '1'
-                          e.target.style.display = 'block'
-                        }}
-                      />
-                    ) : null}
-                    <User className={`w-5 h-5 profile-icon-fallback ${user?.profileImage ? 'hidden' : ''}`} />
+                    <div className="relative w-8 h-8 flex items-center justify-center">
+                      {user?.profileImage ? (
+                        <img
+                          key={`navbar-profile-${user.profileImage}`}
+                          src={getImageSrc(user.profileImage)}
+                          alt="Profile"
+                          className="w-8 h-8 rounded-full object-cover border-2 border-gray-300 absolute"
+                          loading="eager"
+                          decoding="async"
+                          onError={(e) => {
+                            e.target.style.display = 'none'
+                            const icon = e.target.parentElement.querySelector('.profile-icon-fallback')
+                            if (icon) icon.style.display = 'block'
+                          }}
+                          onLoad={(e) => {
+                            e.target.style.opacity = '1'
+                            e.target.style.display = 'block'
+                          }}
+                        />
+                      ) : null}
+                      <User className={`w-5 h-5 profile-icon-fallback ${user?.profileImage ? 'hidden' : ''} absolute`} />
+                    </div>
                     <span>{user?.firstName || user?.providerName || user?.adminName || 'Profile'}</span>
                   </Link>
                   <button
                     onClick={handleLogout}
-                    className="flex items-center space-x-2 text-gray-700 hover:text-red-600 transition-colors"
+                    className="flex items-center space-x-2 px-4 py-2 rounded-lg text-gray-700 hover:bg-red-50 hover:text-red-600 transition-all duration-200 border border-transparent hover:border-red-200"
                   >
                     <LogOut className="w-5 h-5" />
-                    <span>Logout</span>
+                    <span className="font-medium">Logout</span>
                   </button>
                 </div>
               </>
@@ -253,10 +255,7 @@ const Navbar = () => {
                 {userType === 'traveler' && (
                   <>
                     <Link to="/dashboard" className="block text-gray-700 hover:text-primary-600">
-                      Search
-                    </Link>
-                    <Link to="/my-bookings" className="block text-gray-700 hover:text-primary-600">
-                      My Bookings
+                      Dashboard
                     </Link>
                     <Link 
                       to="/checkout" 
@@ -275,7 +274,7 @@ const Navbar = () => {
                 </Link>
                 <button
                   onClick={handleLogout}
-                  className="block text-gray-700 hover:text-red-600"
+                  className="block w-full text-left px-4 py-2 rounded-lg text-gray-700 hover:bg-red-50 hover:text-red-600 transition-all duration-200 border border-transparent hover:border-red-200 font-medium"
                 >
                   Logout
                 </button>

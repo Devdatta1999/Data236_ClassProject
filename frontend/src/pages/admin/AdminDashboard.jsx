@@ -29,7 +29,7 @@ const AdminDashboard = () => {
       window.history.replaceState({}, document.title)
     }
     // Note: Tab persistence is handled by Redux initial state reading from localStorage
-    // and setSelectedTab action saving to localStorage
+    // and setSelectedTab action saving to localStorage. Default is 'requests' in adminSlice.
   }, [location, dispatch])
 
   const fetchPendingListings = async () => {

@@ -52,7 +52,7 @@ const LoginPage = () => {
           user: response.data.data.admin,
           userType: 'admin',
         }))
-        navigate('/admin')
+        navigate('/admin', { state: { tab: 'requests' } })
       } else if (formData.userType === 'host') {
         // Use HTTP for host/provider login
         const response = await api.post('/api/providers/login', {
