@@ -88,7 +88,7 @@ async function handleFlightSearch(event) {
       // Check if flight is available on this date (within availableFrom/availableTo range)
       outboundQuery.availableFrom = { $lte: searchDate };
       outboundQuery.availableTo = { $gte: searchDate };
-
+      
       // Get day of week (0 = Sunday, 1 = Monday, ..., 6 = Saturday)
       const dayIndex = searchDate.getDay();
       const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];

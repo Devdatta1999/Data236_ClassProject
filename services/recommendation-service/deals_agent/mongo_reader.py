@@ -7,8 +7,9 @@ import json
 import os
 from datetime import datetime
 from typing import Dict, Any, Optional, List
-from bson import ObjectId
 
+from bson import ObjectId
+from dotenv import load_dotenv
 from aiokafka import AIOKafkaProducer
 from aiokafka.errors import KafkaError
 from pymongo import MongoClient
@@ -21,6 +22,11 @@ from kafka_config import KAFKA_BOOTSTRAP_SERVERS, TOPIC_RAW_SUPPLIER_FEEDS
 import logging
 
 logger = logging.getLogger(__name__)
+
+# Load environment variables from a .env file (if present) so that
+# MONGODB_URI and Kafka settings can be configured locally without
+# needing to export them in every shell session.
+load_dotenv()
 
 
 class MongoReader:

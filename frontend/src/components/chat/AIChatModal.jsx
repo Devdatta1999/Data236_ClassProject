@@ -1,9 +1,12 @@
 import { useState, useEffect, useRef } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
+import { differenceInDays } from 'date-fns'
 import { X, Send, Bot, User, Loader2 } from 'lucide-react'
 import { closeChat, addMessage, setLoading, setError, setBundles } from '../../store/slices/chatSlice'
+import { addToCart, clearCart } from '../../store/slices/cartSlice'
 import { sendChatMessage, selectBundle } from '../../services/chatService'
+import api from '../../services/apiService'
 
 const AIChatModal = () => {
   const dispatch = useDispatch()
@@ -26,6 +29,109 @@ const AIChatModal = () => {
       }, 100)
     }
   }, [isOpen])
+
+  const fetchListingDetails = async (type, externalId) => {
+    if (!externalId) {
+      throw new Error('Missing listing reference for this bundle item.')
+    }
+    const endpoint =
+      type === 'flight'
+        ? `/api/listings/flights/${encodeURIComponent(externalId)}`
+        : `/api/listings/hotels/${encodeURIComponent(externalId)}`
+    const response = await api.get(endpoint)
+    const data = type === 'flight' ? response.data.data?.flight : response.data.data?.hotel
+    if (!data) {
+      throw new Error(`Unable to load ${type} details for ${externalId}.`)
+    }
+    return data
+  }
+
+  const addQuoteItemsToCart = async (quote) => {
+    if (!quote) {
+      throw new Error('Missing quote data from the concierge service.')
+    }
+
+    // Prefer trip dates from the concierge quote (these reflect the user's
+    // actual requested dates) and fall back to the hotel/flight dates only if
+    // they are missing. Using the quote dates avoids sending an extremely long
+    // stay (e.g., full availability window) to the booking service.
+    const departureDateStr = quote.travel_dates?.departure_date || null
+    const returnDateStr = quote.travel_dates?.return_date || null
+
+    const cartItems = []
+
+    const flightPromises = (quote.flights || []).map(async (flight) => {
+      const externalId = flight.external_id || flight.externalId || flight.id
+      const listing = await fetchListingDetails('flight', externalId)
+      const listingId = listing?.flightId || externalId
+      const travelers = Math.max(quote.travelers || 1, 1)
+      const totalFlightPrice = Number(flight.price_usd || 0)
+      const perSeatPriceRaw = travelers > 0 ? totalFlightPrice / travelers : totalFlightPrice
+      const perSeatPrice = Number(Number.isFinite(perSeatPriceRaw) ? perSeatPriceRaw.toFixed(2) : 0)
+      const seatType = listing?.seatTypes?.[0]?.type || 'Economy'
+
+      cartItems.push({
+        listingId,
+        listingType: 'Flight',
+        listingName: listing?.flightId
+          ? `${listing.flightId} - ${listing.departureAirport} to ${listing.arrivalAirport}`
+          : `${flight.origin} → ${flight.destination}`,
+        listing,
+        roomType: seatType,
+        quantity: travelers,
+        price: perSeatPrice || totalFlightPrice,
+        totalPrice: totalFlightPrice,
+        travelDate: flight.departure_date,
+        returnDate: flight.return_date,
+        image: listing?.image || null,
+        address: `${flight.origin} → ${flight.destination}`,
+      })
+    })
+
+    const hotelPromises = (quote.hotels || []).map(async (hotel) => {
+      const externalId = hotel.external_id || hotel.externalId || hotel.id
+      const listing = await fetchListingDetails('hotel', externalId)
+      const listingId = listing?.hotelId || externalId
+      // Use trip dates from the quote when available, otherwise fall back to
+      // the hotel deal's own dates.
+      const checkIn = departureDateStr ? new Date(departureDateStr) : new Date(hotel.check_in_date)
+      const checkOut = returnDateStr ? new Date(returnDateStr) : new Date(hotel.check_out_date)
+      const nights = Math.max(differenceInDays(checkOut, checkIn), 1)
+      const totalHotelPrice = Number(hotel.total_price_usd || 0)
+      const nightlyRaw = nights > 0 ? totalHotelPrice / nights : totalHotelPrice
+      const pricePerNight = Number(Number.isFinite(nightlyRaw) ? nightlyRaw.toFixed(2) : 0)
+      const travelers = Math.max(quote.travelers || 1, 1)
+      const quantity = Math.max(1, Math.ceil(travelers / 2))
+      const roomType = listing?.roomTypes?.[0]?.type || 'Standard'
+
+      cartItems.push({
+        listingId,
+        listingType: 'Hotel',
+        listingName: listing?.hotelName || hotel.hotel_name,
+        listing,
+        roomType,
+        quantity,
+        pricePerNight: pricePerNight || Number(hotel.price_per_night_usd || 0),
+        totalPrice: totalHotelPrice,
+        checkInDate: checkIn.toISOString(),
+        checkOutDate: checkOut.toISOString(),
+        numberOfNights: nights,
+        image: listing?.images?.[0] || null,
+        address: listing
+          ? [listing.address, listing.city, listing.state].filter(Boolean).join(', ')
+          : hotel.city,
+      })
+    })
+
+    await Promise.all([...flightPromises, ...hotelPromises])
+
+    if (cartItems.length === 0) {
+      throw new Error('This bundle did not include any bookable flights or hotels.')
+    }
+
+    dispatch(clearCart())
+    cartItems.forEach((item) => dispatch(addToCart(item)))
+  }
 
   const handleSend = async (e) => {
     e.preventDefault()
@@ -82,10 +188,9 @@ const AIChatModal = () => {
     try {
       const response = await selectBundle(sessionId, bundleId)
       if (response.success && response.quote) {
-        // Navigate to AI quote page using quote_id
-        navigate(`/ai/quote/${response.quote.quote_id}`)
-        // Close chat so the quote page is visible immediately
+        await addQuoteItemsToCart(response.quote)
         dispatch(closeChat())
+        navigate('/checkout', { state: { fromAIConcierge: true } })
       } else {
         dispatch(
           addMessage({
@@ -99,7 +204,9 @@ const AIChatModal = () => {
       dispatch(
         addMessage({
           role: 'assistant',
-          content: 'Sorry, there was an error selecting that package. Please try again.',
+          content:
+            error?.message ||
+            'Sorry, there was an error selecting that package. Please try again.',
         })
       )
     } finally {

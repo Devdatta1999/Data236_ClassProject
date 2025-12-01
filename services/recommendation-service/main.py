@@ -43,10 +43,10 @@ async def lifespan(app: FastAPI):
     """
     logger.info("Initializing database...")
     init_db()
-
+    
     # No-op on startup/shutdown beyond DB init.
     yield
-
+    
     logger.info("Shutting down recommendation-service (no Kafka cleanup needed)")
 
 
@@ -698,7 +698,7 @@ async def simulate_price_drop_for_bundle(session_id: str, bundle_id: int) -> Non
     except Exception as e:
         logger.error(
             "simulate_price_drop_for_bundle: error sending WebSocket message: %s", e
-        )
+    )
 
 
 @app.get("/checkout/quote/{quote_id}", response_model=CheckoutQuote)

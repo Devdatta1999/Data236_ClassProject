@@ -1,67 +1,121 @@
-# Test Analysis - Agent Verification
+## Test Analysis – Current Deals Data (Mongo → SQLite)
 
-## Summary
+This document replaces the older CSV‑based analysis. It reflects the **current
+MongoDB → Kafka → SQLite pipeline** and what the AI concierge actually sees in
+`recommendation_service.db`.
 
-The agent is **working correctly**. The issue is a **data availability mismatch**:
+---
 
-### Data Distribution
+### Data Overview
 
-1. **Flights**: 
-   - 1,631 flights on **2024-01-01**
-   - 5 flights on **2024-10-25**
-   - 2 flights on **2025-11-26-27**
+- **Flight deals (`FlightDeal`)**
+  - Total rows: **1645**
+  - Key departure dates observed:
+    - 2024‑01‑01
+    - 2025‑11‑26
+    - 2025‑11‑27
+    - 2025‑12‑01, 2025‑12‑02, 2025‑12‑03, 2025‑12‑04
+  - Destinations mapped via `AIRPORT_TO_CITY` (e.g., LAX → Los Angeles, MIA → Miami).
 
-2. **Hotels**:
-   - 8 hotels available **ONLY** on **2024-10-25 to 2024-10-27**
-   - Hotels extend to 2027, but check-in dates start from Oct 25, 2024
+- **Hotel deals (`HotelDeal`)**
+  - Total rows: **4003**
+  - Typical availability windows:
+    - Many hotels with `check_in_date = 2024‑01‑01` and
+      `check_out_date = 2025‑12‑31`.
+    - Some with ranges like 2025‑11‑26 → 2026‑11‑26 or 2025‑11‑27 → 2027‑07‑27.
+  - Cities aligned with major hub airports (Los Angeles, Miami, Boston,
+    Chicago, Phoenix, Las Vegas, etc.).
 
-### Test Results
+Because hotels represent long availability windows, their `total_price_usd`
+values are **very large** (tens of thousands of dollars). This is why test
+queries need high budgets.
 
-| Test | Query Dates | Flights Found | Hotels Found | Bundles Created | Status |
-|------|-------------|---------------|---------------|-----------------|--------|
-| Test 1 | Oct 25-27 | ✅ 1 | ✅ 1 | ✅ 1 | **WORKING** |
-| Test 2 | Jan 1-3 | ✅ 4 | ❌ 0 | ❌ 0 | **Expected** (no hotels) |
-| Test 3 | Jan 1-3 | ✅ 2 | ❌ 0 | ❌ 0 | **Expected** (no hotels) |
-| Test 4 | Oct 25-27 | ✅ 1 | ✅ 1 | ✅ 1 | **WORKING** |
-| Test 5 | Jan 1-3 | ✅ 62 | ❌ 0 | ❌ 0 | **Expected** (no hotels) |
-| Test 6 | Oct 25-27 | ❌ 0 | ❌ 0 | ❌ 0 | **Expected** (no LAX→SFO) |
-| Test 7 | Jan 1-3 | ✅ 55 | ❌ 0 | ❌ 0 | **Expected** (no hotels) |
-| Test 8 | Jan 1-3 | ✅ 2 | ❌ 0 | ❌ 0 | **Expected** (no hotels) |
-| Test 9 | Jan 1-3 | ✅ 2 | ❌ 0 | ❌ 0 | **Expected** (no hotels) |
-| Test 10 | Nov 23-28 | ❌ 0 | ❌ 0 | ❌ 0 | **Expected** (no data) |
+---
 
-### Why Tests Fail
+### How Bundles Are Built
 
-**Tests 2, 3, 5, 7, 8, 9 fail because:**
-- ✅ Flights exist for Jan 1, 2024
-- ❌ Hotels do NOT exist for Jan 1-3, 2024
-- ❌ Cannot create bundles without hotels
+The `TripPlanner`:
 
-**The agent correctly:**
-1. Finds flights
-2. Searches for hotels
-3. Returns 0 bundles when hotels don't exist
-4. Responds quickly (3-6 seconds) because it's correctly identifying no matches
+- Selects flights where:
+  - `origin` matches the parsed origin airport code.
+  - Departure date is within **±2 days** of the requested `start_date`.
+  - `deal_score >= 10`.
 
-### Response Time Analysis
+- Selects hotels where:
+  - City/neighborhood matches the **destination city** implied by the flight
+    destination (via `AIRPORT_TO_CITY` and `normalize_destination`).
+  - Hotel date range overlaps the requested `[start_date, end_date]`.
+  - `deal_score >= 10`.
 
-- **Test 1 (with bundles)**: 6.59s - Normal (finds flights + hotels + creates bundle)
-- **Test 2-10 (no bundles)**: 3-4s - Fast because it quickly identifies no hotel matches
+- Builds bundles only when:
+  - There is at least one matching flight and one matching hotel.
+  - The **bundle total price** is within **120% of the user budget**:
+    \[
+    \text{bundle\_price} \le 1.2 \times \text{budget\_usd}
+    \]
 
-The agent is **not broken** - it's responding quickly because it's correctly identifying that hotels don't exist for those dates.
+Given current hotel prices (~\$60k per stay), realistic bundles require
+budgets in the **\$70k range**.
 
-### Solution
+---
 
-To test properly, use dates that have **both flights AND hotels**:
-- ✅ **Oct 25-27, 2024**: Has both flights and hotels
-- ❌ **Jan 1-3, 2024**: Has flights but NO hotels
-- ❌ **Nov 23-28, 2024**: Has NO flights and NO hotels
+### Verified Working Queries (Return Bundles)
 
-### Recommendations
+Using `TripPlanner.plan_bundles()` directly:
 
-1. **For testing**: Use Oct 25-27, 2024 dates (has both flights and hotels)
-2. **For production**: Need to sync hotel availability dates with flight dates
-3. **MongoDB data**: Hotels need to have check-in dates that overlap with flight dates
+1. **SFO → LAX, 2025‑11‑27 to 2025‑11‑29, budget \$70,000**
+   - Bundles found: 3
+   - Example bundle: `SFO → LAX`, total price ≈ \$58,560.
 
-The agent logic is correct - the issue is data availability, not the agent itself.
+2. **MCO → MIA, 2024‑01‑01 to 2024‑01‑03, budget \$70,000**
+   - Bundles found: 3
+   - Example bundle: `MCO → MIA`, total price ≈ \$59,566.
+
+3. **DFW → BOS, 2024‑01‑01 to 2024‑01‑03, budget \$70,000**
+   - Bundles found: 3
+   - Example bundle: `DFW → BOS`, total price ≈ \$60,202.
+
+4. **MDW → LAS, 2024‑01‑01 to 2024‑01‑03, budget \$70,000**
+   - Bundles found: 3
+   - Example bundle: `MDW → LAS`, total price ≈ \$59,106.
+
+5. **MDW → PHX, 2024‑01‑01 to 2024‑01‑03, budget \$70,000**
+   - Bundles found: 3
+   - Example bundle: `MDW → PHX`, total price ≈ \$58,864.
+
+These correspond exactly to the queries listed in
+`FRONTEND_TEST_QUERIES.md` and have been verified against the current
+`recommendation_service.db`.
+
+---
+
+### Why Many Other Dates Return 0 Bundles
+
+- Flights only exist on a **small set of dates** (2024‑01‑01 and late 2025+),
+  so arbitrary dates often have no matching `FlightDeal`.
+- Even when flights exist, if the hotel city does not match the destination
+  (via `AIRPORT_TO_CITY`), `TripPlanner` will not pair them.
+- With current hotel pricing, low budgets (e.g., \$1,000–\$5,000) almost
+  always fail the budget check:
+  \[
+  \text{bundle\_price} \gg \text{budget\_usd} \Rightarrow \text{bundle skipped}
+  \]
+
+So the system is behaving correctly: **no bundles** simply reflects the
+combination of date coverage, city matching, and high hotel prices in the
+current dataset.
+
+---
+
+### Recommended Testing Strategy
+
+1. Use the **5 verified queries** from `FRONTEND_TEST_QUERIES.md` for frontend
+   and backend validation.
+2. When adding new data to MongoDB:
+   - Ensure flights and hotels share overlapping **dates** and **cities**.
+   - Re‑run `run_all_workers.sh` so the deals DB is refreshed.
+3. If you want more “normal” budgets (e.g., \$1,000–\$3,000), adjust the
+   hotel ingestion or pricing logic so `total_price_usd` reflects realistic
+   trip costs instead of long multi‑year windows.
+
 

@@ -79,15 +79,28 @@ class Normalizer:
         except (ValueError, TypeError):
             return Decimal("0.00")
     
+    from datetime import datetime
+
     def _parse_date(self, date_str: Any) -> Optional[datetime]:
         """Parse date string to datetime."""
         if not date_str:
             return None
-        
+
         if isinstance(date_str, datetime):
             return date_str
-        
-        # Try common formats
+
+        text = str(date_str).strip()
+
+        # First, try Python's ISO8601 parser (handles offsets like +00:00)
+        try:
+            # Normalize trailing 'Z' to '+00:00' so fromisoformat can handle both
+            if text.endswith("Z"):
+                text = text[:-1] + "+00:00"
+            return datetime.fromisoformat(text)
+        except ValueError:
+            pass
+
+        # Fallback to the existing format list
         formats = [
             "%Y-%m-%d",
             "%Y-%m-%d %H:%M:%S",
@@ -96,13 +109,13 @@ class Normalizer:
             "%Y-%m-%dT%H:%M:%S",
             "%Y-%m-%dT%H:%M:%SZ",
         ]
-        
+
         for fmt in formats:
             try:
-                return datetime.strptime(str(date_str).strip(), fmt)
+                return datetime.strptime(text, fmt)
             except ValueError:
                 continue
-        
+
         logger.warning(f"Could not parse date: {date_str}")
         return None
     

@@ -4,7 +4,7 @@
   "description": "Aerive travel booking platform backend",
   "main": "index.js",
   "scripts": {
-    "dev": "concurrently \"npm run dev:user\" \"npm run dev:listing\" \"npm run dev:booking\" \"npm run dev:billing\" \"npm run dev:provider\" \"npm run dev:admin\" \"npm run dev:gateway\"",
+    "dev": "concurrently \"npm run dev:user\" \"npm run dev:listing\" \"npm run dev:booking\" \"npm run dev:billing\" \"npm run dev:provider\" \"npm run dev:admin\" \"npm run dev:gateway\" \"npm run dev:kafka-proxy\"",
     "dev:user": "cd services/user-service && npm run dev",
     "dev:listing": "cd services/listing-service && npm run dev",
     "dev:booking": "cd services/booking-service && npm run dev",
@@ -12,6 +12,8 @@
     "dev:provider": "cd services/provider-service && npm run dev",
     "dev:admin": "cd services/admin-service && npm run dev",
     "dev:gateway": "cd services/api-gateway && npm run dev",
+    "dev:kafka-proxy": "cd services/kafka-proxy && npm run dev",
+    "dev:recommendation": "cd services/recommendation-service && python3 -m uvicorn main:app --host 0.0.0.0 --port 8000",
     "install:all": "npm install && cd services/user-service && npm install && cd ../listing-service && npm install && cd ../booking-service && npm install && cd ../billing-service && npm install && cd ../provider-service && npm install && cd ../admin-service && npm install && cd ../api-gateway && npm install",
     "build": "npm run build:user && npm run build:listing && npm run build:booking && npm run build:billing && npm run build:provider && npm run build:admin && npm run build:gateway",
     "build:user": "cd services/user-service && npm run build",

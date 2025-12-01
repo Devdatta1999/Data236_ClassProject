@@ -1,4 +1,4 @@
-import { Routes, Route, Navigate } from 'react-router-dom'
+import { Routes, Route, Navigate, useNavigate } from 'react-router-dom'
 import { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 // Kafka proxy handles connection, no need to initialize
@@ -10,6 +10,7 @@ import ProtectedRoute from './components/auth/ProtectedRoute'
 import AIChatModal from './components/chat/AIChatModal'
 import Notification from './components/common/Notification'
 import useRecommendationEvents from './hooks/useRecommendationEvents'
+import { removeNotification } from './store/slices/notificationSlice'
 
 // Pages
 import LandingPage from './pages/LandingPage'
@@ -36,6 +37,7 @@ import HostProfilePage from './pages/host/HostProfilePage'
 
 function App() {
   const dispatch = useDispatch()
+  const navigate = useNavigate()
   const { isAuthenticated, userType } = useSelector((state) => state.auth)
   const notifications = useSelector((state) => state.notifications.items)
 
@@ -52,6 +54,13 @@ function App() {
     }
   }, [dispatch])
 
+  const handleNotificationAction = (notification) => {
+    if (notification.actionPath) {
+      navigate(notification.actionPath)
+    }
+    dispatch(removeNotification(notification.id))
+  }
+
   return (
     <div className="min-h-screen bg-gray-50">
       <Navbar />
@@ -64,8 +73,10 @@ function App() {
                 key={n.id}
                 type={n.type}
                 message={n.message}
-                onClose={() => dispatch({ type: 'notifications/removeNotification', payload: n.id })}
-                duration={6000}
+                onClose={() => dispatch(removeNotification(n.id))}
+                duration={n.actionLabel ? null : 6000}
+                actionLabel={n.actionLabel}
+                onAction={n.actionPath ? () => handleNotificationAction(n) : undefined}
               />
             ))}
           </div>

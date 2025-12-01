@@ -38,6 +38,8 @@ const useRecommendationEvents = () => {
               id,
               type: 'success',
               message,
+              actionLabel: 'Book now',
+              actionPath: '/checkout',
             })
           )
         } else if (data.type === 'watch_triggered') {

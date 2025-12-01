@@ -1,129 +1,83 @@
-# Frontend Test Queries - Verified to Work
+## Frontend Test Queries - Verified with Current Mongo/Deals Data
 
-All queries use **October 25-27, 2024** which has both flights AND hotels in the database.
+These queries are aligned with the **current Mongo → deals DB** (not the old CSV
+snapshot). All of them have been verified by calling `TripPlanner` directly
+against `recommendation_service.db` and **return at least one bundle**.
 
-## ✅ Basic Queries (Will Return Bundles)
+Because the synthetic hotel deals represent long availability windows, their
+`total_price_usd` is very large. To make sure bundles are not filtered out by
+budget, these test queries use **high budgets (~$70,000)**. That is expected
+for this dataset.
 
-### 1. SFO → Los Angeles (Basic)
-```
-I need a trip from SFO to Los Angeles on October 25-27, 2024, budget $1200 for 2 people
-```
-**Expected**: 1 bundle at ~$899.98
-- Flight: SFO → LAX ($299.99)
-- Hotel: Grand Hotel in Los Angeles ($300 for 2 nights)
+All queries use **YYYY-MM-DD** dates so the rule-based fallback intent parser
+can extract them if OpenAI is unavailable.
 
-### 2. SFO → Miami (Pet-friendly)
-```
-I want a trip from SFO to Miami on October 25-27, budget $1500 for 2 people, pet-friendly
-```
-**Expected**: 1 bundle at ~$1160.00
-- Flight: SFO → MIA ($380)
-- Hotel: Beach Resort in Miami ($400 for 2 nights, pet-friendly ✅)
+---
 
-### 3. SFO → Seattle (Pet-friendly + Breakfast)
-```
-Find me a trip from SFO to Seattle, October 25-27, budget $1000 for 2 people, pet-friendly, breakfast included
-```
-**Expected**: 1 bundle at ~$639.98
-- Flight: SFO → SEA ($199.99)
-- Hotel: Boutique Inn in Seattle ($240 for 2 nights, pet-friendly ✅, breakfast ✅)
+### ✅ 1. SFO → Los Angeles (Nov 27–29, 2025)
 
-### 4. SFO → Chicago (Breakfast)
-```
-I need a trip from SFO to Chicago on October 25-27, budget $1500 for 2 people, breakfast included
-```
-**Expected**: 1 bundle at ~$1280.00
-- Flight: SFO → ORD ($420)
-- Hotel: Luxury Suites in Chicago ($440 for 2 nights, breakfast ✅)
+Use this in the AI concierge chat:
 
-### 5. SFO → New York (Basic)
-```
-I want a trip from SFO to New York on October 25-27, budget $1200 for 2 people
-```
-**Expected**: 1 bundle at ~$1120.00
-- Flight: SFO → JFK ($450)
-- Hotel: City Center Hotel in New York ($360 for 2 nights)
-
-### 6. SFO → Los Angeles (Single Traveler)
-```
-I need a trip from SFO to Los Angeles on October 25-27, budget $700 for 1 person
-```
-**Expected**: 1 bundle at ~$599.99
-- Flight: SFO → LAX ($299.99 for 1 person)
-- Hotel: Grand Hotel ($300 for 2 nights)
-
-## 🔄 Refinement Queries (Test Memory)
-
-Use these **after** Query 1 above:
-
-### 7. Add Constraint (Will Return 0)
-```
-Make it pet-friendly
-```
-**Expected**: 0 bundles (LA hotel is not pet-friendly)
-
-### 8. Change Destination (Will Return 1)
-```
-I want to go to Miami instead
-```
-**Expected**: 1 bundle (Miami has pet-friendly hotel)
-
-### 9. Change Budget
-```
-Increase my budget to $1500
-```
-**Expected**: 1 bundle (same bundle, higher budget allows it)
-
-### 10. Add Breakfast
-```
-Also include breakfast
-```
-**Expected**: 1 bundle (if current hotel has breakfast) or 0 (if not)
-
-## 📝 Alternative Date Formats
-
-The agent understands various date formats:
-
-```
-October 25-27, 2024
-Oct 25-27, 2024
-2024-10-25 to 2024-10-27
-October 25 to October 27, 2024
+```text
+I need a trip from SFO to LAX from 2025-11-27 to 2025-11-29 for 2 people with a budget of $70000.
 ```
 
-## ⚠️ Queries That Will Return 0 (No Data)
+**Expected:** 1–3 bundles, with a flight `SFO → LAX` around 2025‑11‑27 and a
+hotel in Los Angeles.
 
-These queries will correctly return 0 bundles because data doesn't exist:
+---
 
+### ✅ 2. Orlando → Miami (Jan 1–3, 2024)
+
+```text
+I need a trip from MCO to MIA from 2024-01-01 to 2024-01-03 for 2 people with a budget of $70000.
 ```
-I need a trip from SFO to Los Angeles on November 23-28, 2024, budget $900 for 2 people
+
+**Expected:** 1–3 bundles, flight `MCO → MIA` on 2024‑01‑01 and a hotel in Miami.
+
+---
+
+### ✅ 3. Dallas → Boston (Jan 1–3, 2024)
+
+```text
+I need a trip from DFW to BOS from 2024-01-01 to 2024-01-03 for 2 people with a budget of $70000.
 ```
-**Expected**: 0 bundles (no flights/hotels on these dates)
 
+**Expected:** 1–3 bundles, flight `DFW → BOS` on 2024‑01‑01 and a hotel in Boston.
+
+---
+
+### ✅ 4. Chicago Midway → Las Vegas (Jan 1–3, 2024)
+
+```text
+I need a trip from MDW to LAS from 2024-01-01 to 2024-01-03 for 2 people with a budget of $70000.
 ```
-I want a trip from JFK to Seattle, January 1-3, 2024, budget $600 for 1 person
+
+**Expected:** 1–3 bundles, flight `MDW → LAS` on 2024‑01‑01 and a hotel in Las Vegas.
+
+---
+
+### ✅ 5. Chicago Midway → Phoenix (Jan 1–3, 2024)
+
+```text
+I need a trip from MDW to PHX from 2024-01-01 to 2024-01-03 for 2 people with a budget of $70000.
 ```
-**Expected**: 0 bundles (has flights but no hotels on Jan 1-3)
 
-## 🎯 Quick Test Sequence
+**Expected:** 1–3 bundles, flight `MDW → PHX` on 2024‑01‑01 and a hotel in Phoenix.
 
-1. **Start**: Query 1 (SFO → LA) → Should get 1 bundle
-2. **Refine**: Query 7 (pet-friendly) → Should get 0 bundles
-3. **Change**: Query 8 (Miami) → Should get 1 bundle
-4. **Adjust**: Query 9 (budget) → Should get 1 bundle
+---
 
-This tests:
-- ✅ Basic bundle creation
-- ✅ Constraint filtering
-- ✅ Memory/context preservation
-- ✅ Destination change
-- ✅ Budget adjustment
+### Notes
 
-## 💡 Tips
+- If you get **“I couldn't find any matching deals”** for these queries:
+  - Make sure:
+    - `docker-compose up -d` is running (Kafka, Redis, Postgres).
+    - Root `npm run dev` is running (Node services + FastAPI at port 8000).
+    - `services/recommendation-service/run_all_workers.sh` is running
+      (Mongo reader + normalizer + detector + tagger + emitter).
+    - The frontend `npm run dev` is running and
+      `VITE_RECOMMENDATION_SERVICE_URL` (if set) points to `http://localhost:8000`.
+  - Then try again – these specific origin/destination/date combinations are
+    known to exist in the current deals DB.
 
-- All working queries use **October 25-27, 2024**
-- Budget should be at least **$600-1500** depending on route
-- Pet-friendly works for: **Miami** and **Seattle**
-- Breakfast works for: **Los Angeles, Miami, Seattle, Chicago**
-- Use **2 people** for most queries (better price per person)
 

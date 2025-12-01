@@ -2,8 +2,15 @@
 """Test script to verify MongoDB connection and data availability."""
 import os
 import sys
+
+from dotenv import load_dotenv
 from pymongo import MongoClient
 from pymongo.errors import ConnectionFailure, ServerSelectionTimeoutError
+
+# Load environment variables from a .env file (if present) so that
+# MONGODB_URI and other settings can be configured without needing
+# to export them manually in every shell.
+load_dotenv()
 
 def test_mongodb_connection():
     """Test MongoDB connection and check for flights/hotels data."""

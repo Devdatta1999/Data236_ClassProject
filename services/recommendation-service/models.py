@@ -4,11 +4,11 @@ Separates internal DB models (SQLModel) from API schemas (Pydantic v2).
 """
 from datetime import datetime
 from decimal import Decimal
-from typing import Optional, List, Dict, Any
 from enum import Enum
 
 from sqlmodel import SQLModel, Field, Relationship, Column, JSON
 from pydantic import BaseModel, Field as PydanticField, ConfigDict
+from typing import Optional, List, Dict, Any
 
 
 # ============================================================================
@@ -380,7 +380,7 @@ class CheckoutQuote(BaseModel):
     flights: List[FlightDealResponse]
     hotels: List[HotelDealResponse]
     travelers: int
-    travel_dates: Dict[str, str]
+    travel_dates: Dict[str, Optional[str]]
     quote_expires_at: datetime
     checkout_url: Optional[str] = None
 

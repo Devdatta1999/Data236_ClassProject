@@ -1,7 +1,14 @@
 import { useEffect } from 'react'
 import { X, CheckCircle, AlertCircle, Info, XCircle } from 'lucide-react'
 
-const Notification = ({ type, message, onClose, duration = 5000 }) => {
+const Notification = ({
+  type,
+  message,
+  onClose,
+  duration = 5000,
+  actionLabel,
+  onAction,
+}) => {
   useEffect(() => {
     if (duration && onClose) {
       const timer = setTimeout(() => {
@@ -50,7 +57,7 @@ const Notification = ({ type, message, onClose, duration = 5000 }) => {
 
   return (
     <div className={`${style.bg} border-l-4 ${style.border} p-4 mb-4`}>
-      <div className="flex">
+      <div className="flex items-start space-x-3">
         <div className="flex-shrink-0">
           {style.icon}
         </div>
@@ -63,6 +70,14 @@ const Notification = ({ type, message, onClose, duration = 5000 }) => {
           <p className={`mt-1 text-sm ${style.text}`}>
             {message}
           </p>
+          {actionLabel && onAction && (
+            <button
+              onClick={onAction}
+              className="mt-3 inline-flex items-center px-3 py-1.5 text-sm font-semibold text-white bg-primary-600 hover:bg-primary-700 rounded transition-colors"
+            >
+              {actionLabel}
+            </button>
+          )}
         </div>
         {onClose && (
           <div className="ml-auto pl-3">

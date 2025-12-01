@@ -11,36 +11,48 @@ from datetime import datetime
 
 BASE_URL = "http://localhost:8000"
 
+
 def verify_data_exists(origin, destination, start_date, end_date):
-    """Verify that flights and hotels exist for the query."""
+    """Verify that flights and hotels exist for the query window."""
     init_db()
     with Session(engine) as session:
-        # Check flights
+        # Check flights in a ±2 day window around the requested start date
         from datetime import timedelta
+
         flights = session.exec(
             select(FlightDeal)
             .where(FlightDeal.origin == origin.upper())
-            .where(FlightDeal.departure_date >= datetime.strptime(start_date, "%Y-%m-%d") - timedelta(days=2))
-            .where(FlightDeal.departure_date <= datetime.strptime(start_date, "%Y-%m-%d") + timedelta(days=2))
+            .where(
+                FlightDeal.departure_date
+                >= datetime.strptime(start_date, "%Y-%m-%d") - timedelta(days=2)
+            )
+            .where(
+                FlightDeal.departure_date
+                <= datetime.strptime(start_date, "%Y-%m-%d") + timedelta(days=2)
+            )
         ).all()
         
         # Filter by destination if provided
         if destination:
             from concierge_agent.airport_mapper import normalize_destination
+
             airport_codes = normalize_destination(destination)
             if airport_codes:
                 flights = [f for f in flights if f.destination in airport_codes]
         
-        # Check hotels
+        # Check hotels that overlap the requested window
         hotels = session.exec(
             select(HotelDeal)
             .where(HotelDeal.check_in_date <= datetime.strptime(end_date, "%Y-%m-%d"))
-            .where(HotelDeal.check_out_date >= datetime.strptime(start_date, "%Y-%m-%d"))
+            .where(
+                HotelDeal.check_out_date >= datetime.strptime(start_date, "%Y-%m-%d")
+            )
         ).all()
         
         # Filter by city if destination provided
         if destination and hotels:
             from concierge_agent.airport_mapper import CITY_TO_AIRPORTS, AIRPORT_TO_CITY
+
             city_names = []
             if destination.upper() in AIRPORT_TO_CITY:
                 city_names.append(AIRPORT_TO_CITY[destination.upper()])
@@ -109,11 +121,13 @@ def test_chat(session_id, message, test_name, expected_bundles=None, wait_second
         print(f"❌ Error: {e}")
         return None
 
-# Test sequence with verified data
-print("="*80)
+# ---------------------------------------------------------------------------
+# Part 1: Chat-based tests (10 cases) – verify bundles vs DB-backed data
+# ---------------------------------------------------------------------------
+print("=" * 80)
 print("VERIFIED TEST - Using Queries with Actual Database Data")
-print("="*80)
-print("Note: All queries use dates that have flights/hotels in the database\n")
+print("=" * 80)
+print("Part 1: Chat-based trip queries (10 tests)\n")
 
 session = "test_verified_data"
 
@@ -218,17 +232,146 @@ print("\nVerifying Test 10 data (should have NO flights)...")
 flights10, hotels10 = verify_data_exists("SFO", "Los Angeles", "2024-11-23", "2024-11-28")
 print(f"  Flights available: {flights10}, Hotels available: {hotels10}\n")
 
-test_chat("session_5_verified",
+test_chat(
+    "session_5_verified",
     "I need a trip from SFO to Los Angeles on November 23-28, 2024, budget $900 for 2 people",
     "Test 10: SFO → LAX (Nov 23-28) - Should Return 0",
     expected_bundles=0,  # Should be 0 - no data for these dates
-    wait_seconds=3)
+    wait_seconds=3,
+)
 
-print("\n" + "="*80)
+# ---------------------------------------------------------------------------
+# Part 2: Flight-only DB tests (5 cases) – verify normalized FlightDeal data
+# ---------------------------------------------------------------------------
+print("\n" + "=" * 80)
+print("Part 2: Flight-only DB checks (5 tests)")
+print("=" * 80)
+
+init_db()
+with Session(engine) as session:
+    # F1: All SFO-origin flights
+    flights_sfo = session.exec(select(FlightDeal).where(FlightDeal.origin == "SFO")).all()
+    print(
+        f"\nF1: All flights from SFO -> count={len(flights_sfo)}"
+        + (f", sample={flights_sfo[0].origin}→{flights_sfo[0].destination}" if flights_sfo else "")
+    )
+
+    # F2: Flights from SFO on/around 2024-10-25
+    flights_sfo_oct = session.exec(
+        select(FlightDeal).where(
+            FlightDeal.origin == "SFO",
+            FlightDeal.departure_date.between(
+                datetime(2024, 10, 23), datetime(2024, 10, 27)
+            ),
+        )
+    ).all()
+    print(
+        f"F2: SFO flights around 2024-10-25 (±2 days) -> count={len(flights_sfo_oct)}"
+        + (
+            f", sample={flights_sfo_oct[0].origin}→{flights_sfo_oct[0].destination}"
+            if flights_sfo_oct
+            else ""
+        )
+    )
+
+    # F3: Flights with destination LAX
+    flights_to_lax = session.exec(
+        select(FlightDeal).where(FlightDeal.destination == "LAX")
+    ).all()
+    print(
+        f"F3: Flights to LAX -> count={len(flights_to_lax)}"
+        + (
+            f", sample={flights_to_lax[0].origin}→{flights_to_lax[0].destination}"
+            if flights_to_lax
+            else ""
+        )
+    )
+
+    # F4: Flights from JFK
+    flights_jfk = session.exec(select(FlightDeal).where(FlightDeal.origin == "JFK")).all()
+    print(
+        f"F4: Flights from JFK -> count={len(flights_jfk)}"
+        + (
+            f", sample={flights_jfk[0].origin}→{flights_jfk[0].destination}"
+            if flights_jfk
+            else ""
+        )
+    )
+
+    # F5: Short-haul flights (< 5 hours)
+    short_flights = session.exec(
+        select(FlightDeal).where(FlightDeal.duration_minutes < 300)
+    ).all()
+    print(
+        f"F5: Short flights (<5h) -> count={len(short_flights)}"
+        + (
+            f", sample={short_flights[0].origin}→{short_flights[0].destination}"
+            if short_flights
+            else ""
+        )
+    )
+
+# ---------------------------------------------------------------------------
+# Part 3: Hotel-only DB tests (5 cases) – verify normalized HotelDeal data
+# ---------------------------------------------------------------------------
+print("\n" + "=" * 80)
+print("Part 3: Hotel-only DB checks (5 tests)")
+print("=" * 80)
+
+init_db()
+with Session(engine) as session:
+    # H1: All hotels in San Jose
+    hotels_sj = session.exec(
+        select(HotelDeal).where(HotelDeal.city.ilike("%San Jose%"))
+    ).all()
+    print(
+        f"\nH1: Hotels in San Jose -> count={len(hotels_sj)}"
+        + (f", sample={hotels_sj[0].hotel_name}" if hotels_sj else "")
+    )
+
+    # H2: Hotels overlapping Oct 25–27, 2024
+    hotels_oct = session.exec(
+        select(HotelDeal)
+        .where(HotelDeal.check_in_date <= datetime(2024, 10, 27))
+        .where(HotelDeal.check_out_date >= datetime(2024, 10, 25))
+    ).all()
+    print(
+        f"H2: Hotels overlapping 2024-10-25 to 2024-10-27 -> count={len(hotels_oct)}"
+        + (f", sample={hotels_oct[0].hotel_name}" if hotels_oct else "")
+    )
+
+    # H3: Pet-friendly hotels
+    hotels_pet = session.exec(
+        select(HotelDeal).where(HotelDeal.pet_friendly == True)  # noqa: E712
+    ).all()
+    print(
+        f"H3: Pet-friendly hotels -> count={len(hotels_pet)}"
+        + (f", sample={hotels_pet[0].hotel_name}" if hotels_pet else "")
+    )
+
+    # H4: Hotels with breakfast included
+    hotels_breakfast = session.exec(
+        select(HotelDeal).where(HotelDeal.breakfast_included == True)  # noqa: E712
+    ).all()
+    print(
+        f"H4: Hotels with breakfast included -> count={len(hotels_breakfast)}"
+        + (f", sample={hotels_breakfast[0].hotel_name}" if hotels_breakfast else "")
+    )
+
+    # H5: Hotels near transit
+    hotels_transit = session.exec(
+        select(HotelDeal).where(HotelDeal.near_transit == True)  # noqa: E712
+    ).all()
+    print(
+        f"H5: Hotels near transit -> count={len(hotels_transit)}"
+        + (f", sample={hotels_transit[0].hotel_name}" if hotels_transit else "")
+    )
+
+print("\n" + "=" * 80)
 print("Test Complete - Summary")
-print("="*80)
-print("✓ All 10 test queries completed with verified data")
-print("✓ Tests 1-9 use dates with actual flights/hotels")
-print("✓ Test 10 uses dates with NO data (should return 0)")
-print("="*80)
+print("=" * 80)
+print("✓ 10 chat-based trip queries executed")
+print("✓ 5 flight-only DB checks executed")
+print("✓ 5 hotel-only DB checks executed")
+print("=" * 80)
 

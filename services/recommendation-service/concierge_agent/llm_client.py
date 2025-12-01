@@ -8,10 +8,17 @@ import re
 from datetime import datetime, timedelta
 from typing import Dict, Any, List, Optional
 
+from dotenv import load_dotenv
 from openai import AsyncOpenAI
 from pydantic import BaseModel, Field
 
 logger = logging.getLogger(__name__)
+
+# Load environment variables from a .env file (if present) so that
+# OPENAI_API_KEY and other secrets can be configured without having to
+# export them manually in every environment. This is a no-op if no .env
+# file exists or the variables are already set in the real environment.
+load_dotenv()
 
 # Initialize OpenAI client lazily
 _client = None
@@ -52,14 +59,17 @@ def _basic_intent_from_chat(chat_history: List[Dict[str, str]]) -> "TravelIntent
       - Defaults dates to a short trip around a fixed reference date that
         matches the sample deals in the DB (e.g. 2024-10-25 to 2024-10-27)
     """
-    # Get last user message
+    # Get last user message (used mainly to detect greetings/small-talk)
     last_user = ""
-    for msg in reversed(chat_history):
+    user_messages: List[str] = []
+    for msg in chat_history:
         if msg.get("role") == "user":
-            last_user = msg.get("content", "")
-            break
+            content = msg.get("content", "") or ""
+            user_messages.append(content)
+            last_user = content
 
     text = (last_user or "").strip()
+    combined_user_text = " ".join(m.strip() for m in user_messages if m).strip()
 
     # If the latest message is just a short greeting or small-talk (e.g. "hi",
     # "hello", "thanks"), don't fabricate a default trip. Instead, ask the user
@@ -77,28 +87,76 @@ def _basic_intent_from_chat(chat_history: List[Dict[str, str]]) -> "TravelIntent
                 "budget, and how many people are traveling."
             ),
         )
+    # If there is no real content from the user at all, ask for details.
+    if not combined_user_text:
+        return TravelIntent(
+            needs_clarification=True,
+            clarifying_question=(
+                "Hi! Tell me where you're traveling from and to, your dates, "
+                "budget, and how many people are traveling."
+            ),
+        )
 
-    # Airport codes: any 3-letter all-caps token
-    codes = re.findall(r"\b[A-Z]{3}\b", text)
-    origin = codes[0] if len(codes) >= 1 else "SFO"
-    destination = codes[1] if len(codes) >= 2 else "LAX"
+    # Airport codes: search across the whole conversation so we preserve
+    # context like "make it pet-friendly" after an initial detailed query.
+    codes = re.findall(r"\b[A-Z]{3}\b", combined_user_text)
+    origin = codes[0] if len(codes) >= 1 else None
+    destination = codes[1] if len(codes) >= 2 else None
 
     # Budget: pick the largest 3–5 digit number as an approximate budget
-    numbers = [int(m) for m in re.findall(r"\b(\d{3,5})\b", text)]
-    budget = float(max(numbers)) if numbers else 800.0
+    numbers = [int(m) for m in re.findall(r"\b(\d{3,5})\b", combined_user_text)]
+    budget = float(max(numbers)) if numbers else None
 
-    # Travelers: "for 2 people", "for 3 travelers", etc.
-    travelers_match = re.search(r"\bfor\s+(\d+)\s+(people|persons|travellers|travelers)\b", text, re.IGNORECASE)
-    travelers = int(travelers_match.group(1)) if travelers_match else 2
+    # Travelers: "for 2 people", "for 3 travelers", etc. (use latest mention)
+    travelers = 1
+    travelers_match = re.search(
+        r"\bfor\s+(\d+)\s+(people|persons|travellers|travelers)\b",
+        combined_user_text,
+        re.IGNORECASE,
+    )
+    if travelers_match:
+        travelers = int(travelers_match.group(1))
+    else:
+        # Fallback to a simple "for X" pattern, but keep it optional.
+        generic_match = re.search(r"\bfor\s+(\d+)\b", combined_user_text, re.IGNORECASE)
+        if generic_match:
+            travelers = int(generic_match.group(1))
 
-    # Dates: if we can't robustly parse natural language dates, use a fixed
-    # short trip window that we know has sample data.
-    start_date = datetime(2024, 10, 25)
-    end_date = start_date + timedelta(days=2)
+    # Dates: look for explicit YYYY-MM-DD patterns in the conversation.
+    date_strings = re.findall(r"\b(20[2-9]\d-\d{2}-\d{2})\b", combined_user_text)
+    start_date_str = date_strings[0] if len(date_strings) >= 1 else None
+    end_date_str = date_strings[1] if len(date_strings) >= 2 else None
+
+    # If any of the critical fields (origin, dates, budget) are missing
+    # across the *entire* conversation, don't fabricate defaults – ask
+    # the user for proper travel details instead of returning SFO→LAX.
+    if not origin or not start_date_str or budget is None:
+        return TravelIntent(
+            needs_clarification=True,
+            clarifying_question=(
+                "To help you book a trip, please tell me your origin, "
+                "destination, exact dates, budget, and how many people are traveling."
+            ),
+        )
+
+    # If only end_date is missing, assume a short 2‑day trip window.
+    if not end_date_str:
+        try:
+            start_dt = datetime.strptime(start_date_str, "%Y-%m-%d")
+            end_dt = start_dt + timedelta(days=2)
+            end_date_str = end_dt.strftime("%Y-%m-%d")
+        except ValueError:
+            # If parsing fails, fall back to asking for clarification instead
+            return TravelIntent(
+                needs_clarification=True,
+                clarifying_question=(
+                    "Could you confirm your exact travel dates in YYYY-MM-DD format?"
+                ),
+            )
 
     dates = {
-        "start_date": start_date.strftime("%Y-%m-%d"),
-        "end_date": end_date.strftime("%Y-%m-%d"),
+        "start_date": start_date_str,
+        "end_date": end_date_str,
     }
 
     return TravelIntent(
@@ -106,7 +164,7 @@ def _basic_intent_from_chat(chat_history: List[Dict[str, str]]) -> "TravelIntent
         origin=origin,
         destination=destination,
         budget_usd=budget,
-        travelers=travelers,
+        travelers=max(travelers, 1),
         constraints={},
         needs_clarification=False,
         clarifying_question=None,
@@ -168,12 +226,12 @@ Return ONLY valid JSON matching this schema:
             temperature=0.1,  # Low temperature for deterministic parsing
             response_format={"type": "json_object"},
         )
-
+        
         content = response.choices[0].message.content
         intent_dict = json.loads(content)
-
+        
         return TravelIntent(**intent_dict)
-
+        
     except Exception as e:
         logger.error(f"Error parsing intent: {e}")
         # Fallback to basic, rule-based intent so the system remains usable
