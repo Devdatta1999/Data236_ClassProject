@@ -88,7 +88,7 @@ async function handleFlightSearch(event) {
       // Check if flight is available on this date (within availableFrom/availableTo range)
       outboundQuery.availableFrom = { $lte: searchDate };
       outboundQuery.availableTo = { $gte: searchDate };
-      
+
       // Get day of week (0 = Sunday, 1 = Monday, ..., 6 = Saturday)
       const dayIndex = searchDate.getDay();
       const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
@@ -107,12 +107,47 @@ async function handleFlightSearch(event) {
       await setCache(cacheKey, outboundFlights, 900);
     }
 
+    // Log diagnostic information about the query and initial results
+    logger.info('Flight search Mongo query built', {
+      requestId,
+      departureAirport: outboundQuery.departureAirport,
+      arrivalAirport: outboundQuery.arrivalAirport,
+      availableFrom: outboundQuery.availableFrom,
+      availableTo: outboundQuery.availableTo,
+      searchDayOfWeek,
+      initialCount: Array.isArray(outboundFlights) ? outboundFlights.length : 0
+    });
+
     // Filter by operating days if search date is provided
     if (searchDayOfWeek) {
       outboundFlights = outboundFlights.filter(flight => {
         const flightObj = flight.toObject ? flight.toObject() : flight;
         // Check if flight operates on the search day
         return flightObj.operatingDays && flightObj.operatingDays.includes(searchDayOfWeek);
+      });
+    }
+
+    // Log a small sample of flights after operating day filtering
+    if (outboundFlights && outboundFlights.length > 0) {
+      const sample = outboundFlights.slice(0, 5).map(f => {
+        const fo = f.toObject ? f.toObject() : f;
+        return {
+          flightId: fo.flightId,
+          departureAirport: fo.departureAirport,
+          arrivalAirport: fo.arrivalAirport,
+          availableFrom: fo.availableFrom,
+          availableTo: fo.availableTo,
+          operatingDays: fo.operatingDays
+        };
+      });
+      logger.info('Flight search outbound flights after operating day filter', {
+        requestId,
+        count: outboundFlights.length,
+        sample
+      });
+    } else {
+      logger.info('Flight search: no outbound flights matched initial criteria after operating day filter', {
+        requestId
       });
     }
 
@@ -378,6 +413,14 @@ async function handleFlightSearch(event) {
       return: returnFlights,
       tripType: tripType || 'one-way'
     };
+
+    logger.info('Flight search final availability summary', {
+      requestId,
+      outboundInitialCount: flightsWithAvailability.length,
+      outboundAvailableCount: availableOutboundFlights.length,
+      returnCount: returnFlights.length,
+      tripType: tripType || 'one-way'
+    });
 
     await sendMessage('search-events-response', {
       key: requestId,

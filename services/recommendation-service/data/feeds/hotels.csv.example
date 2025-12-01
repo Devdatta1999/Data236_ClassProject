@@ -1,0 +1,7 @@
+id,hotel_name,city,country,address,neighborhood,check_in_date,check_out_date,price_per_night,currency,star_rating,is_refundable,cancellation_window_days,pet_friendly,breakfast_included,near_transit,parking_available,available_rooms,promo_end_date
+HT001,Grand Hotel,Los Angeles,USA,123 Main St,Downtown,2024-10-25,2024-10-27,150.00,USD,4,true,7,false,true,true,true,10,2024-10-20
+HT002,Beach Resort,Miami,USA,456 Ocean Dr,South Beach,2024-10-25,2024-10-27,200.00,USD,5,true,14,true,true,true,true,5,2024-10-18
+HT003,City Center Hotel,New York,USA,789 Broadway,Midtown,2024-10-25,2024-10-27,180.00,USD,4,false,0,false,false,true,false,8,
+HT004,Boutique Inn,Seattle,USA,321 Pike St,Pioneer Square,2024-10-25,2024-10-27,120.00,USD,3,true,3,true,true,true,true,15,2024-10-22
+HT005,Luxury Suites,Chicago,USA,654 Michigan Ave,The Loop,2024-10-25,2024-10-27,220.00,USD,5,true,30,false,true,true,true,3,2024-10-19
+

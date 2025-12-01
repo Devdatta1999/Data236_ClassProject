@@ -1,0 +1,2 @@
+{"code":"ECONNREFUSED","level":"error","message":"User Service proxy error:","service":"aerive-backend","stack":"AggregateError [ECONNREFUSED]: \n    at internalConnectMultiple (node:net:1134:18)\n    at afterConnectMultiple (node:net:1715:7)","timestamp":"2025-12-01T01:25:59.301Z"}
+{"code":"ECONNREFUSED","level":"error","message":"User Service proxy error:","service":"aerive-backend","stack":"AggregateError [ECONNREFUSED]: \n    at internalConnectMultiple (node:net:1134:18)\n    at afterConnectMultiple (node:net:1715:7)","timestamp":"2025-12-01T01:26:06.258Z"}

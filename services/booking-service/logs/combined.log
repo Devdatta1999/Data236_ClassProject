@@ -1,0 +1,456 @@
+{"level":"info","message":"MongoDB connecting...","service":"aerive-backend","timestamp":"2025-11-30T03:07:13.415Z"}
+{"level":"info","message":"MongoDB connected","readyState":1,"service":"aerive-backend","timestamp":"2025-11-30T03:07:14.469Z"}
+{"dbName":"aerive","level":"info","message":"MongoDB Atlas connected and ready for queries","readyState":1,"service":"aerive-backend","timestamp":"2025-11-30T03:07:14.550Z"}
+{"level":"info","message":"Booking model loaded, MongoDB readyState:","service":"aerive-backend","timestamp":"2025-11-30T03:07:14.875Z"}
+{"level":"info","message":"Redis client connected","service":"aerive-backend","timestamp":"2025-11-30T03:07:14.880Z"}
+{"level":"info","message":"Booking service running on port 3003","service":"aerive-backend","timestamp":"2025-11-30T03:07:14.883Z"}
+{"level":"info","message":"Booking creation endpoint available at POST /api/bookings/create","service":"aerive-backend","timestamp":"2025-11-30T03:07:14.883Z"}
+{"level":"info","message":"MongoDB readyState:","service":"aerive-backend","timestamp":"2025-11-30T03:07:14.883Z"}
+{"level":"info","message":"MongoDB connecting...","service":"aerive-backend","timestamp":"2025-11-30T03:38:42.992Z"}
+{"level":"info","message":"MongoDB connected","readyState":1,"service":"aerive-backend","timestamp":"2025-11-30T03:38:44.067Z"}
+{"dbName":"aerive","level":"info","message":"MongoDB Atlas connected and ready for queries","readyState":1,"service":"aerive-backend","timestamp":"2025-11-30T03:38:44.163Z"}
+{"level":"info","message":"Booking model loaded, MongoDB readyState:","service":"aerive-backend","timestamp":"2025-11-30T03:38:44.269Z"}
+{"level":"info","message":"Redis client connected","service":"aerive-backend","timestamp":"2025-11-30T03:38:44.275Z"}
+{"level":"info","message":"Booking service running on port 3003","service":"aerive-backend","timestamp":"2025-11-30T03:38:44.280Z"}
+{"level":"info","message":"Booking creation endpoint available at POST /api/bookings/create","service":"aerive-backend","timestamp":"2025-11-30T03:38:44.280Z"}
+{"level":"info","message":"MongoDB readyState:","service":"aerive-backend","timestamp":"2025-11-30T03:38:44.281Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764305006441-2BJX50FRY:","service":"aerive-backend","timestamp":"2025-11-30T03:43:44.035Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764299748006-VET507NPJ:","service":"aerive-backend","timestamp":"2025-11-30T03:43:44.038Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764214653010-ZYQAWMG66:","service":"aerive-backend","timestamp":"2025-11-30T03:43:44.039Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764299699045-RZHSR5J3U:","service":"aerive-backend","timestamp":"2025-11-30T03:43:44.039Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764195418653-VLDBT7SF3:","service":"aerive-backend","timestamp":"2025-11-30T03:43:44.043Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764195417591-PZRAOA22A:","service":"aerive-backend","timestamp":"2025-11-30T03:43:44.099Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764195250742-7M00J0XWE:","service":"aerive-backend","timestamp":"2025-11-30T03:43:44.114Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764195251101-T2RWXYSMJ:","service":"aerive-backend","timestamp":"2025-11-30T03:43:44.116Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764189315568-E40MM6R46:","service":"aerive-backend","timestamp":"2025-11-30T03:43:44.124Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764189315135-M6YMY83OG:","service":"aerive-backend","timestamp":"2025-11-30T03:43:44.134Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764189314770-TB87PY79L:","service":"aerive-backend","timestamp":"2025-11-30T03:43:44.179Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764188764505-4PFFBADIF:","service":"aerive-backend","timestamp":"2025-11-30T03:43:44.187Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764188764135-MLHV35UWH:","service":"aerive-backend","timestamp":"2025-11-30T03:43:44.206Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764188763776-S13KUPZ2K:","service":"aerive-backend","timestamp":"2025-11-30T03:43:44.207Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764188494722-IORSBHF6T:","service":"aerive-backend","timestamp":"2025-11-30T03:43:44.215Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764188494341-D4V4503M6:","service":"aerive-backend","timestamp":"2025-11-30T03:43:44.260Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764188104324-BL3EOAFTU:","service":"aerive-backend","timestamp":"2025-11-30T03:43:44.271Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764188103948-QPF1Z89KZ:","service":"aerive-backend","timestamp":"2025-11-30T03:43:44.284Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764187997167-331VPANEM:","service":"aerive-backend","timestamp":"2025-11-30T03:43:44.291Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764187996808-KPOL7VTHF:","service":"aerive-backend","timestamp":"2025-11-30T03:43:44.301Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764187926516-CNAUP5CND:","service":"aerive-backend","timestamp":"2025-11-30T03:43:44.339Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764187926144-VKJ8CM3I5:","service":"aerive-backend","timestamp":"2025-11-30T03:43:44.349Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764187667794-DWT5M89JC:","service":"aerive-backend","timestamp":"2025-11-30T03:43:44.368Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764187667432-PY2MD1RVV:","service":"aerive-backend","timestamp":"2025-11-30T03:43:44.378Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764185437439-0CVN5UTJM:","service":"aerive-backend","timestamp":"2025-11-30T03:43:44.384Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764185437089-PWRI6EJ61:","service":"aerive-backend","timestamp":"2025-11-30T03:43:44.421Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764148268553-5U1VV7T8D:","service":"aerive-backend","timestamp":"2025-11-30T03:43:44.430Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764148034646-Z1HU4PYN5:","service":"aerive-backend","timestamp":"2025-11-30T03:43:44.448Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764146707120-ETCXPOJEH:","service":"aerive-backend","timestamp":"2025-11-30T03:43:44.457Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764111059640-OAJKUDR6E:","service":"aerive-backend","timestamp":"2025-11-30T03:43:44.467Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764110659641-Z0CBJR4AH:","service":"aerive-backend","timestamp":"2025-11-30T03:43:44.508Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764100158711-LYWQ7PQIP:","service":"aerive-backend","timestamp":"2025-11-30T03:43:44.510Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764100158319-G9YOB7BD3:","service":"aerive-backend","timestamp":"2025-11-30T03:43:44.530Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764095633648-4UCKT643D:","service":"aerive-backend","timestamp":"2025-11-30T03:43:44.541Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764299748006-VET507NPJ:","service":"aerive-backend","timestamp":"2025-11-30T03:43:44.548Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764195417951-2K4E4VQ8F:","service":"aerive-backend","timestamp":"2025-11-30T03:43:44.567Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764195418291-MFO3FNNNG:","service":"aerive-backend","timestamp":"2025-11-30T03:43:44.576Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764214653010-ZYQAWMG66:","service":"aerive-backend","timestamp":"2025-11-30T03:43:44.589Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764195418653-VLDBT7SF3:","service":"aerive-backend","timestamp":"2025-11-30T03:43:44.593Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764195418291-MFO3FNNNG:","service":"aerive-backend","timestamp":"2025-11-30T03:43:44.612Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764195417951-2K4E4VQ8F:","service":"aerive-backend","timestamp":"2025-11-30T03:43:44.637Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764195251101-T2RWXYSMJ:","service":"aerive-backend","timestamp":"2025-11-30T03:43:44.649Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764195417591-PZRAOA22A:","service":"aerive-backend","timestamp":"2025-11-30T03:43:44.657Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764195250742-7M00J0XWE:","service":"aerive-backend","timestamp":"2025-11-30T03:43:44.659Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764189314770-TB87PY79L:","service":"aerive-backend","timestamp":"2025-11-30T03:43:44.688Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764189315135-M6YMY83OG:","service":"aerive-backend","timestamp":"2025-11-30T03:43:44.689Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764189315568-E40MM6R46:","service":"aerive-backend","timestamp":"2025-11-30T03:43:44.690Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764188764505-4PFFBADIF:","service":"aerive-backend","timestamp":"2025-11-30T03:43:44.698Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764188764135-MLHV35UWH:","service":"aerive-backend","timestamp":"2025-11-30T03:43:44.718Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764188494722-IORSBHF6T:","service":"aerive-backend","timestamp":"2025-11-30T03:43:44.732Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764188763776-S13KUPZ2K:","service":"aerive-backend","timestamp":"2025-11-30T03:43:44.739Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764188494341-D4V4503M6:","service":"aerive-backend","timestamp":"2025-11-30T03:43:44.767Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764188103948-QPF1Z89KZ:","service":"aerive-backend","timestamp":"2025-11-30T03:43:44.776Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764188104324-BL3EOAFTU:","service":"aerive-backend","timestamp":"2025-11-30T03:43:44.776Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764187996808-KPOL7VTHF:","service":"aerive-backend","timestamp":"2025-11-30T03:43:44.778Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764187926516-CNAUP5CND:","service":"aerive-backend","timestamp":"2025-11-30T03:43:44.803Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764187997167-331VPANEM:","service":"aerive-backend","timestamp":"2025-11-30T03:43:44.813Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764187667794-DWT5M89JC:","service":"aerive-backend","timestamp":"2025-11-30T03:43:44.819Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764187926144-VKJ8CM3I5:","service":"aerive-backend","timestamp":"2025-11-30T03:43:44.847Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764187667432-PY2MD1RVV:","service":"aerive-backend","timestamp":"2025-11-30T03:43:44.858Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764148268553-5U1VV7T8D:","service":"aerive-backend","timestamp":"2025-11-30T03:43:44.865Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764185437089-PWRI6EJ61:","service":"aerive-backend","timestamp":"2025-11-30T03:43:44.866Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764146707120-ETCXPOJEH:","service":"aerive-backend","timestamp":"2025-11-30T03:43:44.897Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764148034646-Z1HU4PYN5:","service":"aerive-backend","timestamp":"2025-11-30T03:43:44.898Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764111059640-OAJKUDR6E:","service":"aerive-backend","timestamp":"2025-11-30T03:43:44.908Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764185437439-0CVN5UTJM:","service":"aerive-backend","timestamp":"2025-11-30T03:43:44.930Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764100158711-LYWQ7PQIP:","service":"aerive-backend","timestamp":"2025-11-30T03:43:44.938Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764110659641-Z0CBJR4AH:","service":"aerive-backend","timestamp":"2025-11-30T03:43:44.949Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764095633648-4UCKT643D:","service":"aerive-backend","timestamp":"2025-11-30T03:43:44.949Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764100158319-G9YOB7BD3:","service":"aerive-backend","timestamp":"2025-11-30T03:43:44.978Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764305006441-2BJX50FRY:","service":"aerive-backend","timestamp":"2025-11-30T03:43:45.127Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764299699045-RZHSR5J3U:","service":"aerive-backend","timestamp":"2025-11-30T03:43:45.159Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764299748006-VET507NPJ:","service":"aerive-backend","timestamp":"2025-11-30T04:00:04.752Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764305006441-2BJX50FRY:","service":"aerive-backend","timestamp":"2025-11-30T04:00:04.753Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764299699045-RZHSR5J3U:","service":"aerive-backend","timestamp":"2025-11-30T04:00:04.753Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764214653010-ZYQAWMG66:","service":"aerive-backend","timestamp":"2025-11-30T04:00:04.754Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764195418653-VLDBT7SF3:","service":"aerive-backend","timestamp":"2025-11-30T04:00:04.754Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764195417951-2K4E4VQ8F:","service":"aerive-backend","timestamp":"2025-11-30T04:00:04.754Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764195418291-MFO3FNNNG:","service":"aerive-backend","timestamp":"2025-11-30T04:00:04.755Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764195417591-PZRAOA22A:","service":"aerive-backend","timestamp":"2025-11-30T04:00:04.755Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764195251101-T2RWXYSMJ:","service":"aerive-backend","timestamp":"2025-11-30T04:00:04.756Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764195250742-7M00J0XWE:","service":"aerive-backend","timestamp":"2025-11-30T04:00:04.756Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764189315135-M6YMY83OG:","service":"aerive-backend","timestamp":"2025-11-30T04:00:04.757Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764189315568-E40MM6R46:","service":"aerive-backend","timestamp":"2025-11-30T04:00:04.757Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764188764505-4PFFBADIF:","service":"aerive-backend","timestamp":"2025-11-30T04:00:04.758Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764189314770-TB87PY79L:","service":"aerive-backend","timestamp":"2025-11-30T04:00:04.758Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764188763776-S13KUPZ2K:","service":"aerive-backend","timestamp":"2025-11-30T04:00:04.758Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764188764135-MLHV35UWH:","service":"aerive-backend","timestamp":"2025-11-30T04:00:04.759Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764188494722-IORSBHF6T:","service":"aerive-backend","timestamp":"2025-11-30T04:00:04.759Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764188104324-BL3EOAFTU:","service":"aerive-backend","timestamp":"2025-11-30T04:00:04.759Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764188494341-D4V4503M6:","service":"aerive-backend","timestamp":"2025-11-30T04:00:04.760Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764188103948-QPF1Z89KZ:","service":"aerive-backend","timestamp":"2025-11-30T04:00:04.761Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764187997167-331VPANEM:","service":"aerive-backend","timestamp":"2025-11-30T04:00:04.761Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764187926516-CNAUP5CND:","service":"aerive-backend","timestamp":"2025-11-30T04:00:04.762Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764187996808-KPOL7VTHF:","service":"aerive-backend","timestamp":"2025-11-30T04:00:04.762Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764187926144-VKJ8CM3I5:","service":"aerive-backend","timestamp":"2025-11-30T04:00:04.763Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764187667794-DWT5M89JC:","service":"aerive-backend","timestamp":"2025-11-30T04:00:04.764Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764187667432-PY2MD1RVV:","service":"aerive-backend","timestamp":"2025-11-30T04:00:04.773Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764185437439-0CVN5UTJM:","service":"aerive-backend","timestamp":"2025-11-30T04:00:04.773Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764148268553-5U1VV7T8D:","service":"aerive-backend","timestamp":"2025-11-30T04:00:04.773Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764185437089-PWRI6EJ61:","service":"aerive-backend","timestamp":"2025-11-30T04:00:04.774Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764148034646-Z1HU4PYN5:","service":"aerive-backend","timestamp":"2025-11-30T04:00:04.774Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764146707120-ETCXPOJEH:","service":"aerive-backend","timestamp":"2025-11-30T04:00:04.774Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764111059640-OAJKUDR6E:","service":"aerive-backend","timestamp":"2025-11-30T04:00:04.774Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764100158711-LYWQ7PQIP:","service":"aerive-backend","timestamp":"2025-11-30T04:00:04.774Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764110659641-Z0CBJR4AH:","service":"aerive-backend","timestamp":"2025-11-30T04:00:04.775Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764100158319-G9YOB7BD3:","service":"aerive-backend","timestamp":"2025-11-30T04:00:04.775Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764095633648-4UCKT643D:","service":"aerive-backend","timestamp":"2025-11-30T04:00:04.775Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764305006441-2BJX50FRY:","service":"aerive-backend","timestamp":"2025-11-30T04:00:04.792Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764299748006-VET507NPJ:","service":"aerive-backend","timestamp":"2025-11-30T04:00:04.793Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764299699045-RZHSR5J3U:","service":"aerive-backend","timestamp":"2025-11-30T04:00:04.794Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764214653010-ZYQAWMG66:","service":"aerive-backend","timestamp":"2025-11-30T04:00:04.794Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764195418653-VLDBT7SF3:","service":"aerive-backend","timestamp":"2025-11-30T04:00:04.794Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764195418291-MFO3FNNNG:","service":"aerive-backend","timestamp":"2025-11-30T04:00:04.794Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764195417951-2K4E4VQ8F:","service":"aerive-backend","timestamp":"2025-11-30T04:00:04.794Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764195417591-PZRAOA22A:","service":"aerive-backend","timestamp":"2025-11-30T04:00:04.794Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764195251101-T2RWXYSMJ:","service":"aerive-backend","timestamp":"2025-11-30T04:00:04.795Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764195250742-7M00J0XWE:","service":"aerive-backend","timestamp":"2025-11-30T04:00:04.795Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764189315568-E40MM6R46:","service":"aerive-backend","timestamp":"2025-11-30T04:00:04.795Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764189315135-M6YMY83OG:","service":"aerive-backend","timestamp":"2025-11-30T04:00:04.795Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764189314770-TB87PY79L:","service":"aerive-backend","timestamp":"2025-11-30T04:00:04.795Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764188764505-4PFFBADIF:","service":"aerive-backend","timestamp":"2025-11-30T04:00:04.795Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764188764135-MLHV35UWH:","service":"aerive-backend","timestamp":"2025-11-30T04:00:04.795Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764188763776-S13KUPZ2K:","service":"aerive-backend","timestamp":"2025-11-30T04:00:04.795Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764188494722-IORSBHF6T:","service":"aerive-backend","timestamp":"2025-11-30T04:00:04.796Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764188494341-D4V4503M6:","service":"aerive-backend","timestamp":"2025-11-30T04:00:04.796Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764188104324-BL3EOAFTU:","service":"aerive-backend","timestamp":"2025-11-30T04:00:04.796Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764188103948-QPF1Z89KZ:","service":"aerive-backend","timestamp":"2025-11-30T04:00:04.796Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764187997167-331VPANEM:","service":"aerive-backend","timestamp":"2025-11-30T04:00:04.796Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764187996808-KPOL7VTHF:","service":"aerive-backend","timestamp":"2025-11-30T04:00:04.796Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764187926516-CNAUP5CND:","service":"aerive-backend","timestamp":"2025-11-30T04:00:04.796Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764187926144-VKJ8CM3I5:","service":"aerive-backend","timestamp":"2025-11-30T04:00:04.797Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764187667794-DWT5M89JC:","service":"aerive-backend","timestamp":"2025-11-30T04:00:04.797Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764187667432-PY2MD1RVV:","service":"aerive-backend","timestamp":"2025-11-30T04:00:04.797Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764185437439-0CVN5UTJM:","service":"aerive-backend","timestamp":"2025-11-30T04:00:04.797Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764185437089-PWRI6EJ61:","service":"aerive-backend","timestamp":"2025-11-30T04:00:04.798Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764148268553-5U1VV7T8D:","service":"aerive-backend","timestamp":"2025-11-30T04:00:04.798Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764148034646-Z1HU4PYN5:","service":"aerive-backend","timestamp":"2025-11-30T04:00:04.799Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764146707120-ETCXPOJEH:","service":"aerive-backend","timestamp":"2025-11-30T04:00:04.799Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764111059640-OAJKUDR6E:","service":"aerive-backend","timestamp":"2025-11-30T04:00:04.800Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764110659641-Z0CBJR4AH:","service":"aerive-backend","timestamp":"2025-11-30T04:00:04.800Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764100158711-LYWQ7PQIP:","service":"aerive-backend","timestamp":"2025-11-30T04:00:04.800Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764100158319-G9YOB7BD3:","service":"aerive-backend","timestamp":"2025-11-30T04:00:04.801Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764095633648-4UCKT643D:","service":"aerive-backend","timestamp":"2025-11-30T04:00:04.801Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764305006441-2BJX50FRY:","service":"aerive-backend","timestamp":"2025-11-30T05:09:53.222Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764299699045-RZHSR5J3U:","service":"aerive-backend","timestamp":"2025-11-30T05:09:53.223Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764299748006-VET507NPJ:","service":"aerive-backend","timestamp":"2025-11-30T05:09:53.224Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764305006441-2BJX50FRY:","service":"aerive-backend","timestamp":"2025-11-30T05:09:53.225Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764299748006-VET507NPJ:","service":"aerive-backend","timestamp":"2025-11-30T05:09:53.225Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764299699045-RZHSR5J3U:","service":"aerive-backend","timestamp":"2025-11-30T05:09:53.226Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764195251101-T2RWXYSMJ:","service":"aerive-backend","timestamp":"2025-11-30T05:09:53.227Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764195417591-PZRAOA22A:","service":"aerive-backend","timestamp":"2025-11-30T05:09:53.227Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764195418291-MFO3FNNNG:","service":"aerive-backend","timestamp":"2025-11-30T05:09:53.228Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764214653010-ZYQAWMG66:","service":"aerive-backend","timestamp":"2025-11-30T05:09:53.228Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764148268553-5U1VV7T8D:","service":"aerive-backend","timestamp":"2025-11-30T05:09:53.229Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764187667432-PY2MD1RVV:","service":"aerive-backend","timestamp":"2025-11-30T05:09:53.237Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764100158711-LYWQ7PQIP:","service":"aerive-backend","timestamp":"2025-11-30T05:09:53.237Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764305006441-2BJX50FRY:","service":"aerive-backend","timestamp":"2025-11-30T05:09:53.245Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764299748006-VET507NPJ:","service":"aerive-backend","timestamp":"2025-11-30T05:09:53.247Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764188494341-D4V4503M6:","service":"aerive-backend","timestamp":"2025-11-30T05:09:53.247Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764299699045-RZHSR5J3U:","service":"aerive-backend","timestamp":"2025-11-30T05:09:53.252Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764214653010-ZYQAWMG66:","service":"aerive-backend","timestamp":"2025-11-30T05:09:53.252Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764195418291-MFO3FNNNG:","service":"aerive-backend","timestamp":"2025-11-30T05:09:53.253Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764195417951-2K4E4VQ8F:","service":"aerive-backend","timestamp":"2025-11-30T05:09:53.253Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764195417591-PZRAOA22A:","service":"aerive-backend","timestamp":"2025-11-30T05:09:53.253Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764195251101-T2RWXYSMJ:","service":"aerive-backend","timestamp":"2025-11-30T05:09:53.253Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764189315568-E40MM6R46:","service":"aerive-backend","timestamp":"2025-11-30T05:09:53.255Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764189315135-M6YMY83OG:","service":"aerive-backend","timestamp":"2025-11-30T05:09:53.256Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764189314770-TB87PY79L:","service":"aerive-backend","timestamp":"2025-11-30T05:09:53.256Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764188764135-MLHV35UWH:","service":"aerive-backend","timestamp":"2025-11-30T05:09:53.256Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764188763776-S13KUPZ2K:","service":"aerive-backend","timestamp":"2025-11-30T05:09:53.256Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764187996808-KPOL7VTHF:","service":"aerive-backend","timestamp":"2025-11-30T05:09:53.256Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764187667794-DWT5M89JC:","service":"aerive-backend","timestamp":"2025-11-30T05:09:53.256Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764100158711-LYWQ7PQIP:","service":"aerive-backend","timestamp":"2025-11-30T05:09:53.260Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764188494722-IORSBHF6T:","service":"aerive-backend","timestamp":"2025-11-30T05:09:53.260Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764187997167-331VPANEM:","service":"aerive-backend","timestamp":"2025-11-30T05:09:53.261Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764187926144-VKJ8CM3I5:","service":"aerive-backend","timestamp":"2025-11-30T05:09:53.262Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764148268553-5U1VV7T8D:","service":"aerive-backend","timestamp":"2025-11-30T05:09:53.262Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764187667432-PY2MD1RVV:","service":"aerive-backend","timestamp":"2025-11-30T05:09:53.263Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764187926516-CNAUP5CND:","service":"aerive-backend","timestamp":"2025-11-30T05:09:53.264Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764195251101-T2RWXYSMJ:","service":"aerive-backend","timestamp":"2025-11-30T05:09:53.286Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764195250742-7M00J0XWE:","service":"aerive-backend","timestamp":"2025-11-30T05:09:53.293Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764195417591-PZRAOA22A:","service":"aerive-backend","timestamp":"2025-11-30T05:09:53.299Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764189315135-M6YMY83OG:","service":"aerive-backend","timestamp":"2025-11-30T05:09:53.304Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764189315568-E40MM6R46:","service":"aerive-backend","timestamp":"2025-11-30T05:09:53.307Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764189314770-TB87PY79L:","service":"aerive-backend","timestamp":"2025-11-30T05:09:53.366Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764188764135-MLHV35UWH:","service":"aerive-backend","timestamp":"2025-11-30T05:09:53.377Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764188763776-S13KUPZ2K:","service":"aerive-backend","timestamp":"2025-11-30T05:09:53.377Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764188494722-IORSBHF6T:","service":"aerive-backend","timestamp":"2025-11-30T05:09:53.401Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764188494341-D4V4503M6:","service":"aerive-backend","timestamp":"2025-11-30T05:09:53.401Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764188764505-4PFFBADIF:","service":"aerive-backend","timestamp":"2025-11-30T05:09:53.456Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764188103948-QPF1Z89KZ:","service":"aerive-backend","timestamp":"2025-11-30T05:09:53.457Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764188104324-BL3EOAFTU:","service":"aerive-backend","timestamp":"2025-11-30T05:09:53.465Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764187997167-331VPANEM:","service":"aerive-backend","timestamp":"2025-11-30T05:09:53.492Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764187926516-CNAUP5CND:","service":"aerive-backend","timestamp":"2025-11-30T05:09:53.493Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764187996808-KPOL7VTHF:","service":"aerive-backend","timestamp":"2025-11-30T05:09:53.538Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764187667794-DWT5M89JC:","service":"aerive-backend","timestamp":"2025-11-30T05:09:53.546Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764187667432-PY2MD1RVV:","service":"aerive-backend","timestamp":"2025-11-30T05:09:53.557Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764187926144-VKJ8CM3I5:","service":"aerive-backend","timestamp":"2025-11-30T05:09:53.583Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764185437439-0CVN5UTJM:","service":"aerive-backend","timestamp":"2025-11-30T05:09:53.591Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764185437089-PWRI6EJ61:","service":"aerive-backend","timestamp":"2025-11-30T05:09:53.621Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764148034646-Z1HU4PYN5:","service":"aerive-backend","timestamp":"2025-11-30T05:09:53.639Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764146707120-ETCXPOJEH:","service":"aerive-backend","timestamp":"2025-11-30T05:09:53.639Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764148268553-5U1VV7T8D:","service":"aerive-backend","timestamp":"2025-11-30T05:09:53.659Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764110659641-Z0CBJR4AH:","service":"aerive-backend","timestamp":"2025-11-30T05:09:53.675Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764100158711-LYWQ7PQIP:","service":"aerive-backend","timestamp":"2025-11-30T05:09:53.705Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764111059640-OAJKUDR6E:","service":"aerive-backend","timestamp":"2025-11-30T05:09:53.720Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764095633648-4UCKT643D:","service":"aerive-backend","timestamp":"2025-11-30T05:09:53.721Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764100158319-G9YOB7BD3:","service":"aerive-backend","timestamp":"2025-11-30T05:09:53.738Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764195418653-VLDBT7SF3:","service":"aerive-backend","timestamp":"2025-11-30T05:09:53.756Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764195418653-VLDBT7SF3:","service":"aerive-backend","timestamp":"2025-11-30T05:09:53.764Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764195417951-2K4E4VQ8F:","service":"aerive-backend","timestamp":"2025-11-30T05:09:53.774Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764195418291-MFO3FNNNG:","service":"aerive-backend","timestamp":"2025-11-30T05:09:53.790Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764195250742-7M00J0XWE:","service":"aerive-backend","timestamp":"2025-11-30T05:09:53.798Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764189315568-E40MM6R46:","service":"aerive-backend","timestamp":"2025-11-30T05:09:53.811Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764189315135-M6YMY83OG:","service":"aerive-backend","timestamp":"2025-11-30T05:09:53.816Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764189314770-TB87PY79L:","service":"aerive-backend","timestamp":"2025-11-30T05:09:53.835Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764188764505-4PFFBADIF:","service":"aerive-backend","timestamp":"2025-11-30T05:09:53.844Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764188764135-MLHV35UWH:","service":"aerive-backend","timestamp":"2025-11-30T05:09:53.863Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764188494722-IORSBHF6T:","service":"aerive-backend","timestamp":"2025-11-30T05:09:53.875Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764188494341-D4V4503M6:","service":"aerive-backend","timestamp":"2025-11-30T05:09:53.890Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764188104324-BL3EOAFTU:","service":"aerive-backend","timestamp":"2025-11-30T05:09:53.897Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764188763776-S13KUPZ2K:","service":"aerive-backend","timestamp":"2025-11-30T05:09:53.911Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764188103948-QPF1Z89KZ:","service":"aerive-backend","timestamp":"2025-11-30T05:09:53.912Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764187997167-331VPANEM:","service":"aerive-backend","timestamp":"2025-11-30T05:09:53.948Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764187996808-KPOL7VTHF:","service":"aerive-backend","timestamp":"2025-11-30T05:09:53.950Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764187926144-VKJ8CM3I5:","service":"aerive-backend","timestamp":"2025-11-30T05:09:53.956Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764187667794-DWT5M89JC:","service":"aerive-backend","timestamp":"2025-11-30T05:09:53.974Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764187926516-CNAUP5CND:","service":"aerive-backend","timestamp":"2025-11-30T05:09:53.983Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764185437439-0CVN5UTJM:","service":"aerive-backend","timestamp":"2025-11-30T05:09:53.992Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764185437089-PWRI6EJ61:","service":"aerive-backend","timestamp":"2025-11-30T05:09:54.001Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764146707120-ETCXPOJEH:","service":"aerive-backend","timestamp":"2025-11-30T05:09:54.028Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764111059640-OAJKUDR6E:","service":"aerive-backend","timestamp":"2025-11-30T05:09:54.037Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764110659641-Z0CBJR4AH:","service":"aerive-backend","timestamp":"2025-11-30T05:09:54.047Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764148034646-Z1HU4PYN5:","service":"aerive-backend","timestamp":"2025-11-30T05:09:54.060Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764095633648-4UCKT643D:","service":"aerive-backend","timestamp":"2025-11-30T05:09:54.068Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764100158319-G9YOB7BD3:","service":"aerive-backend","timestamp":"2025-11-30T05:09:54.077Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764195418653-VLDBT7SF3:","service":"aerive-backend","timestamp":"2025-11-30T05:09:54.087Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764195250742-7M00J0XWE:","service":"aerive-backend","timestamp":"2025-11-30T05:09:54.109Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764188764505-4PFFBADIF:","service":"aerive-backend","timestamp":"2025-11-30T05:09:54.118Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764188103948-QPF1Z89KZ:","service":"aerive-backend","timestamp":"2025-11-30T05:09:54.127Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764188104324-BL3EOAFTU:","service":"aerive-backend","timestamp":"2025-11-30T05:09:54.144Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764185437439-0CVN5UTJM:","service":"aerive-backend","timestamp":"2025-11-30T05:09:54.156Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764185437089-PWRI6EJ61:","service":"aerive-backend","timestamp":"2025-11-30T05:09:54.162Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764148034646-Z1HU4PYN5:","service":"aerive-backend","timestamp":"2025-11-30T05:09:54.163Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764146707120-ETCXPOJEH:","service":"aerive-backend","timestamp":"2025-11-30T05:09:54.191Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764111059640-OAJKUDR6E:","service":"aerive-backend","timestamp":"2025-11-30T05:09:54.199Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764110659641-Z0CBJR4AH:","service":"aerive-backend","timestamp":"2025-11-30T05:09:54.208Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764095633648-4UCKT643D:","service":"aerive-backend","timestamp":"2025-11-30T05:09:54.236Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764100158319-G9YOB7BD3:","service":"aerive-backend","timestamp":"2025-11-30T05:09:54.244Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764195417951-2K4E4VQ8F:","service":"aerive-backend","timestamp":"2025-11-30T05:09:54.408Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764214653010-ZYQAWMG66:","service":"aerive-backend","timestamp":"2025-11-30T05:09:54.415Z"}
+{"level":"info","message":"MongoDB reconnected","readyState":0,"service":"aerive-backend","timestamp":"2025-11-30T05:13:24.454Z"}
+{"level":"info","message":"MongoDB reconnected","readyState":0,"service":"aerive-backend","timestamp":"2025-11-30T05:13:24.505Z"}
+{"level":"warn","message":"MongoDB disconnected","readyState":0,"service":"aerive-backend","timestamp":"2025-11-30T05:13:46.108Z"}
+{"level":"info","message":"MongoDB connected","readyState":1,"service":"aerive-backend","timestamp":"2025-11-30T05:13:46.125Z"}
+{"level":"info","message":"MongoDB reconnected","readyState":1,"service":"aerive-backend","timestamp":"2025-11-30T05:13:46.126Z"}
+{"level":"info","message":"MongoDB reconnected","readyState":0,"service":"aerive-backend","timestamp":"2025-11-30T08:36:52.395Z"}
+{"level":"warn","message":"MongoDB disconnected","readyState":0,"service":"aerive-backend","timestamp":"2025-11-30T08:52:47.979Z"}
+{"level":"info","message":"MongoDB connected","readyState":1,"service":"aerive-backend","timestamp":"2025-11-30T08:52:47.997Z"}
+{"level":"info","message":"MongoDB reconnected","readyState":1,"service":"aerive-backend","timestamp":"2025-11-30T08:52:47.997Z"}
+{"level":"info","message":"MongoDB reconnected","readyState":0,"service":"aerive-backend","timestamp":"2025-11-30T09:33:52.863Z"}
+{"level":"warn","message":"MongoDB disconnected","readyState":0,"service":"aerive-backend","timestamp":"2025-11-30T09:50:04.906Z"}
+{"level":"info","message":"MongoDB connected","readyState":1,"service":"aerive-backend","timestamp":"2025-11-30T09:50:15.350Z"}
+{"level":"info","message":"MongoDB reconnected","readyState":1,"service":"aerive-backend","timestamp":"2025-11-30T09:50:15.350Z"}
+{"level":"info","message":"MongoDB reconnected","readyState":0,"service":"aerive-backend","timestamp":"2025-11-30T10:06:47.401Z"}
+{"level":"info","message":"MongoDB reconnected","readyState":0,"service":"aerive-backend","timestamp":"2025-11-30T10:06:47.402Z"}
+{"level":"warn","message":"MongoDB disconnected","readyState":0,"service":"aerive-backend","timestamp":"2025-11-30T10:06:57.784Z"}
+{"level":"info","message":"MongoDB connected","readyState":1,"service":"aerive-backend","timestamp":"2025-11-30T10:06:57.786Z"}
+{"level":"info","message":"MongoDB reconnected","readyState":1,"service":"aerive-backend","timestamp":"2025-11-30T10:06:57.786Z"}
+{"level":"info","message":"MongoDB reconnected","readyState":0,"service":"aerive-backend","timestamp":"2025-11-30T10:22:42.351Z"}
+{"level":"warn","message":"MongoDB disconnected","readyState":0,"service":"aerive-backend","timestamp":"2025-11-30T10:22:52.657Z"}
+{"level":"info","message":"MongoDB connected","readyState":1,"service":"aerive-backend","timestamp":"2025-11-30T10:22:52.664Z"}
+{"level":"info","message":"MongoDB reconnected","readyState":1,"service":"aerive-backend","timestamp":"2025-11-30T10:22:52.664Z"}
+{"level":"warn","message":"MongoDB disconnected","readyState":0,"service":"aerive-backend","timestamp":"2025-11-30T10:39:51.595Z"}
+{"level":"info","message":"MongoDB connected","readyState":1,"service":"aerive-backend","timestamp":"2025-11-30T10:39:51.602Z"}
+{"level":"info","message":"MongoDB reconnected","readyState":1,"service":"aerive-backend","timestamp":"2025-11-30T10:39:51.602Z"}
+{"level":"info","message":"MongoDB reconnected","readyState":0,"service":"aerive-backend","timestamp":"2025-11-30T10:57:49.222Z"}
+{"level":"warn","message":"MongoDB disconnected","readyState":0,"service":"aerive-backend","timestamp":"2025-11-30T10:57:59.589Z"}
+{"level":"info","message":"MongoDB connected","readyState":1,"service":"aerive-backend","timestamp":"2025-11-30T10:57:59.591Z"}
+{"level":"info","message":"MongoDB reconnected","readyState":1,"service":"aerive-backend","timestamp":"2025-11-30T10:57:59.591Z"}
+{"level":"warn","message":"MongoDB disconnected","readyState":0,"service":"aerive-backend","timestamp":"2025-11-30T11:16:23.368Z"}
+{"level":"info","message":"MongoDB connected","readyState":1,"service":"aerive-backend","timestamp":"2025-11-30T11:16:23.377Z"}
+{"level":"info","message":"MongoDB reconnected","readyState":1,"service":"aerive-backend","timestamp":"2025-11-30T11:16:23.377Z"}
+{"level":"info","message":"MongoDB reconnected","readyState":0,"service":"aerive-backend","timestamp":"2025-11-30T12:24:48.067Z"}
+{"level":"info","message":"MongoDB reconnected","readyState":0,"service":"aerive-backend","timestamp":"2025-11-30T12:24:48.068Z"}
+{"level":"warn","message":"MongoDB disconnected","readyState":0,"service":"aerive-backend","timestamp":"2025-11-30T12:24:58.322Z"}
+{"level":"info","message":"MongoDB connected","readyState":1,"service":"aerive-backend","timestamp":"2025-11-30T12:24:58.387Z"}
+{"level":"info","message":"MongoDB reconnected","readyState":1,"service":"aerive-backend","timestamp":"2025-11-30T12:24:58.387Z"}
+{"level":"info","message":"MongoDB reconnected","readyState":0,"service":"aerive-backend","timestamp":"2025-11-30T12:42:07.025Z"}
+{"level":"info","message":"MongoDB reconnected","readyState":0,"service":"aerive-backend","timestamp":"2025-11-30T12:42:07.027Z"}
+{"level":"warn","message":"MongoDB disconnected","readyState":0,"service":"aerive-backend","timestamp":"2025-11-30T13:25:59.249Z"}
+{"level":"info","message":"MongoDB connected","readyState":1,"service":"aerive-backend","timestamp":"2025-11-30T13:25:59.288Z"}
+{"level":"info","message":"MongoDB reconnected","readyState":1,"service":"aerive-backend","timestamp":"2025-11-30T13:25:59.288Z"}
+{"level":"warn","message":"MongoDB disconnected","readyState":0,"service":"aerive-backend","timestamp":"2025-11-30T14:08:24.248Z"}
+{"level":"info","message":"MongoDB connected","readyState":1,"service":"aerive-backend","timestamp":"2025-11-30T14:08:24.329Z"}
+{"level":"info","message":"MongoDB reconnected","readyState":1,"service":"aerive-backend","timestamp":"2025-11-30T14:08:24.329Z"}
+{"level":"info","message":"MongoDB reconnected","readyState":0,"service":"aerive-backend","timestamp":"2025-11-30T15:20:00.564Z"}
+{"level":"info","message":"MongoDB reconnected","readyState":0,"service":"aerive-backend","timestamp":"2025-11-30T15:20:00.565Z"}
+{"level":"warn","message":"MongoDB disconnected","readyState":0,"service":"aerive-backend","timestamp":"2025-11-30T15:20:10.871Z"}
+{"level":"info","message":"MongoDB connected","readyState":1,"service":"aerive-backend","timestamp":"2025-11-30T15:20:10.912Z"}
+{"level":"info","message":"MongoDB reconnected","readyState":1,"service":"aerive-backend","timestamp":"2025-11-30T15:20:10.912Z"}
+{"level":"info","message":"MongoDB reconnected","readyState":0,"service":"aerive-backend","timestamp":"2025-11-30T15:26:49.544Z"}
+{"level":"info","message":"MongoDB reconnected","readyState":0,"service":"aerive-backend","timestamp":"2025-11-30T15:35:24.253Z"}
+{"level":"warn","message":"MongoDB disconnected","readyState":0,"service":"aerive-backend","timestamp":"2025-11-30T15:36:36.432Z"}
+{"level":"info","message":"MongoDB connected","readyState":1,"service":"aerive-backend","timestamp":"2025-11-30T15:36:36.441Z"}
+{"level":"info","message":"MongoDB reconnected","readyState":1,"service":"aerive-backend","timestamp":"2025-11-30T15:36:36.441Z"}
+{"level":"info","message":"MongoDB reconnected","readyState":0,"service":"aerive-backend","timestamp":"2025-11-30T15:37:33.920Z"}
+{"level":"info","message":"MongoDB reconnected","readyState":0,"service":"aerive-backend","timestamp":"2025-11-30T17:00:00.311Z"}
+{"level":"warn","message":"MongoDB disconnected","readyState":0,"service":"aerive-backend","timestamp":"2025-11-30T17:16:25.699Z"}
+{"level":"info","message":"MongoDB connected","readyState":1,"service":"aerive-backend","timestamp":"2025-11-30T17:16:25.718Z"}
+{"level":"info","message":"MongoDB reconnected","readyState":1,"service":"aerive-backend","timestamp":"2025-11-30T17:16:25.719Z"}
+{"level":"warn","message":"MongoDB disconnected","readyState":0,"service":"aerive-backend","timestamp":"2025-11-30T17:31:25.633Z"}
+{"level":"info","message":"MongoDB connected","readyState":1,"service":"aerive-backend","timestamp":"2025-11-30T17:31:25.746Z"}
+{"level":"info","message":"MongoDB reconnected","readyState":1,"service":"aerive-backend","timestamp":"2025-11-30T17:31:25.746Z"}
+{"level":"info","message":"MongoDB reconnected","readyState":0,"service":"aerive-backend","timestamp":"2025-11-30T17:49:24.085Z"}
+{"level":"info","message":"MongoDB reconnected","readyState":0,"service":"aerive-backend","timestamp":"2025-11-30T17:49:24.085Z"}
+{"level":"warn","message":"MongoDB disconnected","readyState":0,"service":"aerive-backend","timestamp":"2025-11-30T18:07:00.024Z"}
+{"level":"info","message":"MongoDB connected","readyState":1,"service":"aerive-backend","timestamp":"2025-11-30T18:07:00.028Z"}
+{"level":"info","message":"MongoDB reconnected","readyState":1,"service":"aerive-backend","timestamp":"2025-11-30T18:07:00.028Z"}
+{"level":"info","message":"MongoDB reconnected","readyState":0,"service":"aerive-backend","timestamp":"2025-11-30T18:23:55.604Z"}
+{"level":"info","message":"MongoDB reconnected","readyState":0,"service":"aerive-backend","timestamp":"2025-11-30T18:23:55.605Z"}
+{"level":"warn","message":"MongoDB disconnected","readyState":0,"service":"aerive-backend","timestamp":"2025-11-30T18:58:30.979Z"}
+{"level":"info","message":"MongoDB connected","readyState":1,"service":"aerive-backend","timestamp":"2025-11-30T18:58:31.134Z"}
+{"level":"info","message":"MongoDB reconnected","readyState":1,"service":"aerive-backend","timestamp":"2025-11-30T18:58:31.135Z"}
+{"level":"info","message":"MongoDB reconnected","readyState":0,"service":"aerive-backend","timestamp":"2025-11-30T19:14:48.882Z"}
+{"level":"info","message":"MongoDB reconnected","readyState":0,"service":"aerive-backend","timestamp":"2025-11-30T19:14:48.882Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764497224579-HU2FNSVRI:","service":"aerive-backend","timestamp":"2025-11-30T20:09:37.921Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764493257823-J0LSHYE4H:","service":"aerive-backend","timestamp":"2025-11-30T20:09:37.921Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764496246084-R3ZTIBZ6C:","service":"aerive-backend","timestamp":"2025-11-30T20:09:37.922Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764492462159-TA03Q7ZSA:","service":"aerive-backend","timestamp":"2025-11-30T20:09:37.922Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764493816723-0BR0N4YPV:","service":"aerive-backend","timestamp":"2025-11-30T20:09:37.925Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764489808597-PXZJTIA83:","service":"aerive-backend","timestamp":"2025-11-30T20:09:37.990Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764299748006-VET507NPJ:","service":"aerive-backend","timestamp":"2025-11-30T20:09:38.015Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764305006441-2BJX50FRY:","service":"aerive-backend","timestamp":"2025-11-30T20:09:38.015Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764214653010-ZYQAWMG66:","service":"aerive-backend","timestamp":"2025-11-30T20:09:38.019Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764299699045-RZHSR5J3U:","service":"aerive-backend","timestamp":"2025-11-30T20:09:38.019Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764195418653-VLDBT7SF3:","service":"aerive-backend","timestamp":"2025-11-30T20:09:38.078Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764195418291-MFO3FNNNG:","service":"aerive-backend","timestamp":"2025-11-30T20:09:38.096Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764195417951-2K4E4VQ8F:","service":"aerive-backend","timestamp":"2025-11-30T20:09:38.105Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764195417591-PZRAOA22A:","service":"aerive-backend","timestamp":"2025-11-30T20:09:38.117Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764195251101-T2RWXYSMJ:","service":"aerive-backend","timestamp":"2025-11-30T20:09:38.117Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764195250742-7M00J0XWE:","service":"aerive-backend","timestamp":"2025-11-30T20:09:38.163Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764189315568-E40MM6R46:","service":"aerive-backend","timestamp":"2025-11-30T20:09:38.176Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764189315135-M6YMY83OG:","service":"aerive-backend","timestamp":"2025-11-30T20:09:38.184Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764189314770-TB87PY79L:","service":"aerive-backend","timestamp":"2025-11-30T20:09:38.199Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764188764135-MLHV35UWH:","service":"aerive-backend","timestamp":"2025-11-30T20:09:38.203Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764188764505-4PFFBADIF:","service":"aerive-backend","timestamp":"2025-11-30T20:09:38.252Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764188763776-S13KUPZ2K:","service":"aerive-backend","timestamp":"2025-11-30T20:09:38.264Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764188494722-IORSBHF6T:","service":"aerive-backend","timestamp":"2025-11-30T20:09:38.265Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764188494341-D4V4503M6:","service":"aerive-backend","timestamp":"2025-11-30T20:09:38.281Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764188104324-BL3EOAFTU:","service":"aerive-backend","timestamp":"2025-11-30T20:09:38.292Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764188103948-QPF1Z89KZ:","service":"aerive-backend","timestamp":"2025-11-30T20:09:38.343Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764187997167-331VPANEM:","service":"aerive-backend","timestamp":"2025-11-30T20:09:38.357Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764187996808-KPOL7VTHF:","service":"aerive-backend","timestamp":"2025-11-30T20:09:38.357Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764187926144-VKJ8CM3I5:","service":"aerive-backend","timestamp":"2025-11-30T20:09:38.367Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764187926516-CNAUP5CND:","service":"aerive-backend","timestamp":"2025-11-30T20:09:38.383Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764187667794-DWT5M89JC:","service":"aerive-backend","timestamp":"2025-11-30T20:09:38.433Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764187667432-PY2MD1RVV:","service":"aerive-backend","timestamp":"2025-11-30T20:09:38.442Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764185437439-0CVN5UTJM:","service":"aerive-backend","timestamp":"2025-11-30T20:09:38.443Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764185437089-PWRI6EJ61:","service":"aerive-backend","timestamp":"2025-11-30T20:09:38.450Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764491234150-MUBKUB5FM:","service":"aerive-backend","timestamp":"2025-11-30T20:09:38.471Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764148034646-Z1HU4PYN5:","service":"aerive-backend","timestamp":"2025-11-30T20:09:38.471Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764491119564-8O7QGVU4P:","service":"aerive-backend","timestamp":"2025-11-30T20:09:38.472Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764111059640-OAJKUDR6E:","service":"aerive-backend","timestamp":"2025-11-30T20:09:38.511Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764110659641-Z0CBJR4AH:","service":"aerive-backend","timestamp":"2025-11-30T20:09:38.521Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764100158711-LYWQ7PQIP:","service":"aerive-backend","timestamp":"2025-11-30T20:09:38.530Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764100158319-G9YOB7BD3:","service":"aerive-backend","timestamp":"2025-11-30T20:09:38.538Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764497224579-HU2FNSVRI:","service":"aerive-backend","timestamp":"2025-11-30T20:09:38.571Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764095633648-4UCKT643D:","service":"aerive-backend","timestamp":"2025-11-30T20:09:38.571Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764496246084-R3ZTIBZ6C:","service":"aerive-backend","timestamp":"2025-11-30T20:09:38.572Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764493257823-J0LSHYE4H:","service":"aerive-backend","timestamp":"2025-11-30T20:09:38.600Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764493816723-0BR0N4YPV:","service":"aerive-backend","timestamp":"2025-11-30T20:09:38.619Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764492462159-TA03Q7ZSA:","service":"aerive-backend","timestamp":"2025-11-30T20:09:38.619Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764491234150-MUBKUB5FM:","service":"aerive-backend","timestamp":"2025-11-30T20:09:38.628Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764489808597-PXZJTIA83:","service":"aerive-backend","timestamp":"2025-11-30T20:09:38.659Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764305006441-2BJX50FRY:","service":"aerive-backend","timestamp":"2025-11-30T20:09:38.659Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764491119564-8O7QGVU4P:","service":"aerive-backend","timestamp":"2025-11-30T20:09:38.660Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764299748006-VET507NPJ:","service":"aerive-backend","timestamp":"2025-11-30T20:09:38.681Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764299699045-RZHSR5J3U:","service":"aerive-backend","timestamp":"2025-11-30T20:09:38.704Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764195418653-VLDBT7SF3:","service":"aerive-backend","timestamp":"2025-11-30T20:09:38.706Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764214653010-ZYQAWMG66:","service":"aerive-backend","timestamp":"2025-11-30T20:09:38.711Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764195417951-2K4E4VQ8F:","service":"aerive-backend","timestamp":"2025-11-30T20:09:38.750Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764195418291-MFO3FNNNG:","service":"aerive-backend","timestamp":"2025-11-30T20:09:38.750Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764195417591-PZRAOA22A:","service":"aerive-backend","timestamp":"2025-11-30T20:09:38.750Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764195251101-T2RWXYSMJ:","service":"aerive-backend","timestamp":"2025-11-30T20:09:38.761Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764195250742-7M00J0XWE:","service":"aerive-backend","timestamp":"2025-11-30T20:09:38.784Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764189315135-M6YMY83OG:","service":"aerive-backend","timestamp":"2025-11-30T20:09:38.794Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764189314770-TB87PY79L:","service":"aerive-backend","timestamp":"2025-11-30T20:09:38.796Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764188764505-4PFFBADIF:","service":"aerive-backend","timestamp":"2025-11-30T20:09:38.843Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764188763776-S13KUPZ2K:","service":"aerive-backend","timestamp":"2025-11-30T20:09:38.843Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764189315568-E40MM6R46:","service":"aerive-backend","timestamp":"2025-11-30T20:09:38.844Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764188764135-MLHV35UWH:","service":"aerive-backend","timestamp":"2025-11-30T20:09:38.844Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764188494722-IORSBHF6T:","service":"aerive-backend","timestamp":"2025-11-30T20:09:38.880Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764188494341-D4V4503M6:","service":"aerive-backend","timestamp":"2025-11-30T20:09:38.881Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764188103948-QPF1Z89KZ:","service":"aerive-backend","timestamp":"2025-11-30T20:09:38.889Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764187926516-CNAUP5CND:","service":"aerive-backend","timestamp":"2025-11-30T20:09:38.929Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764188104324-BL3EOAFTU:","service":"aerive-backend","timestamp":"2025-11-30T20:09:38.935Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764187997167-331VPANEM:","service":"aerive-backend","timestamp":"2025-11-30T20:09:38.936Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764187996808-KPOL7VTHF:","service":"aerive-backend","timestamp":"2025-11-30T20:09:38.937Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764187926144-VKJ8CM3I5:","service":"aerive-backend","timestamp":"2025-11-30T20:09:38.992Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764187667794-DWT5M89JC:","service":"aerive-backend","timestamp":"2025-11-30T20:09:39.005Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764187667432-PY2MD1RVV:","service":"aerive-backend","timestamp":"2025-11-30T20:09:39.006Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764185437439-0CVN5UTJM:","service":"aerive-backend","timestamp":"2025-11-30T20:09:39.017Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764148268553-5U1VV7T8D:","service":"aerive-backend","timestamp":"2025-11-30T20:09:39.034Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764146707120-ETCXPOJEH:","service":"aerive-backend","timestamp":"2025-11-30T20:09:39.036Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764146707120-ETCXPOJEH:","service":"aerive-backend","timestamp":"2025-11-30T20:09:39.053Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764148034646-Z1HU4PYN5:","service":"aerive-backend","timestamp":"2025-11-30T20:09:39.054Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764111059640-OAJKUDR6E:","service":"aerive-backend","timestamp":"2025-11-30T20:09:39.085Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764095633648-4UCKT643D:","service":"aerive-backend","timestamp":"2025-11-30T20:09:39.110Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764110659641-Z0CBJR4AH:","service":"aerive-backend","timestamp":"2025-11-30T20:09:39.110Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764100158319-G9YOB7BD3:","service":"aerive-backend","timestamp":"2025-11-30T20:09:39.111Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764148268553-5U1VV7T8D:","service":"aerive-backend","timestamp":"2025-11-30T20:09:39.120Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764185437089-PWRI6EJ61:","service":"aerive-backend","timestamp":"2025-11-30T20:09:39.637Z"}
+{"level":"warn","message":"Error fetching provider PROV-1763953801663-9C6GT4 for booking BK-1764100158711-LYWQ7PQIP:","service":"aerive-backend","timestamp":"2025-11-30T20:09:39.724Z"}
+{"level":"info","message":"MongoDB connecting...","service":"aerive-backend","timestamp":"2025-11-30T22:03:47.794Z"}
+{"level":"info","message":"MongoDB connected","readyState":1,"service":"aerive-backend","timestamp":"2025-11-30T22:03:47.821Z"}
+{"dbName":"aerive","level":"info","message":"MongoDB Atlas connected and ready for queries","readyState":1,"service":"aerive-backend","timestamp":"2025-11-30T22:03:47.824Z"}
+{"level":"info","message":"Booking model loaded, MongoDB readyState:","service":"aerive-backend","timestamp":"2025-11-30T22:03:48.020Z"}
+{"level":"info","message":"Redis client connected","service":"aerive-backend","timestamp":"2025-11-30T22:03:48.024Z"}
+{"level":"info","message":"Booking service running on port 3003","service":"aerive-backend","timestamp":"2025-11-30T22:03:48.029Z"}
+{"level":"info","message":"Booking creation endpoint available at POST /api/bookings/create","service":"aerive-backend","timestamp":"2025-11-30T22:03:48.030Z"}
+{"level":"info","message":"MongoDB readyState:","service":"aerive-backend","timestamp":"2025-11-30T22:03:48.030Z"}
+{"level":"info","message":"MongoDB connecting...","service":"aerive-backend","timestamp":"2025-11-30T22:05:50.313Z"}
+{"level":"info","message":"MongoDB connected","readyState":1,"service":"aerive-backend","timestamp":"2025-11-30T22:05:50.337Z"}
+{"dbName":"aerive","level":"info","message":"MongoDB Atlas connected and ready for queries","readyState":1,"service":"aerive-backend","timestamp":"2025-11-30T22:05:50.341Z"}
+{"level":"info","message":"Booking model loaded, MongoDB readyState:","service":"aerive-backend","timestamp":"2025-11-30T22:05:50.445Z"}
+{"level":"info","message":"Redis client connected","service":"aerive-backend","timestamp":"2025-11-30T22:05:50.450Z"}
+{"level":"info","message":"Booking service running on port 3003","service":"aerive-backend","timestamp":"2025-11-30T22:05:50.453Z"}
+{"level":"info","message":"Booking creation endpoint available at POST /api/bookings/create","service":"aerive-backend","timestamp":"2025-11-30T22:05:50.453Z"}
+{"level":"info","message":"MongoDB readyState:","service":"aerive-backend","timestamp":"2025-11-30T22:05:50.453Z"}
+{"level":"warn","message":"MongoDB disconnected","readyState":0,"service":"aerive-backend","timestamp":"2025-12-01T00:13:33.305Z"}
+{"level":"info","message":"MongoDB connected","readyState":1,"service":"aerive-backend","timestamp":"2025-12-01T00:13:43.324Z"}
+{"level":"info","message":"MongoDB reconnected","readyState":1,"service":"aerive-backend","timestamp":"2025-12-01T00:13:43.325Z"}
+{"level":"warn","message":"MongoDB disconnected","readyState":0,"service":"aerive-backend","timestamp":"2025-12-01T00:34:51.435Z"}
+{"level":"info","message":"MongoDB connected","readyState":1,"service":"aerive-backend","timestamp":"2025-12-01T00:35:01.466Z"}
+{"level":"info","message":"MongoDB reconnected","readyState":1,"service":"aerive-backend","timestamp":"2025-12-01T00:35:01.466Z"}
+{"level":"warn","message":"MongoDB disconnected","readyState":0,"service":"aerive-backend","timestamp":"2025-12-01T00:36:25.785Z"}
+{"level":"info","message":"MongoDB connected","readyState":1,"service":"aerive-backend","timestamp":"2025-12-01T00:36:35.897Z"}
+{"level":"info","message":"MongoDB reconnected","readyState":1,"service":"aerive-backend","timestamp":"2025-12-01T00:36:35.897Z"}

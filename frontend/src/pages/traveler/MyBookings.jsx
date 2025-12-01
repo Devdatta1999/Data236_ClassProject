@@ -342,7 +342,7 @@ const MyBookings = () => {
           <div className="text-center py-12">
             <p className="text-gray-600 text-lg mb-4">You don't have any bookings yet.</p>
             <button
-              onClick={() => navigate('/dashboard')}
+              onClick={() => navigate('/')}
               className="btn-primary"
             >
               Start Searching
@@ -354,7 +354,7 @@ const MyBookings = () => {
               You don't have any {activeTab.slice(0, -1)} bookings yet.
             </p>
             <button
-              onClick={() => navigate('/dashboard')}
+              onClick={() => navigate('/')}
               className="btn-primary"
             >
               Start Searching

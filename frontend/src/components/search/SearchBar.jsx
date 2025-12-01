@@ -1,8 +1,11 @@
 import { useState } from 'react'
-import { Calendar, MapPin, Users, Search, Plus, Minus } from 'lucide-react'
+import { useDispatch } from 'react-redux'
+import { Calendar, MapPin, Users, Search, Plus, Minus, Sparkles } from 'lucide-react'
 import { US_AIRPORTS } from '../../utils/usAirports'
+import { openChat, setSessionId } from '../../store/slices/chatSlice'
 
 const SearchBar = ({ type, onSearch }) => {
+  const dispatch = useDispatch()
   const [params, setParams] = useState({
     // Flights
     departureAirport: '',
@@ -31,6 +34,13 @@ const SearchBar = ({ type, onSearch }) => {
   const handleSubmit = (e) => {
     e.preventDefault()
     onSearch({ ...params, type })
+  }
+
+  const handleAIMode = () => {
+    // Generate or get session ID
+    const sessionId = `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+    dispatch(setSessionId(sessionId))
+    dispatch(openChat())
   }
 
   if (type === 'flights') {
@@ -175,10 +185,12 @@ const SearchBar = ({ type, onSearch }) => {
             </div>
           </div>
         )}
-        <button type="submit" className="btn-primary w-full md:w-auto flex items-center justify-center space-x-2">
-          <Search className="w-5 h-5" />
-          <span>Search Flights</span>
-        </button>
+        <div className="flex items-center space-x-3">
+          <button type="submit" className="btn-primary flex items-center justify-center space-x-2">
+            <Search className="w-5 h-5" />
+            <span>Search Flights</span>
+          </button>
+        </div>
       </form>
     )
   }
@@ -362,10 +374,12 @@ const SearchBar = ({ type, onSearch }) => {
             )}
           </div>
         </div>
-        <button type="submit" className="btn-primary w-full md:w-auto flex items-center justify-center space-x-2">
-          <Search className="w-5 h-5" />
-          <span>Search Hotels</span>
-        </button>
+        <div className="flex items-center space-x-3">
+          <button type="submit" className="btn-primary flex items-center justify-center space-x-2">
+            <Search className="w-5 h-5" />
+            <span>Search Hotels</span>
+          </button>
+        </div>
       </form>
     )
   }
@@ -441,10 +455,12 @@ const SearchBar = ({ type, onSearch }) => {
             </div>
           </div>
         </div>
-        <button type="submit" className="btn-primary w-full md:w-auto flex items-center justify-center space-x-2">
-          <Search className="w-5 h-5" />
-          <span>Search Cars</span>
-        </button>
+        <div className="flex items-center space-x-3">
+          <button type="submit" className="btn-primary flex items-center justify-center space-x-2">
+            <Search className="w-5 h-5" />
+            <span>Search Cars</span>
+          </button>
+        </div>
       </form>
     )
   }

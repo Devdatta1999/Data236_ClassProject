@@ -1,0 +1,832 @@
+{"level":"info","message":"Uploads directory structure initialized","profilePicturesDir":"/Users/spartan/Documents/Data236_ClassProject/services/uploads/profile-pictures","service":"aerive-backend","timestamp":"2025-11-30T03:07:13.410Z","uploadsDir":"/Users/spartan/Documents/Data236_ClassProject/services/uploads"}
+{"level":"info","message":"MONGODB_URI is set","service":"aerive-backend","timestamp":"2025-11-30T03:07:13.419Z","uri":"mongodb+srv://dygandole_db_user:***@aerive.ajaohyp.mongodb.net/aerive?appName=Aerive&retryWrites=true&w=majority"}
+{"level":"info","message":"Connecting to MongoDB...","service":"aerive-backend","timestamp":"2025-11-30T03:07:13.420Z"}
+{"level":"info","message":"MongoDB connecting...","service":"aerive-backend","timestamp":"2025-11-30T03:07:13.421Z"}
+{"level":"info","message":"MongoDB connected","readyState":1,"service":"aerive-backend","timestamp":"2025-11-30T03:07:14.478Z"}
+{"dbName":"aerive","level":"info","message":"MongoDB Atlas connected and ready for queries","readyState":1,"service":"aerive-backend","timestamp":"2025-11-30T03:07:14.559Z"}
+{"level":"info","message":"MongoDB connected and ready for queries","service":"aerive-backend","timestamp":"2025-11-30T03:07:14.559Z"}
+{"level":"info","message":"Connecting to Redis...","service":"aerive-backend","timestamp":"2025-11-30T03:07:14.559Z"}
+{"level":"info","message":"Redis client connected","service":"aerive-backend","timestamp":"2025-11-30T03:07:14.564Z"}
+{"level":"info","message":"Redis connected successfully","service":"aerive-backend","timestamp":"2025-11-30T03:07:14.569Z"}
+{"dbName":"aerive","level":"info","message":"MongoDB connection verified before loading routes","readyState":1,"service":"aerive-backend","timestamp":"2025-11-30T03:07:14.569Z"}
+{"level":"info","message":"Loading provider routes...","service":"aerive-backend","timestamp":"2025-11-30T03:07:14.569Z"}
+{"level":"info","message":"Provider model verified to use connected mongoose instance","service":"aerive-backend","timestamp":"2025-11-30T03:07:15.627Z"}
+{"level":"info","message":"Provider routes registered successfully","service":"aerive-backend","timestamp":"2025-11-30T03:07:15.628Z"}
+{"level":"info","message":"Registered routes:","routes":[{"path":"/^\\/?(?=\\/|$)/i"},{"path":"/^\\/?(?=\\/|$)/i"},{"path":"/^\\/?(?=\\/|$)/i"},{"path":"/^\\/?(?=\\/|$)/i"},{"path":"/^\\/api\\/providers\\/profile-pictures\\/?(?=\\/|$)/i"},{"methods":{"get":true},"path":"/health"},{"methods":{"get":true},"path":"/readyz"},{"path":"/^\\/?(?=\\/|$)/i"},{"path":"/^\\/api\\/providers\\/?(?=\\/|$)/i"},{"path":"/^\\/?(?=\\/|$)/i"}],"service":"aerive-backend","timestamp":"2025-11-30T03:07:15.628Z"}
+{"level":"info","message":"Provider service running on port 3005","service":"aerive-backend","timestamp":"2025-11-30T03:07:15.632Z"}
+{"level":"info","message":"Ready to accept requests","service":"aerive-backend","timestamp":"2025-11-30T03:07:15.632Z"}
+{"level":"info","message":"Uploads directory structure initialized","profilePicturesDir":"/Users/spartan/Documents/Data236_ClassProject/services/uploads/profile-pictures","service":"aerive-backend","timestamp":"2025-11-30T03:38:42.986Z","uploadsDir":"/Users/spartan/Documents/Data236_ClassProject/services/uploads"}
+{"level":"info","message":"MONGODB_URI is set","service":"aerive-backend","timestamp":"2025-11-30T03:38:42.995Z","uri":"mongodb+srv://dygandole_db_user:***@aerive.ajaohyp.mongodb.net/aerive?appName=Aerive&retryWrites=true&w=majority"}
+{"level":"info","message":"Connecting to MongoDB...","service":"aerive-backend","timestamp":"2025-11-30T03:38:42.995Z"}
+{"level":"info","message":"MongoDB connecting...","service":"aerive-backend","timestamp":"2025-11-30T03:38:42.997Z"}
+{"level":"info","message":"MongoDB connected","readyState":1,"service":"aerive-backend","timestamp":"2025-11-30T03:38:44.011Z"}
+{"dbName":"aerive","level":"info","message":"MongoDB Atlas connected and ready for queries","readyState":1,"service":"aerive-backend","timestamp":"2025-11-30T03:38:44.100Z"}
+{"level":"info","message":"MongoDB connected and ready for queries","service":"aerive-backend","timestamp":"2025-11-30T03:38:44.100Z"}
+{"level":"info","message":"Connecting to Redis...","service":"aerive-backend","timestamp":"2025-11-30T03:38:44.100Z"}
+{"level":"info","message":"Redis client connected","service":"aerive-backend","timestamp":"2025-11-30T03:38:44.106Z"}
+{"level":"info","message":"Redis connected successfully","service":"aerive-backend","timestamp":"2025-11-30T03:38:44.109Z"}
+{"dbName":"aerive","level":"info","message":"MongoDB connection verified before loading routes","readyState":1,"service":"aerive-backend","timestamp":"2025-11-30T03:38:44.110Z"}
+{"level":"info","message":"Loading provider routes...","service":"aerive-backend","timestamp":"2025-11-30T03:38:44.110Z"}
+{"level":"info","message":"Provider model verified to use connected mongoose instance","service":"aerive-backend","timestamp":"2025-11-30T03:38:44.367Z"}
+{"level":"info","message":"Provider routes registered successfully","service":"aerive-backend","timestamp":"2025-11-30T03:38:44.367Z"}
+{"level":"info","message":"Registered routes:","routes":[{"path":"/^\\/?(?=\\/|$)/i"},{"path":"/^\\/?(?=\\/|$)/i"},{"path":"/^\\/?(?=\\/|$)/i"},{"path":"/^\\/?(?=\\/|$)/i"},{"path":"/^\\/api\\/providers\\/profile-pictures\\/?(?=\\/|$)/i"},{"methods":{"get":true},"path":"/health"},{"methods":{"get":true},"path":"/readyz"},{"path":"/^\\/?(?=\\/|$)/i"},{"path":"/^\\/api\\/providers\\/?(?=\\/|$)/i"},{"path":"/^\\/?(?=\\/|$)/i"}],"service":"aerive-backend","timestamp":"2025-11-30T03:38:44.367Z"}
+{"level":"info","message":"Provider service running on port 3005","service":"aerive-backend","timestamp":"2025-11-30T03:38:44.370Z"}
+{"level":"info","message":"Ready to accept requests","service":"aerive-backend","timestamp":"2025-11-30T03:38:44.370Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T03:43:44.031Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T03:43:44.032Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T03:43:44.036Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T03:43:44.037Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T03:43:44.038Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T03:43:44.038Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T03:43:44.039Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T03:43:44.039Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T03:43:44.042Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T03:43:44.042Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T03:43:44.098Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T03:43:44.098Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T03:43:44.112Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T03:43:44.112Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T03:43:44.114Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T03:43:44.114Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T03:43:44.120Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T03:43:44.122Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T03:43:44.132Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T03:43:44.132Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T03:43:44.178Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T03:43:44.178Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T03:43:44.186Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T03:43:44.186Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T03:43:44.205Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T03:43:44.206Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T03:43:44.207Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T03:43:44.207Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T03:43:44.214Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T03:43:44.214Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T03:43:44.258Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T03:43:44.259Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T03:43:44.271Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T03:43:44.271Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T03:43:44.283Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T03:43:44.284Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T03:43:44.290Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T03:43:44.290Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T03:43:44.300Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T03:43:44.300Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T03:43:44.338Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T03:43:44.339Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T03:43:44.349Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T03:43:44.349Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T03:43:44.367Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T03:43:44.367Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T03:43:44.378Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T03:43:44.378Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T03:43:44.383Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T03:43:44.383Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T03:43:44.421Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T03:43:44.421Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T03:43:44.430Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T03:43:44.430Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T03:43:44.447Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T03:43:44.447Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T03:43:44.457Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T03:43:44.457Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T03:43:44.466Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T03:43:44.466Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T03:43:44.507Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T03:43:44.507Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T03:43:44.509Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T03:43:44.509Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T03:43:44.530Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T03:43:44.530Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T03:43:44.540Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T03:43:44.540Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T03:43:44.547Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T03:43:44.548Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T03:43:44.566Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T03:43:44.567Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T03:43:44.575Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T03:43:44.575Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T03:43:44.584Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T03:43:44.585Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T03:43:44.592Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T03:43:44.592Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T03:43:44.611Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T03:43:44.611Z"}
+{"level":"info","message":"GET /api/providers/profile-pictures/provider-1764229718861-155911689.jpg","query":{},"service":"aerive-backend","timestamp":"2025-11-30T03:43:44.622Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T03:43:44.626Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T03:43:44.626Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T03:43:44.647Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T03:43:44.647Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T03:43:44.655Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T03:43:44.655Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T03:43:44.658Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T03:43:44.658Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T03:43:44.686Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T03:43:44.687Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T03:43:44.688Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T03:43:44.688Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T03:43:44.690Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T03:43:44.690Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T03:43:44.697Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T03:43:44.697Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T03:43:44.717Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T03:43:44.717Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T03:43:44.731Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T03:43:44.731Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T03:43:44.738Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T03:43:44.738Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T03:43:44.766Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T03:43:44.766Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T03:43:44.775Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T03:43:44.775Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T03:43:44.775Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T03:43:44.775Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T03:43:44.778Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T03:43:44.778Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T03:43:44.802Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T03:43:44.802Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T03:43:44.812Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T03:43:44.812Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T03:43:44.819Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T03:43:44.819Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T03:43:44.846Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T03:43:44.846Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T03:43:44.857Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T03:43:44.857Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T03:43:44.865Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T03:43:44.865Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T03:43:44.865Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T03:43:44.865Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T03:43:44.897Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T03:43:44.897Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T03:43:44.897Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T03:43:44.897Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T03:43:44.907Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T03:43:44.907Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T03:43:44.929Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T03:43:44.929Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T03:43:44.937Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T03:43:44.937Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T03:43:44.947Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T03:43:44.947Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T03:43:44.948Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T03:43:44.948Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T03:43:44.977Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T03:43:44.978Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T03:43:45.126Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T03:43:45.126Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T03:43:45.158Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T03:43:45.158Z"}
+{"level":"info","message":"GET /api/providers/profile-pictures/provider-1764229718861-155911689.jpg","query":{},"service":"aerive-backend","timestamp":"2025-11-30T03:43:45.187Z"}
+{"level":"info","message":"MongoDB reconnected","readyState":0,"service":"aerive-backend","timestamp":"2025-11-30T03:57:48.253Z"}
+{"level":"warn","message":"MongoDB disconnected","readyState":0,"service":"aerive-backend","timestamp":"2025-11-30T03:57:58.566Z"}
+{"level":"info","message":"MongoDB connected","readyState":1,"service":"aerive-backend","timestamp":"2025-11-30T03:57:58.581Z"}
+{"level":"info","message":"MongoDB reconnected","readyState":1,"service":"aerive-backend","timestamp":"2025-11-30T03:57:58.581Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T04:00:04.750Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T04:00:04.750Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T04:00:04.751Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T04:00:04.751Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T04:00:04.752Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T04:00:04.752Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T04:00:04.752Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T04:00:04.752Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T04:00:04.753Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T04:00:04.753Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T04:00:04.753Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T04:00:04.754Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T04:00:04.754Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T04:00:04.754Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T04:00:04.754Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T04:00:04.754Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T04:00:04.755Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T04:00:04.755Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T04:00:04.755Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T04:00:04.755Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T04:00:04.756Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T04:00:04.756Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T04:00:04.756Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T04:00:04.756Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T04:00:04.756Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T04:00:04.756Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T04:00:04.757Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T04:00:04.757Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T04:00:04.758Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T04:00:04.758Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T04:00:04.758Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T04:00:04.758Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T04:00:04.758Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T04:00:04.759Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T04:00:04.759Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T04:00:04.759Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T04:00:04.759Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T04:00:04.759Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T04:00:04.760Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T04:00:04.760Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T04:00:04.760Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T04:00:04.761Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T04:00:04.761Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T04:00:04.761Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T04:00:04.762Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T04:00:04.762Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T04:00:04.762Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T04:00:04.762Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T04:00:04.763Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T04:00:04.763Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T04:00:04.763Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T04:00:04.764Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T04:00:04.764Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T04:00:04.764Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T04:00:04.765Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T04:00:04.765Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T04:00:04.765Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T04:00:04.766Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T04:00:04.767Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T04:00:04.767Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T04:00:04.767Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T04:00:04.767Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T04:00:04.768Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T04:00:04.768Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T04:00:04.768Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T04:00:04.768Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T04:00:04.769Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T04:00:04.769Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T04:00:04.769Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T04:00:04.769Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T04:00:04.770Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T04:00:04.770Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T04:00:04.778Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T04:00:04.779Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T04:00:04.779Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T04:00:04.780Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T04:00:04.780Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T04:00:04.781Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T04:00:04.781Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T04:00:04.781Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T04:00:04.782Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T04:00:04.782Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T04:00:04.782Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T04:00:04.782Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T04:00:04.782Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T04:00:04.783Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T04:00:04.783Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T04:00:04.783Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T04:00:04.783Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T04:00:04.783Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T04:00:04.783Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T04:00:04.783Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T04:00:04.784Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T04:00:04.784Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T04:00:04.784Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T04:00:04.784Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T04:00:04.784Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T04:00:04.784Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T04:00:04.785Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T04:00:04.785Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T04:00:04.785Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T04:00:04.785Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T04:00:04.785Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T04:00:04.785Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T04:00:04.786Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T04:00:04.786Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T04:00:04.786Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T04:00:04.786Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T04:00:04.786Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T04:00:04.786Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T04:00:04.786Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T04:00:04.787Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T04:00:04.787Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T04:00:04.787Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T04:00:04.787Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T04:00:04.787Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T04:00:04.788Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T04:00:04.788Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T04:00:04.788Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T04:00:04.788Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T04:00:04.788Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T04:00:04.789Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T04:00:04.789Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T04:00:04.789Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T04:00:04.789Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T04:00:04.789Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T04:00:04.789Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T04:00:04.790Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T04:00:04.790Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T04:00:04.790Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T04:00:04.790Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T04:00:04.790Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T04:00:04.790Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T04:00:04.790Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T04:00:04.790Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T04:00:04.790Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T04:00:04.791Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T04:00:04.791Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T04:00:04.791Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T04:00:04.791Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T04:00:04.791Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T04:00:04.791Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T04:00:04.791Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T04:00:04.792Z"}
+{"level":"info","message":"GET /api/providers/profile-pictures/provider-1764229718861-155911689.jpg","query":{},"service":"aerive-backend","timestamp":"2025-11-30T04:00:04.828Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T05:09:53.219Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T05:09:53.220Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T05:09:53.222Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T05:09:53.222Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T05:09:53.223Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T05:09:53.223Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T05:09:53.224Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T05:09:53.224Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T05:09:53.224Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T05:09:53.224Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T05:09:53.225Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T05:09:53.225Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T05:09:53.226Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T05:09:53.226Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T05:09:53.227Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T05:09:53.227Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T05:09:53.227Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T05:09:53.227Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T05:09:53.228Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T05:09:53.228Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T05:09:53.228Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T05:09:53.228Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T05:09:53.229Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T05:09:53.229Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T05:09:53.229Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T05:09:53.229Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T05:09:53.240Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T05:09:53.240Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T05:09:53.240Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T05:09:53.240Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T05:09:53.240Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T05:09:53.240Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T05:09:53.240Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T05:09:53.240Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T05:09:53.241Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T05:09:53.241Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T05:09:53.241Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T05:09:53.241Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T05:09:53.241Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T05:09:53.241Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T05:09:53.241Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T05:09:53.241Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T05:09:53.242Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T05:09:53.242Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T05:09:53.242Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T05:09:53.243Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T05:09:53.243Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T05:09:53.243Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T05:09:53.243Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T05:09:53.244Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T05:09:53.244Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T05:09:53.244Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T05:09:53.246Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T05:09:53.246Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T05:09:53.248Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T05:09:53.248Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T05:09:53.249Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T05:09:53.249Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T05:09:53.258Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T05:09:53.258Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T05:09:53.259Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T05:09:53.259Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T05:09:53.260Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T05:09:53.260Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T05:09:53.261Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T05:09:53.261Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T05:09:53.261Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T05:09:53.261Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T05:09:53.262Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T05:09:53.262Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T05:09:53.262Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T05:09:53.262Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T05:09:53.285Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T05:09:53.286Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T05:09:53.292Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T05:09:53.292Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T05:09:53.295Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T05:09:53.296Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T05:09:53.302Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T05:09:53.303Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T05:09:53.306Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T05:09:53.306Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T05:09:53.366Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T05:09:53.366Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T05:09:53.376Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T05:09:53.376Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T05:09:53.376Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T05:09:53.377Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T05:09:53.400Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T05:09:53.400Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T05:09:53.400Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T05:09:53.401Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T05:09:53.455Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T05:09:53.456Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T05:09:53.456Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T05:09:53.456Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T05:09:53.465Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T05:09:53.465Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T05:09:53.492Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T05:09:53.492Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T05:09:53.492Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T05:09:53.492Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T05:09:53.537Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T05:09:53.537Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T05:09:53.546Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T05:09:53.546Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T05:09:53.556Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T05:09:53.556Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T05:09:53.582Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T05:09:53.582Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T05:09:53.590Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T05:09:53.590Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T05:09:53.620Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T05:09:53.620Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T05:09:53.638Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T05:09:53.639Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T05:09:53.639Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T05:09:53.639Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T05:09:53.658Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T05:09:53.659Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T05:09:53.674Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T05:09:53.674Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T05:09:53.704Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T05:09:53.704Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T05:09:53.719Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T05:09:53.719Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T05:09:53.720Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T05:09:53.720Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T05:09:53.737Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T05:09:53.737Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T05:09:53.754Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T05:09:53.755Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T05:09:53.764Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T05:09:53.764Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T05:09:53.773Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T05:09:53.773Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T05:09:53.789Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T05:09:53.789Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T05:09:53.798Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T05:09:53.798Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T05:09:53.810Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T05:09:53.811Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T05:09:53.815Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T05:09:53.815Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T05:09:53.834Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T05:09:53.835Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T05:09:53.843Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T05:09:53.843Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T05:09:53.862Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T05:09:53.862Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T05:09:53.874Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T05:09:53.874Z"}
+{"level":"info","message":"GET /api/providers/profile-pictures/provider-1764229718861-155911689.jpg","query":{},"service":"aerive-backend","timestamp":"2025-11-30T05:09:53.875Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T05:09:53.889Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T05:09:53.890Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T05:09:53.896Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T05:09:53.896Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T05:09:53.910Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T05:09:53.910Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T05:09:53.912Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T05:09:53.912Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T05:09:53.947Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T05:09:53.947Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T05:09:53.950Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T05:09:53.950Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T05:09:53.955Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T05:09:53.956Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T05:09:53.973Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T05:09:53.973Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T05:09:53.982Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T05:09:53.982Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T05:09:53.992Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T05:09:53.992Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T05:09:54.000Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T05:09:54.000Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T05:09:54.028Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T05:09:54.028Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T05:09:54.036Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T05:09:54.036Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T05:09:54.046Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T05:09:54.046Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T05:09:54.059Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T05:09:54.060Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T05:09:54.067Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T05:09:54.067Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T05:09:54.077Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T05:09:54.077Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T05:09:54.086Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T05:09:54.086Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T05:09:54.108Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T05:09:54.108Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T05:09:54.117Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T05:09:54.117Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T05:09:54.127Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T05:09:54.127Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T05:09:54.143Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T05:09:54.144Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T05:09:54.155Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T05:09:54.155Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T05:09:54.161Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T05:09:54.162Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T05:09:54.162Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T05:09:54.162Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T05:09:54.190Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T05:09:54.190Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T05:09:54.198Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T05:09:54.198Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T05:09:54.208Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T05:09:54.208Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T05:09:54.235Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T05:09:54.236Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T05:09:54.243Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T05:09:54.244Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T05:09:54.407Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T05:09:54.407Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T05:09:54.414Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T05:09:54.414Z"}
+{"level":"info","message":"MongoDB reconnected","readyState":0,"service":"aerive-backend","timestamp":"2025-11-30T05:13:24.452Z"}
+{"level":"warn","message":"MongoDB disconnected","readyState":0,"service":"aerive-backend","timestamp":"2025-11-30T05:13:46.107Z"}
+{"level":"info","message":"MongoDB connected","readyState":1,"service":"aerive-backend","timestamp":"2025-11-30T05:13:46.110Z"}
+{"level":"info","message":"MongoDB reconnected","readyState":1,"service":"aerive-backend","timestamp":"2025-11-30T05:13:46.110Z"}
+{"level":"info","message":"MongoDB reconnected","readyState":0,"service":"aerive-backend","timestamp":"2025-11-30T08:36:52.398Z"}
+{"level":"warn","message":"MongoDB disconnected","readyState":0,"service":"aerive-backend","timestamp":"2025-11-30T09:34:03.245Z"}
+{"level":"info","message":"MongoDB connected","readyState":1,"service":"aerive-backend","timestamp":"2025-11-30T09:34:03.247Z"}
+{"level":"info","message":"MongoDB reconnected","readyState":1,"service":"aerive-backend","timestamp":"2025-11-30T09:34:03.247Z"}
+{"level":"warn","message":"MongoDB disconnected","readyState":0,"service":"aerive-backend","timestamp":"2025-11-30T09:50:04.908Z"}
+{"level":"info","message":"MongoDB connected","readyState":1,"service":"aerive-backend","timestamp":"2025-11-30T09:50:15.348Z"}
+{"level":"info","message":"MongoDB reconnected","readyState":1,"service":"aerive-backend","timestamp":"2025-11-30T09:50:15.348Z"}
+{"level":"info","message":"MongoDB reconnected","readyState":0,"service":"aerive-backend","timestamp":"2025-11-30T10:06:47.398Z"}
+{"level":"warn","message":"MongoDB disconnected","readyState":0,"service":"aerive-backend","timestamp":"2025-11-30T10:06:57.786Z"}
+{"level":"info","message":"MongoDB connected","readyState":1,"service":"aerive-backend","timestamp":"2025-11-30T10:06:57.796Z"}
+{"level":"info","message":"MongoDB reconnected","readyState":1,"service":"aerive-backend","timestamp":"2025-11-30T10:06:57.796Z"}
+{"level":"info","message":"MongoDB reconnected","readyState":0,"service":"aerive-backend","timestamp":"2025-11-30T10:22:42.346Z"}
+{"level":"warn","message":"MongoDB disconnected","readyState":0,"service":"aerive-backend","timestamp":"2025-11-30T10:39:51.608Z"}
+{"level":"info","message":"MongoDB connected","readyState":1,"service":"aerive-backend","timestamp":"2025-11-30T10:39:51.610Z"}
+{"level":"info","message":"MongoDB reconnected","readyState":1,"service":"aerive-backend","timestamp":"2025-11-30T10:39:51.610Z"}
+{"level":"warn","message":"MongoDB disconnected","readyState":0,"service":"aerive-backend","timestamp":"2025-11-30T11:16:23.349Z"}
+{"level":"info","message":"MongoDB connected","readyState":1,"service":"aerive-backend","timestamp":"2025-11-30T11:16:23.368Z"}
+{"level":"info","message":"MongoDB reconnected","readyState":1,"service":"aerive-backend","timestamp":"2025-11-30T11:16:23.368Z"}
+{"level":"info","message":"MongoDB reconnected","readyState":0,"service":"aerive-backend","timestamp":"2025-11-30T12:24:48.050Z"}
+{"level":"warn","message":"MongoDB disconnected","readyState":0,"service":"aerive-backend","timestamp":"2025-11-30T12:24:58.330Z"}
+{"level":"info","message":"MongoDB connected","readyState":1,"service":"aerive-backend","timestamp":"2025-11-30T12:24:58.387Z"}
+{"level":"info","message":"MongoDB reconnected","readyState":1,"service":"aerive-backend","timestamp":"2025-11-30T12:24:58.388Z"}
+{"level":"info","message":"MongoDB reconnected","readyState":0,"service":"aerive-backend","timestamp":"2025-11-30T12:42:07.013Z"}
+{"level":"info","message":"MongoDB reconnected","readyState":0,"service":"aerive-backend","timestamp":"2025-11-30T12:42:07.014Z"}
+{"level":"warn","message":"MongoDB disconnected","readyState":0,"service":"aerive-backend","timestamp":"2025-11-30T12:42:17.361Z"}
+{"level":"info","message":"MongoDB connected","readyState":1,"service":"aerive-backend","timestamp":"2025-11-30T12:42:17.364Z"}
+{"level":"info","message":"MongoDB reconnected","readyState":1,"service":"aerive-backend","timestamp":"2025-11-30T12:42:17.364Z"}
+{"level":"warn","message":"MongoDB disconnected","readyState":0,"service":"aerive-backend","timestamp":"2025-11-30T13:11:40.283Z"}
+{"level":"info","message":"MongoDB connected","readyState":1,"service":"aerive-backend","timestamp":"2025-11-30T13:11:40.295Z"}
+{"level":"info","message":"MongoDB reconnected","readyState":1,"service":"aerive-backend","timestamp":"2025-11-30T13:11:40.295Z"}
+{"level":"info","message":"MongoDB reconnected","readyState":0,"service":"aerive-backend","timestamp":"2025-11-30T13:25:48.860Z"}
+{"level":"warn","message":"MongoDB disconnected","readyState":0,"service":"aerive-backend","timestamp":"2025-11-30T13:25:59.249Z"}
+{"level":"info","message":"MongoDB connected","readyState":1,"service":"aerive-backend","timestamp":"2025-11-30T13:25:59.288Z"}
+{"level":"info","message":"MongoDB reconnected","readyState":1,"service":"aerive-backend","timestamp":"2025-11-30T13:25:59.288Z"}
+{"level":"info","message":"MongoDB reconnected","readyState":0,"service":"aerive-backend","timestamp":"2025-11-30T13:34:09.842Z"}
+{"level":"info","message":"MongoDB reconnected","readyState":0,"service":"aerive-backend","timestamp":"2025-11-30T15:20:00.573Z"}
+{"level":"info","message":"MongoDB reconnected","readyState":0,"service":"aerive-backend","timestamp":"2025-11-30T15:20:00.574Z"}
+{"level":"warn","message":"MongoDB disconnected","readyState":0,"service":"aerive-backend","timestamp":"2025-11-30T15:20:10.905Z"}
+{"level":"info","message":"MongoDB connected","readyState":1,"service":"aerive-backend","timestamp":"2025-11-30T15:20:10.919Z"}
+{"level":"info","message":"MongoDB reconnected","readyState":1,"service":"aerive-backend","timestamp":"2025-11-30T15:20:10.920Z"}
+{"level":"warn","message":"MongoDB disconnected","readyState":0,"service":"aerive-backend","timestamp":"2025-11-30T15:36:36.412Z"}
+{"level":"info","message":"MongoDB connected","readyState":1,"service":"aerive-backend","timestamp":"2025-11-30T15:36:36.454Z"}
+{"level":"info","message":"MongoDB reconnected","readyState":1,"service":"aerive-backend","timestamp":"2025-11-30T15:36:36.454Z"}
+{"level":"info","message":"MongoDB reconnected","readyState":0,"service":"aerive-backend","timestamp":"2025-11-30T15:37:33.917Z"}
+{"level":"info","message":"MongoDB reconnected","readyState":0,"service":"aerive-backend","timestamp":"2025-11-30T15:37:33.917Z"}
+{"level":"warn","message":"MongoDB disconnected","readyState":0,"service":"aerive-backend","timestamp":"2025-11-30T15:37:44.332Z"}
+{"level":"info","message":"MongoDB connected","readyState":1,"service":"aerive-backend","timestamp":"2025-11-30T15:37:44.334Z"}
+{"level":"info","message":"MongoDB reconnected","readyState":1,"service":"aerive-backend","timestamp":"2025-11-30T15:37:44.334Z"}
+{"level":"info","message":"MongoDB reconnected","readyState":0,"service":"aerive-backend","timestamp":"2025-11-30T17:00:00.309Z"}
+{"level":"warn","message":"MongoDB disconnected","readyState":0,"service":"aerive-backend","timestamp":"2025-11-30T17:31:25.632Z"}
+{"level":"info","message":"MongoDB connected","readyState":1,"service":"aerive-backend","timestamp":"2025-11-30T17:31:25.745Z"}
+{"level":"info","message":"MongoDB reconnected","readyState":1,"service":"aerive-backend","timestamp":"2025-11-30T17:31:25.745Z"}
+{"level":"info","message":"MongoDB reconnected","readyState":0,"service":"aerive-backend","timestamp":"2025-11-30T17:49:24.085Z"}
+{"level":"info","message":"MongoDB reconnected","readyState":0,"service":"aerive-backend","timestamp":"2025-11-30T17:49:24.085Z"}
+{"level":"info","message":"MongoDB reconnected","readyState":0,"service":"aerive-backend","timestamp":"2025-11-30T18:23:55.601Z"}
+{"level":"warn","message":"MongoDB disconnected","readyState":0,"service":"aerive-backend","timestamp":"2025-11-30T19:59:33.391Z"}
+{"level":"info","message":"MongoDB connected","readyState":1,"service":"aerive-backend","timestamp":"2025-11-30T19:59:33.403Z"}
+{"level":"info","message":"MongoDB reconnected","readyState":1,"service":"aerive-backend","timestamp":"2025-11-30T19:59:33.403Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T20:09:37.919Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T20:09:37.920Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T20:09:37.921Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T20:09:37.921Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T20:09:37.921Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T20:09:37.922Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T20:09:37.922Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T20:09:37.922Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T20:09:37.925Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T20:09:37.925Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T20:09:37.989Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T20:09:37.990Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T20:09:38.014Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T20:09:38.014Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T20:09:38.014Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T20:09:38.014Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T20:09:38.018Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T20:09:38.018Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T20:09:38.019Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T20:09:38.019Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T20:09:38.077Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T20:09:38.077Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T20:09:38.095Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T20:09:38.095Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T20:09:38.104Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T20:09:38.104Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T20:09:38.116Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T20:09:38.116Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T20:09:38.116Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T20:09:38.116Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T20:09:38.162Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T20:09:38.162Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T20:09:38.175Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T20:09:38.175Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T20:09:38.184Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T20:09:38.184Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T20:09:38.198Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T20:09:38.198Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T20:09:38.202Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T20:09:38.202Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T20:09:38.251Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T20:09:38.252Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T20:09:38.263Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T20:09:38.263Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T20:09:38.265Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T20:09:38.265Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T20:09:38.280Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T20:09:38.280Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T20:09:38.291Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T20:09:38.291Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T20:09:38.342Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T20:09:38.342Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T20:09:38.356Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T20:09:38.356Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T20:09:38.357Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T20:09:38.357Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T20:09:38.367Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T20:09:38.367Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T20:09:38.382Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T20:09:38.382Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T20:09:38.431Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T20:09:38.432Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T20:09:38.441Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T20:09:38.441Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T20:09:38.442Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T20:09:38.442Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T20:09:38.450Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T20:09:38.450Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T20:09:38.470Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T20:09:38.470Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T20:09:38.471Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T20:09:38.471Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T20:09:38.471Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T20:09:38.471Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T20:09:38.510Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T20:09:38.510Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T20:09:38.520Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T20:09:38.520Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T20:09:38.529Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T20:09:38.530Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T20:09:38.537Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T20:09:38.537Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T20:09:38.570Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T20:09:38.571Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T20:09:38.571Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T20:09:38.571Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T20:09:38.571Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T20:09:38.571Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T20:09:38.600Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T20:09:38.600Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T20:09:38.618Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T20:09:38.618Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T20:09:38.619Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T20:09:38.619Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T20:09:38.627Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T20:09:38.627Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T20:09:38.658Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T20:09:38.658Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T20:09:38.658Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T20:09:38.659Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T20:09:38.659Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T20:09:38.659Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T20:09:38.680Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T20:09:38.681Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T20:09:38.703Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T20:09:38.703Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T20:09:38.705Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T20:09:38.705Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T20:09:38.710Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T20:09:38.710Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T20:09:38.749Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T20:09:38.749Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T20:09:38.750Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T20:09:38.750Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T20:09:38.750Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T20:09:38.750Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T20:09:38.760Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T20:09:38.760Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T20:09:38.784Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T20:09:38.784Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T20:09:38.793Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T20:09:38.793Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T20:09:38.795Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T20:09:38.795Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T20:09:38.842Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T20:09:38.842Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T20:09:38.842Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T20:09:38.843Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T20:09:38.843Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T20:09:38.843Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T20:09:38.843Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T20:09:38.843Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T20:09:38.879Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T20:09:38.879Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T20:09:38.880Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T20:09:38.880Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T20:09:38.889Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T20:09:38.889Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T20:09:38.928Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T20:09:38.928Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T20:09:38.934Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T20:09:38.934Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T20:09:38.935Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T20:09:38.935Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T20:09:38.936Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T20:09:38.936Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T20:09:38.991Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T20:09:38.991Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T20:09:39.004Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T20:09:39.005Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T20:09:39.005Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T20:09:39.005Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T20:09:39.016Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T20:09:39.016Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T20:09:39.033Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T20:09:39.033Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T20:09:39.035Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T20:09:39.035Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T20:09:39.052Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T20:09:39.052Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T20:09:39.053Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T20:09:39.053Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T20:09:39.084Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T20:09:39.084Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T20:09:39.107Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T20:09:39.107Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T20:09:39.108Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T20:09:39.108Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T20:09:39.109Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T20:09:39.109Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T20:09:39.119Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T20:09:39.119Z"}
+{"level":"info","message":"GET /api/providers/profile-pictures/provider-1764229718861-155911689.jpg","query":{},"service":"aerive-backend","timestamp":"2025-11-30T20:09:39.163Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T20:09:39.636Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T20:09:39.636Z"}
+{"level":"info","message":"GET /api/providers/PROV-1763953801663-9C6GT4","query":{},"service":"aerive-backend","timestamp":"2025-11-30T20:09:39.722Z"}
+{"code":"AUTHENTICATION_ERROR","level":"error","message":"Error: No token provided","service":"aerive-backend","statusCode":401,"timestamp":"2025-11-30T20:09:39.722Z"}
+{"level":"info","message":"GET /api/providers/profile-pictures/provider-1764229718861-155911689.jpg","query":{},"service":"aerive-backend","timestamp":"2025-11-30T20:09:39.757Z"}
+{"level":"info","message":"GET /api/providers/profile-pictures/provider-1764229718861-155911689.jpg","query":{},"service":"aerive-backend","timestamp":"2025-11-30T20:10:00.102Z"}
+{"level":"info","message":"GET /api/providers/profile-pictures/provider-1764229718861-155911689.jpg","query":{},"service":"aerive-backend","timestamp":"2025-11-30T20:10:00.115Z"}
+{"level":"info","message":"GET /api/providers/profile-pictures/provider-1764229718861-155911689.jpg","query":{},"service":"aerive-backend","timestamp":"2025-11-30T20:10:00.186Z"}
+{"level":"info","message":"Uploads directory structure initialized","profilePicturesDir":"/Users/spartan/Documents/Data236_ClassProject/services/uploads/profile-pictures","service":"aerive-backend","timestamp":"2025-11-30T22:10:16.736Z","uploadsDir":"/Users/spartan/Documents/Data236_ClassProject/services/uploads"}
+{"level":"info","message":"MONGODB_URI is set","service":"aerive-backend","timestamp":"2025-11-30T22:10:16.741Z","uri":"mongodb+srv://dygandole_db_user:***@aerive.ajaohyp.mongodb.net/aerive?appName=Aerive&retryWrites=true&w=majority"}
+{"level":"info","message":"Connecting to MongoDB...","service":"aerive-backend","timestamp":"2025-11-30T22:10:16.741Z"}
+{"level":"info","message":"MongoDB connecting...","service":"aerive-backend","timestamp":"2025-11-30T22:10:16.742Z"}
+{"level":"info","message":"MongoDB connected","readyState":1,"service":"aerive-backend","timestamp":"2025-11-30T22:10:17.809Z"}
+{"dbName":"aerive","level":"info","message":"MongoDB Atlas connected and ready for queries","readyState":1,"service":"aerive-backend","timestamp":"2025-11-30T22:10:17.891Z"}
+{"level":"info","message":"MongoDB connected and ready for queries","service":"aerive-backend","timestamp":"2025-11-30T22:10:17.892Z"}
+{"level":"info","message":"Connecting to Redis...","service":"aerive-backend","timestamp":"2025-11-30T22:10:17.892Z"}
+{"level":"info","message":"Redis client connected","service":"aerive-backend","timestamp":"2025-11-30T22:10:17.899Z"}
+{"level":"info","message":"Redis connected successfully","service":"aerive-backend","timestamp":"2025-11-30T22:10:17.902Z"}
+{"dbName":"aerive","level":"info","message":"MongoDB connection verified before loading routes","readyState":1,"service":"aerive-backend","timestamp":"2025-11-30T22:10:17.902Z"}
+{"level":"info","message":"Loading provider routes...","service":"aerive-backend","timestamp":"2025-11-30T22:10:17.902Z"}
+{"level":"info","message":"Provider model verified to use connected mongoose instance","service":"aerive-backend","timestamp":"2025-11-30T22:10:18.484Z"}
+{"level":"info","message":"Provider routes registered successfully","service":"aerive-backend","timestamp":"2025-11-30T22:10:18.484Z"}
+{"level":"info","message":"Registered routes:","routes":[{"path":"/^\\/?(?=\\/|$)/i"},{"path":"/^\\/?(?=\\/|$)/i"},{"path":"/^\\/?(?=\\/|$)/i"},{"path":"/^\\/?(?=\\/|$)/i"},{"path":"/^\\/api\\/providers\\/profile-pictures\\/?(?=\\/|$)/i"},{"methods":{"get":true},"path":"/health"},{"methods":{"get":true},"path":"/readyz"},{"path":"/^\\/?(?=\\/|$)/i"},{"path":"/^\\/api\\/providers\\/?(?=\\/|$)/i"},{"path":"/^\\/?(?=\\/|$)/i"}],"service":"aerive-backend","timestamp":"2025-11-30T22:10:18.484Z"}
+{"level":"info","message":"Provider service running on port 3005","service":"aerive-backend","timestamp":"2025-11-30T22:10:18.486Z"}
+{"level":"info","message":"Ready to accept requests","service":"aerive-backend","timestamp":"2025-11-30T22:10:18.486Z"}
+{"level":"info","message":"Uploads directory structure initialized","profilePicturesDir":"/Users/spartan/Documents/Data236_ClassProject/services/uploads/profile-pictures","service":"aerive-backend","timestamp":"2025-11-30T22:49:24.634Z","uploadsDir":"/Users/spartan/Documents/Data236_ClassProject/services/uploads"}
+{"level":"info","message":"MONGODB_URI is set","service":"aerive-backend","timestamp":"2025-11-30T22:49:24.637Z","uri":"mongodb+srv://dygandole_db_user:***@aerive.ajaohyp.mongodb.net/aerive?appName=Aerive&retryWrites=true&w=majority"}
+{"level":"info","message":"Connecting to MongoDB...","service":"aerive-backend","timestamp":"2025-11-30T22:49:24.637Z"}
+{"level":"info","message":"MongoDB connecting...","service":"aerive-backend","timestamp":"2025-11-30T22:49:24.638Z"}
+{"level":"info","message":"MongoDB connected","readyState":1,"service":"aerive-backend","timestamp":"2025-11-30T22:49:25.677Z"}
+{"dbName":"aerive","level":"info","message":"MongoDB Atlas connected and ready for queries","readyState":1,"service":"aerive-backend","timestamp":"2025-11-30T22:49:25.757Z"}
+{"level":"info","message":"MongoDB connected and ready for queries","service":"aerive-backend","timestamp":"2025-11-30T22:49:25.758Z"}
+{"level":"info","message":"Connecting to Redis...","service":"aerive-backend","timestamp":"2025-11-30T22:49:25.758Z"}
+{"level":"info","message":"Redis client connected","service":"aerive-backend","timestamp":"2025-11-30T22:49:25.766Z"}
+{"level":"info","message":"Redis connected successfully","service":"aerive-backend","timestamp":"2025-11-30T22:49:25.769Z"}
+{"dbName":"aerive","level":"info","message":"MongoDB connection verified before loading routes","readyState":1,"service":"aerive-backend","timestamp":"2025-11-30T22:49:25.769Z"}
+{"level":"info","message":"Loading provider routes...","service":"aerive-backend","timestamp":"2025-11-30T22:49:25.769Z"}
+{"level":"info","message":"Provider model verified to use connected mongoose instance","service":"aerive-backend","timestamp":"2025-11-30T22:49:26.281Z"}
+{"level":"info","message":"Provider routes registered successfully","service":"aerive-backend","timestamp":"2025-11-30T22:49:26.281Z"}
+{"level":"info","message":"Registered routes:","routes":[{"path":"/^\\/?(?=\\/|$)/i"},{"path":"/^\\/?(?=\\/|$)/i"},{"path":"/^\\/?(?=\\/|$)/i"},{"path":"/^\\/?(?=\\/|$)/i"},{"path":"/^\\/api\\/providers\\/profile-pictures\\/?(?=\\/|$)/i"},{"methods":{"get":true},"path":"/health"},{"methods":{"get":true},"path":"/readyz"},{"path":"/^\\/?(?=\\/|$)/i"},{"path":"/^\\/api\\/providers\\/?(?=\\/|$)/i"},{"path":"/^\\/?(?=\\/|$)/i"}],"service":"aerive-backend","timestamp":"2025-11-30T22:49:26.281Z"}
+{"level":"info","message":"Provider service running on port 3005","service":"aerive-backend","timestamp":"2025-11-30T22:49:26.282Z"}
+{"level":"info","message":"Ready to accept requests","service":"aerive-backend","timestamp":"2025-11-30T22:49:26.282Z"}
+{"level":"warn","message":"MongoDB disconnected","readyState":0,"service":"aerive-backend","timestamp":"2025-11-30T23:56:53.919Z"}
+{"level":"info","message":"MongoDB connected","readyState":1,"service":"aerive-backend","timestamp":"2025-11-30T23:57:04.301Z"}
+{"level":"info","message":"MongoDB reconnected","readyState":1,"service":"aerive-backend","timestamp":"2025-11-30T23:57:04.302Z"}
+{"level":"info","message":"MongoDB reconnected","readyState":0,"service":"aerive-backend","timestamp":"2025-12-01T00:13:33.225Z"}
+{"level":"warn","message":"MongoDB disconnected","readyState":0,"service":"aerive-backend","timestamp":"2025-12-01T00:13:43.611Z"}
+{"level":"info","message":"MongoDB connected","readyState":1,"service":"aerive-backend","timestamp":"2025-12-01T00:13:43.624Z"}
+{"level":"info","message":"MongoDB reconnected","readyState":1,"service":"aerive-backend","timestamp":"2025-12-01T00:13:43.625Z"}
+{"level":"info","message":"MongoDB reconnected","readyState":0,"service":"aerive-backend","timestamp":"2025-12-01T00:36:28.190Z"}
+{"level":"info","message":"MongoDB reconnected","readyState":0,"service":"aerive-backend","timestamp":"2025-12-01T00:36:28.192Z"}

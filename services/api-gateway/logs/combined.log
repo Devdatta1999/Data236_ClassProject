@@ -1,0 +1,243 @@
+{"level":"info","message":"API Gateway running on port 3000","service":"aerive-backend","timestamp":"2025-11-30T03:07:09.316Z"}
+{"level":"info","message":"Service endpoints:","service":"aerive-backend","timestamp":"2025-11-30T03:07:09.320Z"}
+{"level":"info","message":"  User Service: http://localhost:3001","service":"aerive-backend","timestamp":"2025-11-30T03:07:09.320Z"}
+{"level":"info","message":"  Listing Service: http://localhost:3002","service":"aerive-backend","timestamp":"2025-11-30T03:07:09.321Z"}
+{"level":"info","message":"  Booking Service: http://localhost:3003","service":"aerive-backend","timestamp":"2025-11-30T03:07:09.321Z"}
+{"level":"info","message":"  Billing Service: http://localhost:3004","service":"aerive-backend","timestamp":"2025-11-30T03:07:09.321Z"}
+{"level":"info","message":"  Provider Service: http://localhost:3005","service":"aerive-backend","timestamp":"2025-11-30T03:07:09.321Z"}
+{"level":"info","message":"  Admin Service: http://localhost:3006","service":"aerive-backend","timestamp":"2025-11-30T03:07:09.321Z"}
+{"level":"info","message":"API Gateway running on port 3000","service":"aerive-backend","timestamp":"2025-11-30T03:38:41.526Z"}
+{"level":"info","message":"Service endpoints:","service":"aerive-backend","timestamp":"2025-11-30T03:38:41.533Z"}
+{"level":"info","message":"  User Service: http://localhost:3001","service":"aerive-backend","timestamp":"2025-11-30T03:38:41.533Z"}
+{"level":"info","message":"  Listing Service: http://localhost:3002","service":"aerive-backend","timestamp":"2025-11-30T03:38:41.534Z"}
+{"level":"info","message":"  Booking Service: http://localhost:3003","service":"aerive-backend","timestamp":"2025-11-30T03:38:41.534Z"}
+{"level":"info","message":"  Billing Service: http://localhost:3004","service":"aerive-backend","timestamp":"2025-11-30T03:38:41.534Z"}
+{"level":"info","message":"  Provider Service: http://localhost:3005","service":"aerive-backend","timestamp":"2025-11-30T03:38:41.534Z"}
+{"level":"info","message":"  Admin Service: http://localhost:3006","service":"aerive-backend","timestamp":"2025-11-30T03:38:41.534Z"}
+{"contentType":"application/json","level":"info","message":"Proxying to User Service: POST /api/users/login","service":"aerive-backend","timestamp":"2025-11-30T03:43:26.697Z"}
+{"level":"info","message":"Proxying to User Service: GET /api/users/profile-pictures/profile-1764295597214-246944908.webp","service":"aerive-backend","timestamp":"2025-11-30T03:43:27.143Z"}
+{"level":"info","message":"Proxying to User Service: GET /api/users/333-44-5555/reviews","service":"aerive-backend","timestamp":"2025-11-30T03:43:43.575Z"}
+{"level":"info","message":"Proxying to User Service: GET /api/users/333-44-5555/reviews","service":"aerive-backend","timestamp":"2025-11-30T03:43:43.677Z"}
+{"level":"info","message":"Proxying to Booking Service: GET /api/bookings/user/333-44-5555","service":"aerive-backend","timestamp":"2025-11-30T03:43:43.682Z"}
+{"level":"info","message":"Proxying to Booking Service: GET /api/bookings/user/333-44-5555","service":"aerive-backend","timestamp":"2025-11-30T03:43:43.772Z"}
+{"hasBody":false,"level":"info","message":"Proxying to Provider Service: GET /api/providers/profile-pictures/provider-1764229718861-155911689.jpg","service":"aerive-backend","target":"http://localhost:3005","timestamp":"2025-11-30T03:43:44.617Z"}
+{"level":"info","message":"Provider Service responded: 404 for GET /api/providers/profile-pictures/provider-1764229718861-155911689.jpg","service":"aerive-backend","timestamp":"2025-11-30T03:43:44.625Z"}
+{"hasBody":false,"level":"info","message":"Proxying to Provider Service: GET /api/providers/profile-pictures/provider-1764229718861-155911689.jpg","service":"aerive-backend","target":"http://localhost:3005","timestamp":"2025-11-30T03:43:45.185Z"}
+{"level":"info","message":"Provider Service responded: 404 for GET /api/providers/profile-pictures/provider-1764229718861-155911689.jpg","service":"aerive-backend","timestamp":"2025-11-30T03:43:45.187Z"}
+{"level":"info","message":"Proxying to User Service: GET /api/users/profile-pictures/profile-1764295597214-246944908.webp","service":"aerive-backend","timestamp":"2025-11-30T03:54:34.406Z"}
+{"contentType":"application/json","level":"info","message":"Proxying to User Service: POST /api/users/login","service":"aerive-backend","timestamp":"2025-11-30T04:00:00.963Z"}
+{"level":"info","message":"Proxying to User Service: GET /api/users/profile-pictures/profile-1764295597214-246944908.webp","service":"aerive-backend","timestamp":"2025-11-30T04:00:01.310Z"}
+{"level":"info","message":"Proxying to User Service: GET /api/users/333-44-5555/reviews","service":"aerive-backend","timestamp":"2025-11-30T04:00:04.401Z"}
+{"level":"info","message":"Proxying to User Service: GET /api/users/333-44-5555/reviews","service":"aerive-backend","timestamp":"2025-11-30T04:00:04.504Z"}
+{"level":"info","message":"Proxying to Booking Service: GET /api/bookings/user/333-44-5555","service":"aerive-backend","timestamp":"2025-11-30T04:00:04.509Z"}
+{"level":"info","message":"Proxying to Booking Service: GET /api/bookings/user/333-44-5555","service":"aerive-backend","timestamp":"2025-11-30T04:00:04.600Z"}
+{"hasBody":false,"level":"info","message":"Proxying to Provider Service: GET /api/providers/profile-pictures/provider-1764229718861-155911689.jpg","service":"aerive-backend","target":"http://localhost:3005","timestamp":"2025-11-30T04:00:04.824Z"}
+{"level":"info","message":"Provider Service responded: 404 for GET /api/providers/profile-pictures/provider-1764229718861-155911689.jpg","service":"aerive-backend","timestamp":"2025-11-30T04:00:04.829Z"}
+{"level":"info","message":"Proxying to User Service: GET /api/users/profile-pictures/profile-1764295597214-246944908.webp","service":"aerive-backend","timestamp":"2025-11-30T05:09:52.734Z"}
+{"level":"info","message":"Proxying to User Service: GET /api/users/333-44-5555/reviews","service":"aerive-backend","timestamp":"2025-11-30T05:09:52.764Z"}
+{"level":"info","message":"Proxying to User Service: GET /api/users/333-44-5555/reviews","service":"aerive-backend","timestamp":"2025-11-30T05:09:52.882Z"}
+{"level":"info","message":"Proxying to Booking Service: GET /api/bookings/user/333-44-5555","service":"aerive-backend","timestamp":"2025-11-30T05:09:52.888Z"}
+{"level":"info","message":"Proxying to User Service: GET /api/users/333-44-5555/reviews","service":"aerive-backend","timestamp":"2025-11-30T05:09:52.977Z"}
+{"level":"info","message":"Proxying to Booking Service: GET /api/bookings/user/333-44-5555","service":"aerive-backend","timestamp":"2025-11-30T05:09:53.014Z"}
+{"level":"info","message":"Proxying to Booking Service: GET /api/bookings/user/333-44-5555","service":"aerive-backend","timestamp":"2025-11-30T05:09:53.068Z"}
+{"hasBody":false,"level":"info","message":"Proxying to Provider Service: GET /api/providers/profile-pictures/provider-1764229718861-155911689.jpg","service":"aerive-backend","target":"http://localhost:3005","timestamp":"2025-11-30T05:09:53.867Z"}
+{"level":"info","message":"Provider Service responded: 404 for GET /api/providers/profile-pictures/provider-1764229718861-155911689.jpg","service":"aerive-backend","timestamp":"2025-11-30T05:09:53.877Z"}
+{"level":"info","message":"Proxying to User Service: GET /api/users/profile-pictures/profile-1764295597214-246944908.webp","service":"aerive-backend","timestamp":"2025-11-30T05:56:28.754Z"}
+{"level":"info","message":"Proxying to User Service: GET /api/users/profile-pictures/profile-1764295597214-246944908.webp","service":"aerive-backend","timestamp":"2025-11-30T08:23:49.458Z"}
+{"level":"info","message":"Proxying to User Service: GET /api/users/profile-pictures/profile-1764295597214-246944908.webp","service":"aerive-backend","timestamp":"2025-11-30T08:36:58.108Z"}
+{"level":"info","message":"Proxying to User Service: GET /api/users/profile-pictures/profile-1764295597214-246944908.webp","service":"aerive-backend","timestamp":"2025-11-30T15:41:59.208Z"}
+{"level":"info","message":"Proxying to User Service: GET /api/users/profile-pictures/profile-1764295597214-246944908.webp","service":"aerive-backend","timestamp":"2025-11-30T15:43:09.041Z"}
+{"level":"info","message":"Proxying to User Service: GET /api/users/profile-pictures/profile-1764295597214-246944908.webp","service":"aerive-backend","timestamp":"2025-11-30T15:50:03.166Z"}
+{"level":"info","message":"Proxying to User Service: GET /api/users/profile-pictures/profile-1764295597214-246944908.webp","service":"aerive-backend","timestamp":"2025-11-30T16:58:12.491Z"}
+{"level":"info","message":"Proxying to User Service: GET /api/users/profile-pictures/profile-1764295597214-246944908.webp","service":"aerive-backend","timestamp":"2025-11-30T16:58:12.503Z"}
+{"level":"info","message":"Proxying to User Service: GET /api/users/profile-pictures/profile-1764295597214-246944908.webp","service":"aerive-backend","timestamp":"2025-11-30T16:58:12.506Z"}
+{"level":"info","message":"Proxying to User Service: GET /api/users/profile-pictures/profile-1764295597214-246944908.webp","service":"aerive-backend","timestamp":"2025-11-30T20:04:48.009Z"}
+{"level":"info","message":"Proxying to User Service: GET /api/users/profile-pictures/profile-1764295597214-246944908.webp","service":"aerive-backend","timestamp":"2025-11-30T20:06:29.671Z"}
+{"level":"info","message":"Proxying to User Service: GET /api/users/333-44-5555/reviews","service":"aerive-backend","timestamp":"2025-11-30T20:09:37.501Z"}
+{"level":"info","message":"Proxying to User Service: GET /api/users/333-44-5555/reviews","service":"aerive-backend","timestamp":"2025-11-30T20:09:37.604Z"}
+{"level":"info","message":"Proxying to Booking Service: GET /api/bookings/user/333-44-5555","service":"aerive-backend","timestamp":"2025-11-30T20:09:37.609Z"}
+{"level":"info","message":"Proxying to Booking Service: GET /api/bookings/user/333-44-5555","service":"aerive-backend","timestamp":"2025-11-30T20:09:37.697Z"}
+{"hasBody":false,"level":"info","message":"Proxying to Provider Service: GET /api/providers/profile-pictures/provider-1764229718861-155911689.jpg","service":"aerive-backend","target":"http://localhost:3005","timestamp":"2025-11-30T20:09:39.161Z"}
+{"level":"info","message":"Provider Service responded: 404 for GET /api/providers/profile-pictures/provider-1764229718861-155911689.jpg","service":"aerive-backend","timestamp":"2025-11-30T20:09:39.164Z"}
+{"hasBody":false,"level":"info","message":"Proxying to Provider Service: GET /api/providers/profile-pictures/provider-1764229718861-155911689.jpg","service":"aerive-backend","target":"http://localhost:3005","timestamp":"2025-11-30T20:09:39.754Z"}
+{"level":"info","message":"Provider Service responded: 404 for GET /api/providers/profile-pictures/provider-1764229718861-155911689.jpg","service":"aerive-backend","timestamp":"2025-11-30T20:09:39.757Z"}
+{"level":"info","message":"Proxying to User Service: GET /api/users/333-44-5555","service":"aerive-backend","timestamp":"2025-11-30T20:09:41.640Z"}
+{"level":"info","message":"Proxying to User Service: GET /api/users/333-44-5555/cards","service":"aerive-backend","timestamp":"2025-11-30T20:09:41.641Z"}
+{"level":"info","message":"Proxying to User Service: GET /api/users/333-44-5555/cards","service":"aerive-backend","timestamp":"2025-11-30T20:09:41.737Z"}
+{"level":"info","message":"Proxying to User Service: GET /api/users/333-44-5555","service":"aerive-backend","timestamp":"2025-11-30T20:09:41.778Z"}
+{"level":"info","message":"Proxying to User Service: GET /api/users/profile-pictures/profile-1764489703549-592060150.webp","service":"aerive-backend","timestamp":"2025-11-30T20:09:41.790Z"}
+{"contentType":"multipart/form-data; boundary=----WebKitFormBoundary5rEcJ7AT1pWrpF7B","level":"info","message":"Proxying to User Service: POST /api/users/upload/profile-picture","service":"aerive-backend","timestamp":"2025-11-30T20:09:46.532Z"}
+{"contentType":"application/json","level":"info","message":"Proxying to User Service: PUT /api/users/333-44-5555","service":"aerive-backend","timestamp":"2025-11-30T20:09:46.597Z"}
+{"level":"info","message":"Proxying to User Service: GET /api/users/profile-pictures/profile-1764533386544-480415265.png","service":"aerive-backend","timestamp":"2025-11-30T20:09:46.855Z"}
+{"level":"info","message":"Proxying to User Service: GET /api/users/333-44-5555","service":"aerive-backend","timestamp":"2025-11-30T20:09:46.855Z"}
+{"contentType":"application/json","level":"info","message":"Proxying to User Service: PUT /api/users/333-44-5555","service":"aerive-backend","timestamp":"2025-11-30T20:09:50.090Z"}
+{"level":"info","message":"Proxying to User Service: GET /api/users/333-44-5555","service":"aerive-backend","timestamp":"2025-11-30T20:09:50.314Z"}
+{"level":"info","message":"Proxying to User Service: GET /api/users/333-44-5555/reviews","service":"aerive-backend","timestamp":"2025-11-30T20:09:59.964Z"}
+{"level":"info","message":"Proxying to User Service: GET /api/users/333-44-5555/reviews","service":"aerive-backend","timestamp":"2025-11-30T20:10:00.062Z"}
+{"level":"info","message":"Proxying to Booking Service: GET /api/bookings/user/333-44-5555","service":"aerive-backend","timestamp":"2025-11-30T20:10:00.067Z"}
+{"hasBody":false,"level":"info","message":"Proxying to Provider Service: GET /api/providers/profile-pictures/provider-1764229718861-155911689.jpg","service":"aerive-backend","target":"http://localhost:3005","timestamp":"2025-11-30T20:10:00.100Z"}
+{"level":"info","message":"Provider Service responded: 404 for GET /api/providers/profile-pictures/provider-1764229718861-155911689.jpg","service":"aerive-backend","timestamp":"2025-11-30T20:10:00.103Z"}
+{"hasBody":false,"level":"info","message":"Proxying to Provider Service: GET /api/providers/profile-pictures/provider-1764229718861-155911689.jpg","service":"aerive-backend","target":"http://localhost:3005","timestamp":"2025-11-30T20:10:00.114Z"}
+{"level":"info","message":"Provider Service responded: 404 for GET /api/providers/profile-pictures/provider-1764229718861-155911689.jpg","service":"aerive-backend","timestamp":"2025-11-30T20:10:00.116Z"}
+{"level":"info","message":"Proxying to Booking Service: GET /api/bookings/user/333-44-5555","service":"aerive-backend","timestamp":"2025-11-30T20:10:00.157Z"}
+{"hasBody":false,"level":"info","message":"Proxying to Provider Service: GET /api/providers/profile-pictures/provider-1764229718861-155911689.jpg","service":"aerive-backend","target":"http://localhost:3005","timestamp":"2025-11-30T20:10:00.184Z"}
+{"level":"info","message":"Provider Service responded: 404 for GET /api/providers/profile-pictures/provider-1764229718861-155911689.jpg","service":"aerive-backend","timestamp":"2025-11-30T20:10:00.186Z"}
+{"level":"info","message":"Proxying to User Service: GET /api/users/profile-pictures/profile-1764533386544-480415265.png","service":"aerive-backend","timestamp":"2025-11-30T20:54:41.736Z"}
+{"level":"info","message":"API Gateway running on port 3000","service":"aerive-backend","timestamp":"2025-11-30T22:12:14.484Z"}
+{"level":"info","message":"Service endpoints:","service":"aerive-backend","timestamp":"2025-11-30T22:12:14.489Z"}
+{"level":"info","message":"  User Service: http://localhost:3001","service":"aerive-backend","timestamp":"2025-11-30T22:12:14.489Z"}
+{"level":"info","message":"  Listing Service: http://localhost:3002","service":"aerive-backend","timestamp":"2025-11-30T22:12:14.490Z"}
+{"level":"info","message":"  Booking Service: http://localhost:3003","service":"aerive-backend","timestamp":"2025-11-30T22:12:14.490Z"}
+{"level":"info","message":"  Billing Service: http://localhost:3004","service":"aerive-backend","timestamp":"2025-11-30T22:12:14.490Z"}
+{"level":"info","message":"  Provider Service: http://localhost:3005","service":"aerive-backend","timestamp":"2025-11-30T22:12:14.490Z"}
+{"level":"info","message":"  Admin Service: http://localhost:3006","service":"aerive-backend","timestamp":"2025-11-30T22:12:14.490Z"}
+{"contentType":"application/json","level":"info","message":"Proxying to User Service: POST /api/users/login","service":"aerive-backend","timestamp":"2025-11-30T22:23:26.343Z"}
+{"contentType":"application/json","level":"info","message":"Proxying to User Service: POST /api/users/login","service":"aerive-backend","timestamp":"2025-11-30T22:23:34.761Z"}
+{"contentType":"application/json","level":"info","message":"Proxying to User Service: POST /api/users/login","service":"aerive-backend","timestamp":"2025-11-30T22:26:05.701Z"}
+{"contentType":"application/json","level":"info","message":"Proxying to User Service: POST /api/users/login","service":"aerive-backend","timestamp":"2025-11-30T22:28:46.160Z"}
+{"level":"info","message":"Proxying to User Service: GET /api/users/989-22-2339/reviews","service":"aerive-backend","timestamp":"2025-11-30T22:30:29.784Z"}
+{"level":"info","message":"Proxying to User Service: GET /api/users/989-22-2339/reviews","service":"aerive-backend","timestamp":"2025-11-30T22:30:29.803Z"}
+{"level":"info","message":"Proxying to Booking Service: GET /api/bookings/user/989-22-2339","service":"aerive-backend","timestamp":"2025-11-30T22:30:29.807Z"}
+{"level":"info","message":"Proxying to Booking Service: GET /api/bookings/user/989-22-2339","service":"aerive-backend","timestamp":"2025-11-30T22:30:29.814Z"}
+{"level":"info","message":"Proxying to User Service: GET /api/users/989-22-2339/reviews","service":"aerive-backend","timestamp":"2025-11-30T22:30:35.130Z"}
+{"level":"info","message":"Proxying to User Service: GET /api/users/989-22-2339/reviews","service":"aerive-backend","timestamp":"2025-11-30T22:30:35.143Z"}
+{"level":"info","message":"Proxying to Booking Service: GET /api/bookings/user/989-22-2339","service":"aerive-backend","timestamp":"2025-11-30T22:30:35.146Z"}
+{"level":"info","message":"Proxying to Booking Service: GET /api/bookings/user/989-22-2339","service":"aerive-backend","timestamp":"2025-11-30T22:30:35.155Z"}
+{"level":"info","message":"Proxying to User Service: GET /api/users/989-22-2339/reviews","service":"aerive-backend","timestamp":"2025-11-30T22:30:38.162Z"}
+{"level":"info","message":"Proxying to User Service: GET /api/users/989-22-2339/reviews","service":"aerive-backend","timestamp":"2025-11-30T22:30:38.173Z"}
+{"level":"info","message":"Proxying to Booking Service: GET /api/bookings/user/989-22-2339","service":"aerive-backend","timestamp":"2025-11-30T22:30:38.184Z"}
+{"level":"info","message":"Proxying to Booking Service: GET /api/bookings/user/989-22-2339","service":"aerive-backend","timestamp":"2025-11-30T22:30:38.192Z"}
+{"level":"info","message":"Proxying to User Service: GET /api/users/989-22-2339/reviews","service":"aerive-backend","timestamp":"2025-11-30T22:30:40.606Z"}
+{"level":"info","message":"Proxying to User Service: GET /api/users/989-22-2339/reviews","service":"aerive-backend","timestamp":"2025-11-30T22:30:40.613Z"}
+{"level":"info","message":"Proxying to Booking Service: GET /api/bookings/user/989-22-2339","service":"aerive-backend","timestamp":"2025-11-30T22:30:40.618Z"}
+{"level":"info","message":"Proxying to Booking Service: GET /api/bookings/user/989-22-2339","service":"aerive-backend","timestamp":"2025-11-30T22:30:40.625Z"}
+{"level":"info","message":"Proxying to User Service: GET /api/users/989-22-2339","service":"aerive-backend","timestamp":"2025-11-30T22:30:46.373Z"}
+{"level":"info","message":"Proxying to User Service: GET /api/users/989-22-2339/cards","service":"aerive-backend","timestamp":"2025-11-30T22:30:46.374Z"}
+{"level":"info","message":"Proxying to User Service: GET /api/users/989-22-2339/cards","service":"aerive-backend","timestamp":"2025-11-30T22:30:46.387Z"}
+{"level":"info","message":"Proxying to User Service: GET /api/users/989-22-2339","service":"aerive-backend","timestamp":"2025-11-30T22:30:46.393Z"}
+{"level":"info","message":"Proxying to User Service: GET /api/users/989-22-2339/reviews","service":"aerive-backend","timestamp":"2025-11-30T22:30:48.634Z"}
+{"level":"info","message":"Proxying to User Service: GET /api/users/989-22-2339/reviews","service":"aerive-backend","timestamp":"2025-11-30T22:30:48.641Z"}
+{"level":"info","message":"Proxying to Booking Service: GET /api/bookings/user/989-22-2339","service":"aerive-backend","timestamp":"2025-11-30T22:30:48.646Z"}
+{"level":"info","message":"Proxying to Booking Service: GET /api/bookings/user/989-22-2339","service":"aerive-backend","timestamp":"2025-11-30T22:30:48.655Z"}
+{"level":"info","message":"Proxying to User Service: GET /api/users/989-22-2339/reviews","service":"aerive-backend","timestamp":"2025-11-30T22:30:54.627Z"}
+{"level":"info","message":"Proxying to User Service: GET /api/users/989-22-2339/reviews","service":"aerive-backend","timestamp":"2025-11-30T22:30:54.633Z"}
+{"level":"info","message":"Proxying to Booking Service: GET /api/bookings/user/989-22-2339","service":"aerive-backend","timestamp":"2025-11-30T22:30:54.637Z"}
+{"level":"info","message":"Proxying to Booking Service: GET /api/bookings/user/989-22-2339","service":"aerive-backend","timestamp":"2025-11-30T22:30:54.655Z"}
+{"level":"info","message":"Proxying to User Service: GET /api/users/989-22-2339/reviews","service":"aerive-backend","timestamp":"2025-11-30T22:33:08.427Z"}
+{"level":"info","message":"Proxying to User Service: GET /api/users/989-22-2339/reviews","service":"aerive-backend","timestamp":"2025-11-30T22:33:08.450Z"}
+{"level":"info","message":"Proxying to Booking Service: GET /api/bookings/user/989-22-2339","service":"aerive-backend","timestamp":"2025-11-30T22:33:08.454Z"}
+{"level":"info","message":"Proxying to Booking Service: GET /api/bookings/user/989-22-2339","service":"aerive-backend","timestamp":"2025-11-30T22:33:08.465Z"}
+{"level":"info","message":"Proxying to User Service: GET /api/users/989-22-2339/reviews","service":"aerive-backend","timestamp":"2025-11-30T22:33:12.326Z"}
+{"level":"info","message":"Proxying to User Service: GET /api/users/989-22-2339/reviews","service":"aerive-backend","timestamp":"2025-11-30T22:33:12.333Z"}
+{"level":"info","message":"Proxying to Booking Service: GET /api/bookings/user/989-22-2339","service":"aerive-backend","timestamp":"2025-11-30T22:33:12.345Z"}
+{"level":"info","message":"Proxying to Booking Service: GET /api/bookings/user/989-22-2339","service":"aerive-backend","timestamp":"2025-11-30T22:33:12.346Z"}
+{"level":"info","message":"Proxying to User Service: GET /api/users/989-22-2339/reviews","service":"aerive-backend","timestamp":"2025-11-30T22:35:16.354Z"}
+{"level":"info","message":"Proxying to Booking Service: GET /api/bookings/user/989-22-2339","service":"aerive-backend","timestamp":"2025-11-30T22:35:16.374Z"}
+{"level":"info","message":"Proxying to User Service: GET /api/users/989-22-2339/reviews","service":"aerive-backend","timestamp":"2025-11-30T22:35:33.340Z"}
+{"level":"info","message":"Proxying to Booking Service: GET /api/bookings/user/989-22-2339","service":"aerive-backend","timestamp":"2025-11-30T22:35:33.350Z"}
+{"level":"info","message":"Proxying to User Service: GET /api/users/989-22-2339/reviews","service":"aerive-backend","timestamp":"2025-11-30T22:35:57.384Z"}
+{"level":"info","message":"Proxying to User Service: GET /api/users/989-22-2339/reviews","service":"aerive-backend","timestamp":"2025-11-30T22:35:57.384Z"}
+{"level":"info","message":"Proxying to User Service: GET /api/users/989-22-2339/reviews","service":"aerive-backend","timestamp":"2025-11-30T22:35:57.404Z"}
+{"level":"info","message":"Proxying to Booking Service: GET /api/bookings/user/989-22-2339","service":"aerive-backend","timestamp":"2025-11-30T22:35:57.409Z"}
+{"level":"info","message":"Proxying to Booking Service: GET /api/bookings/user/989-22-2339","service":"aerive-backend","timestamp":"2025-11-30T22:35:57.513Z"}
+{"level":"info","message":"Proxying to Booking Service: GET /api/bookings/user/989-22-2339","service":"aerive-backend","timestamp":"2025-11-30T22:35:57.514Z"}
+{"contentType":"application/json","level":"info","message":"Proxying to User Service: POST /api/users/login","service":"aerive-backend","timestamp":"2025-11-30T22:54:50.801Z"}
+{"level":"info","message":"Proxying to User Service: GET /api/users/989-22-2339/reviews","service":"aerive-backend","timestamp":"2025-11-30T22:54:52.859Z"}
+{"level":"info","message":"Proxying to User Service: GET /api/users/989-22-2339/reviews","service":"aerive-backend","timestamp":"2025-11-30T22:54:52.870Z"}
+{"level":"info","message":"Proxying to Booking Service: GET /api/bookings/user/989-22-2339","service":"aerive-backend","timestamp":"2025-11-30T22:54:52.871Z"}
+{"level":"info","message":"Proxying to Booking Service: GET /api/bookings/user/989-22-2339","service":"aerive-backend","timestamp":"2025-11-30T22:54:52.877Z"}
+{"level":"info","message":"Proxying to User Service: GET /api/users/989-22-2339/reviews","service":"aerive-backend","timestamp":"2025-11-30T22:56:17.365Z"}
+{"level":"info","message":"Proxying to User Service: GET /api/users/989-22-2339/reviews","service":"aerive-backend","timestamp":"2025-11-30T22:56:17.375Z"}
+{"level":"info","message":"Proxying to Booking Service: GET /api/bookings/user/989-22-2339","service":"aerive-backend","timestamp":"2025-11-30T22:56:17.377Z"}
+{"level":"info","message":"Proxying to Booking Service: GET /api/bookings/user/989-22-2339","service":"aerive-backend","timestamp":"2025-11-30T22:56:17.392Z"}
+{"level":"info","message":"API Gateway running on port 3000","service":"aerive-backend","timestamp":"2025-12-01T00:50:29.272Z"}
+{"level":"info","message":"Service endpoints:","service":"aerive-backend","timestamp":"2025-12-01T00:50:29.277Z"}
+{"level":"info","message":"  User Service: http://localhost:3001","service":"aerive-backend","timestamp":"2025-12-01T00:50:29.277Z"}
+{"level":"info","message":"  Listing Service: http://localhost:3002","service":"aerive-backend","timestamp":"2025-12-01T00:50:29.277Z"}
+{"level":"info","message":"  Booking Service: http://localhost:3003","service":"aerive-backend","timestamp":"2025-12-01T00:50:29.278Z"}
+{"level":"info","message":"  Billing Service: http://localhost:3004","service":"aerive-backend","timestamp":"2025-12-01T00:50:29.278Z"}
+{"level":"info","message":"  Provider Service: http://localhost:3005","service":"aerive-backend","timestamp":"2025-12-01T00:50:29.278Z"}
+{"level":"info","message":"  Admin Service: http://localhost:3006","service":"aerive-backend","timestamp":"2025-12-01T00:50:29.279Z"}
+{"level":"info","message":"API Gateway running on port 3000","service":"aerive-backend","timestamp":"2025-12-01T01:24:21.081Z"}
+{"level":"info","message":"Service endpoints:","service":"aerive-backend","timestamp":"2025-12-01T01:24:21.083Z"}
+{"level":"info","message":"  User Service: http://localhost:3001","service":"aerive-backend","timestamp":"2025-12-01T01:24:21.084Z"}
+{"level":"info","message":"  Listing Service: http://localhost:3002","service":"aerive-backend","timestamp":"2025-12-01T01:24:21.084Z"}
+{"level":"info","message":"  Booking Service: http://localhost:3003","service":"aerive-backend","timestamp":"2025-12-01T01:24:21.084Z"}
+{"level":"info","message":"  Billing Service: http://localhost:3004","service":"aerive-backend","timestamp":"2025-12-01T01:24:21.084Z"}
+{"level":"info","message":"  Provider Service: http://localhost:3005","service":"aerive-backend","timestamp":"2025-12-01T01:24:21.084Z"}
+{"level":"info","message":"  Admin Service: http://localhost:3006","service":"aerive-backend","timestamp":"2025-12-01T01:24:21.084Z"}
+{"contentType":"application/json","level":"info","message":"Proxying to User Service: POST /api/users/login","service":"aerive-backend","timestamp":"2025-12-01T01:25:59.285Z"}
+{"code":"ECONNREFUSED","level":"error","message":"User Service proxy error:","service":"aerive-backend","stack":"AggregateError [ECONNREFUSED]: \n    at internalConnectMultiple (node:net:1134:18)\n    at afterConnectMultiple (node:net:1715:7)","timestamp":"2025-12-01T01:25:59.301Z"}
+{"contentType":"application/json","level":"info","message":"Proxying to User Service: POST /api/users/login","service":"aerive-backend","timestamp":"2025-12-01T01:26:06.255Z"}
+{"code":"ECONNREFUSED","level":"error","message":"User Service proxy error:","service":"aerive-backend","stack":"AggregateError [ECONNREFUSED]: \n    at internalConnectMultiple (node:net:1134:18)\n    at afterConnectMultiple (node:net:1715:7)","timestamp":"2025-12-01T01:26:06.258Z"}
+{"level":"info","message":"API Gateway running on port 3000","service":"aerive-backend","timestamp":"2025-12-01T01:33:27.152Z"}
+{"level":"info","message":"Service endpoints:","service":"aerive-backend","timestamp":"2025-12-01T01:33:27.154Z"}
+{"level":"info","message":"  User Service: http://localhost:3001","service":"aerive-backend","timestamp":"2025-12-01T01:33:27.154Z"}
+{"level":"info","message":"  Listing Service: http://localhost:3002","service":"aerive-backend","timestamp":"2025-12-01T01:33:27.154Z"}
+{"level":"info","message":"  Booking Service: http://localhost:3003","service":"aerive-backend","timestamp":"2025-12-01T01:33:27.154Z"}
+{"level":"info","message":"  Billing Service: http://localhost:3004","service":"aerive-backend","timestamp":"2025-12-01T01:33:27.154Z"}
+{"level":"info","message":"  Provider Service: http://localhost:3005","service":"aerive-backend","timestamp":"2025-12-01T01:33:27.154Z"}
+{"level":"info","message":"  Admin Service: http://localhost:3006","service":"aerive-backend","timestamp":"2025-12-01T01:33:27.155Z"}
+{"contentType":"application/json","level":"info","message":"Proxying to User Service: POST /api/users/login","service":"aerive-backend","timestamp":"2025-12-01T01:35:27.120Z"}
+{"level":"info","message":"Proxying to User Service: GET /api/users/989-22-2339/reviews","service":"aerive-backend","timestamp":"2025-12-01T01:35:28.377Z"}
+{"level":"info","message":"Proxying to User Service: GET /api/users/989-22-2339/reviews","service":"aerive-backend","timestamp":"2025-12-01T01:35:28.391Z"}
+{"level":"info","message":"Proxying to Booking Service: GET /api/bookings/user/989-22-2339","service":"aerive-backend","timestamp":"2025-12-01T01:35:28.397Z"}
+{"level":"info","message":"Proxying to Booking Service: GET /api/bookings/user/989-22-2339","service":"aerive-backend","timestamp":"2025-12-01T01:35:28.407Z"}
+{"contentType":"application/json","level":"info","message":"Proxying to User Service: POST /api/users/login","service":"aerive-backend","timestamp":"2025-12-01T02:01:15.571Z"}
+{"level":"info","message":"Proxying to User Service: GET /api/users/989-22-2339/reviews","service":"aerive-backend","timestamp":"2025-12-01T02:01:16.737Z"}
+{"level":"info","message":"Proxying to User Service: GET /api/users/989-22-2339/reviews","service":"aerive-backend","timestamp":"2025-12-01T02:01:16.747Z"}
+{"level":"info","message":"Proxying to Booking Service: GET /api/bookings/user/989-22-2339","service":"aerive-backend","timestamp":"2025-12-01T02:01:16.748Z"}
+{"level":"info","message":"Proxying to Booking Service: GET /api/bookings/user/989-22-2339","service":"aerive-backend","timestamp":"2025-12-01T02:01:16.755Z"}
+{"level":"info","message":"API Gateway running on port 3000","service":"aerive-backend","timestamp":"2025-12-01T02:06:35.456Z"}
+{"level":"info","message":"Service endpoints:","service":"aerive-backend","timestamp":"2025-12-01T02:06:35.460Z"}
+{"level":"info","message":"  User Service: http://localhost:3001","service":"aerive-backend","timestamp":"2025-12-01T02:06:35.460Z"}
+{"level":"info","message":"  Listing Service: http://localhost:3002","service":"aerive-backend","timestamp":"2025-12-01T02:06:35.460Z"}
+{"level":"info","message":"  Booking Service: http://localhost:3003","service":"aerive-backend","timestamp":"2025-12-01T02:06:35.460Z"}
+{"level":"info","message":"  Billing Service: http://localhost:3004","service":"aerive-backend","timestamp":"2025-12-01T02:06:35.460Z"}
+{"level":"info","message":"  Provider Service: http://localhost:3005","service":"aerive-backend","timestamp":"2025-12-01T02:06:35.460Z"}
+{"level":"info","message":"  Admin Service: http://localhost:3006","service":"aerive-backend","timestamp":"2025-12-01T02:06:35.461Z"}
+{"level":"info","message":"API Gateway running on port 3000","service":"aerive-backend","timestamp":"2025-12-01T02:08:41.155Z"}
+{"level":"info","message":"Service endpoints:","service":"aerive-backend","timestamp":"2025-12-01T02:08:41.158Z"}
+{"level":"info","message":"  User Service: http://localhost:3001","service":"aerive-backend","timestamp":"2025-12-01T02:08:41.158Z"}
+{"level":"info","message":"  Listing Service: http://localhost:3002","service":"aerive-backend","timestamp":"2025-12-01T02:08:41.158Z"}
+{"level":"info","message":"  Booking Service: http://localhost:3003","service":"aerive-backend","timestamp":"2025-12-01T02:08:41.158Z"}
+{"level":"info","message":"  Billing Service: http://localhost:3004","service":"aerive-backend","timestamp":"2025-12-01T02:08:41.158Z"}
+{"level":"info","message":"  Provider Service: http://localhost:3005","service":"aerive-backend","timestamp":"2025-12-01T02:08:41.158Z"}
+{"level":"info","message":"  Admin Service: http://localhost:3006","service":"aerive-backend","timestamp":"2025-12-01T02:08:41.158Z"}
+{"contentType":"application/json","level":"info","message":"Proxying to User Service: POST /api/users/login","service":"aerive-backend","timestamp":"2025-12-01T02:09:12.910Z"}
+{"level":"info","message":"Proxying to User Service: GET /api/users/989-22-2339/reviews","service":"aerive-backend","timestamp":"2025-12-01T02:09:13.901Z"}
+{"level":"info","message":"Proxying to Booking Service: GET /api/bookings/user/989-22-2339","service":"aerive-backend","timestamp":"2025-12-01T02:09:13.916Z"}
+{"level":"info","message":"Proxying to User Service: GET /api/users/989-22-2339/reviews","service":"aerive-backend","timestamp":"2025-12-01T02:09:13.919Z"}
+{"level":"info","message":"Proxying to Booking Service: GET /api/bookings/user/989-22-2339","service":"aerive-backend","timestamp":"2025-12-01T02:09:13.929Z"}
+{"contentType":"application/json","level":"info","message":"Proxying to User Service: POST /api/users/login","service":"aerive-backend","timestamp":"2025-12-01T02:25:39.871Z"}
+{"level":"info","message":"Proxying to User Service: GET /api/users/989-22-2339/reviews","service":"aerive-backend","timestamp":"2025-12-01T02:25:42.132Z"}
+{"level":"info","message":"Proxying to User Service: GET /api/users/989-22-2339/reviews","service":"aerive-backend","timestamp":"2025-12-01T02:25:42.145Z"}
+{"level":"info","message":"Proxying to Booking Service: GET /api/bookings/user/989-22-2339","service":"aerive-backend","timestamp":"2025-12-01T02:25:42.151Z"}
+{"level":"info","message":"Proxying to Booking Service: GET /api/bookings/user/989-22-2339","service":"aerive-backend","timestamp":"2025-12-01T02:25:42.160Z"}
+{"contentType":"application/json","level":"info","message":"Proxying to User Service: POST /api/users/login","service":"aerive-backend","timestamp":"2025-12-01T02:31:19.895Z"}
+{"level":"info","message":"Proxying to User Service: GET /api/users/989-22-2339/reviews","service":"aerive-backend","timestamp":"2025-12-01T02:31:20.958Z"}
+{"level":"info","message":"Proxying to User Service: GET /api/users/989-22-2339/reviews","service":"aerive-backend","timestamp":"2025-12-01T02:31:20.967Z"}
+{"level":"info","message":"Proxying to Booking Service: GET /api/bookings/user/989-22-2339","service":"aerive-backend","timestamp":"2025-12-01T02:31:20.967Z"}
+{"level":"info","message":"Proxying to Booking Service: GET /api/bookings/user/989-22-2339","service":"aerive-backend","timestamp":"2025-12-01T02:31:20.977Z"}
+{"contentType":"application/json","level":"info","message":"Proxying to User Service: POST /api/users/login","service":"aerive-backend","timestamp":"2025-12-01T02:33:12.276Z"}
+{"level":"info","message":"Proxying to User Service: GET /api/users/989-22-2339/reviews","service":"aerive-backend","timestamp":"2025-12-01T02:33:13.253Z"}
+{"level":"info","message":"Proxying to Booking Service: GET /api/bookings/user/989-22-2339","service":"aerive-backend","timestamp":"2025-12-01T02:33:13.263Z"}
+{"level":"info","message":"Proxying to User Service: GET /api/users/989-22-2339/reviews","service":"aerive-backend","timestamp":"2025-12-01T02:33:13.264Z"}
+{"level":"info","message":"Proxying to Booking Service: GET /api/bookings/user/989-22-2339","service":"aerive-backend","timestamp":"2025-12-01T02:33:13.272Z"}
+{"level":"info","message":"Proxying to User Service: GET /api/users/989-22-2339/reviews","service":"aerive-backend","timestamp":"2025-12-01T02:37:11.129Z"}
+{"level":"info","message":"Proxying to User Service: GET /api/users/989-22-2339/reviews","service":"aerive-backend","timestamp":"2025-12-01T02:37:11.141Z"}
+{"level":"info","message":"Proxying to Booking Service: GET /api/bookings/user/989-22-2339","service":"aerive-backend","timestamp":"2025-12-01T02:37:11.143Z"}
+{"level":"info","message":"Proxying to Booking Service: GET /api/bookings/user/989-22-2339","service":"aerive-backend","timestamp":"2025-12-01T02:37:11.150Z"}
+{"level":"info","message":"API Gateway running on port 3000","service":"aerive-backend","timestamp":"2025-12-01T02:50:15.535Z"}
+{"level":"info","message":"Service endpoints:","service":"aerive-backend","timestamp":"2025-12-01T02:50:15.538Z"}
+{"level":"info","message":"  User Service: http://localhost:3001","service":"aerive-backend","timestamp":"2025-12-01T02:50:15.539Z"}
+{"level":"info","message":"  Listing Service: http://localhost:3002","service":"aerive-backend","timestamp":"2025-12-01T02:50:15.539Z"}
+{"level":"info","message":"  Booking Service: http://localhost:3003","service":"aerive-backend","timestamp":"2025-12-01T02:50:15.539Z"}
+{"level":"info","message":"  Billing Service: http://localhost:3004","service":"aerive-backend","timestamp":"2025-12-01T02:50:15.539Z"}
+{"level":"info","message":"  Provider Service: http://localhost:3005","service":"aerive-backend","timestamp":"2025-12-01T02:50:15.539Z"}
+{"level":"info","message":"  Admin Service: http://localhost:3006","service":"aerive-backend","timestamp":"2025-12-01T02:50:15.539Z"}
+{"contentType":"application/json","level":"info","message":"Proxying to User Service: POST /api/users/login","service":"aerive-backend","timestamp":"2025-12-01T02:51:36.282Z"}
+{"level":"info","message":"Proxying to User Service: GET /api/users/989-22-2339/reviews","service":"aerive-backend","timestamp":"2025-12-01T02:51:37.293Z"}
+{"level":"info","message":"Proxying to Booking Service: GET /api/bookings/user/989-22-2339","service":"aerive-backend","timestamp":"2025-12-01T02:51:37.309Z"}
+{"level":"info","message":"Proxying to User Service: GET /api/users/989-22-2339/reviews","service":"aerive-backend","timestamp":"2025-12-01T02:51:37.310Z"}
+{"level":"info","message":"Proxying to Booking Service: GET /api/bookings/user/989-22-2339","service":"aerive-backend","timestamp":"2025-12-01T02:51:37.327Z"}

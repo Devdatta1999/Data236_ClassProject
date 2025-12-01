@@ -1,14 +1,22 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useDispatch } from 'react-redux'
-import { Plane, Hotel, Car, Search, MapPin, Calendar, Users, Star, Shield, Globe, Award } from 'lucide-react'
+import { Plane, Hotel, Car, Search, MapPin, Calendar, Users, Star, Shield, Globe, Award, Sparkles } from 'lucide-react'
 import { setSearchType } from '../store/slices/searchSlice'
+import { openChat, setSessionId } from '../store/slices/chatSlice'
 import SearchBar from '../components/search/SearchBar'
 
 const LandingPage = () => {
   const navigate = useNavigate()
   const dispatch = useDispatch()
   const [activeTab, setActiveTab] = useState('flights')
+
+  const handleAIMode = () => {
+    const sessionId = `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+    dispatch(setSessionId(sessionId))
+    dispatch(openChat())
+    setActiveTab('ai')
+  }
 
   const handleSearch = (searchParams) => {
     dispatch(setSearchType(activeTab))
@@ -96,11 +104,50 @@ const LandingPage = () => {
                       </div>
                       <span className="font-semibold text-sm">Cars</span>
                     </button>
+                    <button
+                      type="button"
+                      onClick={handleAIMode}
+                      className={`flex flex-col items-center justify-center space-y-2 px-6 py-4 rounded-xl transition-all duration-300 ${
+                        activeTab === 'ai'
+                          ? 'bg-purple-600 text-white transform scale-110 shadow-lg'
+                          : 'text-gray-600 hover:bg-gray-50 hover:scale-105'
+                      }`}
+                    >
+                      <div
+                        className={`p-3 rounded-full transition-all duration-300 ${
+                          activeTab === 'ai' ? 'bg-white/20' : 'bg-gray-100'
+                        }`}
+                      >
+                        <Sparkles
+                          className={`w-8 h-8 ${
+                            activeTab === 'ai' ? 'text-white' : 'text-purple-600'
+                          }`}
+                        />
+                      </div>
+                      <span className="font-semibold text-sm">AI Mode</span>
+                    </button>
                   </div>
 
                   {/* Search Bar */}
                   <div className="p-6">
+                    {activeTab === 'ai' ? (
+                      <div className="flex flex-col items-center justify-center py-8 text-center space-y-4">
+                        <p className="text-gray-700 text-lg max-w-xl">
+                          Use AI Mode to describe your perfect trip in natural language. A chat
+                          window will open where you can refine options and pick a bundle.
+                        </p>
+                        <button
+                          type="button"
+                          onClick={handleAIMode}
+                          className="px-6 py-3 bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-xl hover:from-purple-700 hover:to-indigo-700 transition-all duration-200 flex items-center justify-center space-x-2 shadow-lg hover:shadow-xl transform hover:scale-105"
+                        >
+                          <Sparkles className="w-5 h-5" />
+                          <span>Launch AI Mode</span>
+                        </button>
+                      </div>
+                    ) : (
                     <SearchBar type={activeTab} onSearch={handleSearch} />
+                    )}
                   </div>
                 </div>
               </div>

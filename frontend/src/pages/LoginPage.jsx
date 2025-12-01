@@ -22,21 +22,15 @@ const LoginPage = () => {
 
     try {
       if (formData.userType === 'traveler') {
-        // Use Kafka for traveler login (as per original design)
-        const response = await sendEventAndWait(
-          'user-events',
-          {
-            eventType: 'user.login',
-            email: formData.email,
-            password: formData.password,
-          },
-          'user-events-response',
-          30000
-        )
+        // Use HTTP for traveler login (more reliable for local/dev)
+        const response = await api.post('/api/users/login', {
+          email: formData.email,
+          password: formData.password,
+        })
 
         dispatch(loginSuccess({
-          token: response.token,
-          user: response.user,
+          token: response.data.data.token,
+          user: response.data.data.user,
           userType: 'traveler',
         }))
         navigate('/dashboard')
@@ -68,7 +62,13 @@ const LoginPage = () => {
         navigate('/host')
       }
     } catch (err) {
-      const errorMessage = err.response?.data?.error || err.message || 'Login failed'
+      // Backend often returns { error: { code, message } }
+      const apiError = err.response?.data?.error
+      const errorMessage =
+        (typeof apiError === 'string'
+          ? apiError
+          : apiError?.message) || err.message || 'Login failed'
+
       setError(errorMessage)
       dispatch(setError(errorMessage))
     } finally {

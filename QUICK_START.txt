@@ -1,0 +1,257 @@
+Aerive - Quick Start Guide
+
+This is the exact workflow to run the Aerive application.
+
+PREREQUISITES
+- Docker & Docker Compose installed
+- Kubernetes cluster running (Minikube or existing cluster)
+- kubectl configured
+- Node.js installed (for frontend only)
+- MongoDB Atlas and Supabase credentials configured in infrastructure/kubernetes/secrets.yaml
+
+================================================================================
+
+STEP-BY-STEP STARTUP
+
+1. Start Infrastructure (Docker Compose)
+
+Run these commands:
+  docker-compose up -d
+  
+  docker ps
+
+Note: If you're using Supabase for PostgreSQL, you can skip the postgres container, but Kafka and Redis are needed.
+
+2. Build Docker Images
+
+Run these commands:
+  ./build-images.sh aerive latest
+  
+  # If using Minikube, load images into Minikube
+  eval $(minikube docker-env)
+  ./build-images.sh aerive latest
+  eval $(minikube docker-env -u)
+
+3. Deploy to Kubernetes
+
+Run these commands:
+  kubectl apply -f infrastructure/kubernetes/namespace.yaml
+  kubectl apply -f infrastructure/kubernetes/configmap.yaml
+  kubectl apply -f infrastructure/kubernetes/secrets.yaml
+  kubectl apply -f infrastructure/kubernetes/persistent-volumes.yaml
+  kubectl apply -f infrastructure/kubernetes/uploads-pvc.yaml
+  kubectl apply -f infrastructure/kubernetes/redis.yaml
+  kubectl apply -f infrastructure/kubernetes/kafka.yaml
+  kubectl apply -f infrastructure/kubernetes/*.yaml
+  
+  # Or deploy all at once:
+  kubectl apply -f infrastructure/kubernetes/
+  
+  # Wait for all pods to be ready
+  kubectl get pods -n aerive -w
+  # Press Ctrl+C when all pods show "Running"
+
+4. Set Up Port Forwards (Required - Keep Running)
+
+Terminal 1:
+  kubectl port-forward -n aerive service/aerive-api-gateway 8080:80
+  Keep this terminal open!
+
+Terminal 2:
+  kubectl port-forward -n aerive service/aerive-kafka-proxy 3007:3007
+  Keep this terminal open!
+
+Terminal 3 (Optional - for direct Kafka access):
+  kubectl port-forward -n aerive service/aerive-kafka-service 9092:9092
+
+5. Start Frontend
+
+Terminal 4 (new terminal):
+  cd frontend
+  
+  # Install dependencies (first time only)
+  npm install
+  
+  # Create .env file if it doesn't exist
+  echo "VITE_API_GATEWAY_URL=http://localhost:8080" > .env
+  echo "VITE_KAFKA_PROXY_URL=http://localhost:3007" >> .env
+  
+  # Start frontend dev server
+  npm run dev
+
+6. Access Application
+
+- Frontend: http://localhost:5173
+- API Gateway: http://localhost:8080
+- Kafka UI: http://localhost:8080 (if using docker-compose)
+
+================================================================================
+
+VERIFY EVERYTHING IS RUNNING
+
+Run these commands:
+  kubectl get pods -n aerive
+  # All should show "Running" status
+  
+  curl http://localhost:8080/health
+  
+  curl http://localhost:3007/health
+  
+  # Check frontend (should show in browser)
+  # Open: http://localhost:5173
+
+================================================================================
+
+COMMON DAILY STARTUP (After Initial Setup)
+
+If you've already built images and deployed before:
+
+Run these commands:
+  # 1. Start infrastructure
+  docker-compose up -d
+  
+  # 2. Check/restart Kubernetes services
+  kubectl get pods -n aerive
+  # If pods are not running, restart:
+  kubectl rollout restart deployment -n aerive
+  
+  # 3. Set up port forwards (2 terminals)
+  kubectl port-forward -n aerive service/aerive-api-gateway 8080:80
+  kubectl port-forward -n aerive service/aerive-kafka-proxy 3007:3007
+  
+  # 4. Start frontend
+  cd frontend && npm run dev
+
+================================================================================
+
+TROUBLESHOOTING
+
+Pods Not Starting:
+  kubectl logs <pod-name> -n aerive
+  kubectl describe pod <pod-name> -n aerive
+  kubectl rollout restart deployment/<service-name> -n aerive
+
+Port Forward Issues:
+  pkill -f "port-forward"
+  kubectl port-forward -n aerive service/aerive-api-gateway 8080:80
+  kubectl port-forward -n aerive service/aerive-kafka-proxy 3007:3007
+
+Frontend Can't Connect:
+  lsof -i :8080
+  lsof -i :3007
+  cat frontend/.env
+
+================================================================================
+
+STOPPING THE APPLICATION
+
+1. Stop frontend: Ctrl+C in frontend terminal
+2. Stop port forwards: Ctrl+C in port-forward terminals
+3. Stop Kubernetes services (optional - usually keep running):
+   kubectl delete -f infrastructure/kubernetes/*.yaml
+4. Stop infrastructure:
+   docker-compose down
+
+================================================================================
+
+QUICK COMMANDS REFERENCE
+
+View all pods:
+  kubectl get pods -n aerive
+
+View logs for a service:
+  kubectl logs -f deployment/aerive-api-gateway -n aerive
+
+Restart a service:
+  kubectl rollout restart deployment/aerive-user-service -n aerive
+
+Check services:
+  kubectl get svc -n aerive
+
+Check persistent volumes:
+  kubectl get pv
+  kubectl get pvc -n aerive
+
+Rebuild and redeploy single service:
+  docker build -t aerive/user-service:latest -f services/user-service/Dockerfile .
+  minikube image load aerive/user-service:latest  # if using Minikube
+  kubectl rollout restart deployment/aerive-user-service -n aerive
+
+================================================================================
+
+================================================================================
+
+RECOMMENDATION SERVICE (NEW)
+
+The Recommendation Service is a Python FastAPI service that provides AI-powered
+travel concierge functionality with deal discovery and recommendations.
+
+Prerequisites:
+- Python 3.11+ installed
+- OpenAI API key
+- Kafka running (from docker-compose)
+
+Setup Recommendation Service:
+
+1. Navigate to service directory:
+   cd services/recommendation-service
+
+2. Install Python dependencies:
+   pip install -r requirements.txt
+
+3. Set environment variables:
+   export OPENAI_API_KEY=your_openai_api_key_here
+   export KAFKA_BROKERS=localhost:9092
+   export DATABASE_URL=sqlite:///./recommendation_service.db
+
+4. Initialize database:
+   python -c "from database import init_db; init_db()"
+
+5. Start Deals Agent workers (in separate terminals):
+
+   Terminal 1 - Feed Producer:
+   python -m deals_agent.feed_producer
+
+   Terminal 2 - Normalizer:
+   python -m deals_agent.normalizer
+
+   Terminal 3 - Deal Detector:
+   python -m deals_agent.deal_detector
+
+   Terminal 4 - Offer Tagger:
+   python -m deals_agent.offer_tagger
+
+   Terminal 5 - Event Emitter:
+   python -m deals_agent.event_emitter
+
+   Terminal 6 - Watch Evaluator:
+   python watch_manager.py
+
+6. Start FastAPI application:
+   uvicorn main:app --host 0.0.0.0 --port 8000
+
+7. Test the service:
+   curl http://localhost:8000/health
+
+   Example chat request:
+   curl -X POST http://localhost:8000/chat \
+     -H "Content-Type: application/json" \
+     -d '{"session_id": "test123", "message": "I need a weekend trip Oct 25-27, SFO to anywhere warm, budget $1000 for two"}'
+
+8. WebSocket events:
+   Connect to ws://localhost:8000/events?session_id=test123
+   to receive deal updates and watch notifications.
+
+Note: Place CSV feed files in services/recommendation-service/data/feeds/
+See services/recommendation-service/README.md for CSV format details.
+
+================================================================================
+
+THAT'S IT!
+
+Once everything is running:
+- Access frontend at http://localhost:5173
+- Create accounts (Traveler, Host, Admin)
+- Start using the application!
+- Use Recommendation Service at http://localhost:8000
+

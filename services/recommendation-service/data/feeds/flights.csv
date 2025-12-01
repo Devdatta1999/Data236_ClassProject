@@ -1,0 +1,7 @@
+id,origin,destination,departure_date,return_date,price,currency,airline,flight_number,duration_minutes,stops,is_red_eye,baggage_included,available_seats,promo_end_date
+FL001,SFO,LAX,2024-10-25,2024-10-27,299.99,USD,United Airlines,UA123,90,0,false,true,15,2024-10-20
+FL002,SFO,JFK,2024-10-25,2024-10-27,450.00,USD,American Airlines,AA456,330,0,false,true,8,2024-10-18
+FL003,SFO,MIA,2024-10-25,2024-10-27,380.00,USD,Delta,DL789,300,1,false,true,12,
+FL004,SFO,SEA,2024-10-25,2024-10-27,199.99,USD,Alaska Airlines,AS234,120,0,false,true,20,2024-10-22
+FL005,SFO,ORD,2024-10-25,2024-10-27,420.00,USD,United Airlines,UA567,240,0,true,true,5,2024-10-19
+

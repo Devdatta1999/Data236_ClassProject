@@ -6,6 +6,8 @@ import bookingSlice from './slices/bookingSlice'
 import userSlice from './slices/userSlice'
 import adminSlice from './slices/adminSlice'
 import hostSlice from './slices/hostSlice'
+import chatSlice from './slices/chatSlice'
+import notificationSlice from './slices/notificationSlice'
 
 export const store = configureStore({
   reducer: {
@@ -16,6 +18,8 @@ export const store = configureStore({
     user: userSlice,
     admin: adminSlice,
     host: hostSlice,
+    chat: chatSlice,
+    notifications: notificationSlice,
   },
 })
 

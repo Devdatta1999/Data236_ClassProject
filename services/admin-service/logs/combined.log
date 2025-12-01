@@ -1,0 +1,132 @@
+{"level":"info","message":"Connecting to MongoDB...","service":"aerive-backend","timestamp":"2025-11-30T03:07:13.413Z"}
+{"level":"info","message":"MongoDB connecting...","service":"aerive-backend","timestamp":"2025-11-30T03:07:13.421Z"}
+{"level":"info","message":"MongoDB connected","readyState":1,"service":"aerive-backend","timestamp":"2025-11-30T03:07:14.430Z"}
+{"dbName":"aerive","level":"info","message":"MongoDB Atlas connected and ready for queries","readyState":1,"service":"aerive-backend","timestamp":"2025-11-30T03:07:14.522Z"}
+{"level":"info","message":"MongoDB connected and ready for queries","service":"aerive-backend","timestamp":"2025-11-30T03:07:14.522Z"}
+{"dbName":"aerive","level":"info","message":"MongoDB connection verified before loading routes","readyState":1,"service":"aerive-backend","timestamp":"2025-11-30T03:07:14.522Z"}
+{"level":"info","message":"Loading admin routes...","service":"aerive-backend","timestamp":"2025-11-30T03:07:14.523Z"}
+{"level":"info","message":"Admin routes registered successfully","service":"aerive-backend","timestamp":"2025-11-30T03:07:17.937Z"}
+{"level":"info","message":"Redis client connected","service":"aerive-backend","timestamp":"2025-11-30T03:07:17.949Z"}
+{"level":"info","message":"Admin service running on port 3006","service":"aerive-backend","timestamp":"2025-11-30T03:07:17.954Z"}
+{"level":"info","message":"Connecting to MongoDB...","service":"aerive-backend","timestamp":"2025-11-30T03:38:42.988Z"}
+{"level":"info","message":"MongoDB connecting...","service":"aerive-backend","timestamp":"2025-11-30T03:38:42.996Z"}
+{"level":"info","message":"MongoDB connected","readyState":1,"service":"aerive-backend","timestamp":"2025-11-30T03:38:44.067Z"}
+{"dbName":"aerive","level":"info","message":"MongoDB Atlas connected and ready for queries","readyState":1,"service":"aerive-backend","timestamp":"2025-11-30T03:38:44.163Z"}
+{"level":"info","message":"MongoDB connected and ready for queries","service":"aerive-backend","timestamp":"2025-11-30T03:38:44.163Z"}
+{"dbName":"aerive","level":"info","message":"MongoDB connection verified before loading routes","readyState":1,"service":"aerive-backend","timestamp":"2025-11-30T03:38:44.163Z"}
+{"level":"info","message":"Loading admin routes...","service":"aerive-backend","timestamp":"2025-11-30T03:38:44.163Z"}
+{"level":"info","message":"Admin routes registered successfully","service":"aerive-backend","timestamp":"2025-11-30T03:38:44.840Z"}
+{"level":"info","message":"Redis client connected","service":"aerive-backend","timestamp":"2025-11-30T03:38:44.846Z"}
+{"level":"info","message":"Admin service running on port 3006","service":"aerive-backend","timestamp":"2025-11-30T03:38:44.849Z"}
+{"level":"info","message":"MongoDB reconnected","readyState":0,"service":"aerive-backend","timestamp":"2025-11-30T03:57:48.275Z"}
+{"level":"warn","message":"MongoDB disconnected","readyState":0,"service":"aerive-backend","timestamp":"2025-11-30T03:57:58.582Z"}
+{"level":"info","message":"MongoDB connected","readyState":1,"service":"aerive-backend","timestamp":"2025-11-30T03:57:58.584Z"}
+{"level":"info","message":"MongoDB reconnected","readyState":1,"service":"aerive-backend","timestamp":"2025-11-30T03:57:58.584Z"}
+{"level":"info","message":"MongoDB reconnected","readyState":0,"service":"aerive-backend","timestamp":"2025-11-30T05:13:24.390Z"}
+{"level":"info","message":"MongoDB reconnected","readyState":0,"service":"aerive-backend","timestamp":"2025-11-30T05:13:24.440Z"}
+{"level":"info","message":"MongoDB reconnected","readyState":0,"service":"aerive-backend","timestamp":"2025-11-30T08:36:52.373Z"}
+{"level":"warn","message":"MongoDB disconnected","readyState":0,"service":"aerive-backend","timestamp":"2025-11-30T09:34:03.189Z"}
+{"level":"info","message":"MongoDB connected","readyState":1,"service":"aerive-backend","timestamp":"2025-11-30T09:34:03.210Z"}
+{"level":"info","message":"MongoDB reconnected","readyState":1,"service":"aerive-backend","timestamp":"2025-11-30T09:34:03.210Z"}
+{"level":"warn","message":"MongoDB disconnected","readyState":0,"service":"aerive-backend","timestamp":"2025-11-30T09:50:04.904Z"}
+{"level":"info","message":"MongoDB connected","readyState":1,"service":"aerive-backend","timestamp":"2025-11-30T09:50:15.321Z"}
+{"level":"info","message":"MongoDB reconnected","readyState":1,"service":"aerive-backend","timestamp":"2025-11-30T09:50:15.321Z"}
+{"level":"info","message":"MongoDB reconnected","readyState":0,"service":"aerive-backend","timestamp":"2025-11-30T10:06:47.396Z"}
+{"level":"info","message":"MongoDB reconnected","readyState":0,"service":"aerive-backend","timestamp":"2025-11-30T10:06:47.396Z"}
+{"level":"warn","message":"MongoDB disconnected","readyState":0,"service":"aerive-backend","timestamp":"2025-11-30T10:06:57.786Z"}
+{"level":"info","message":"MongoDB connected","readyState":1,"service":"aerive-backend","timestamp":"2025-11-30T10:06:57.788Z"}
+{"level":"info","message":"MongoDB reconnected","readyState":1,"service":"aerive-backend","timestamp":"2025-11-30T10:06:57.788Z"}
+{"level":"info","message":"MongoDB reconnected","readyState":0,"service":"aerive-backend","timestamp":"2025-11-30T10:22:42.346Z"}
+{"level":"warn","message":"MongoDB disconnected","readyState":0,"service":"aerive-backend","timestamp":"2025-11-30T10:39:51.595Z"}
+{"level":"info","message":"MongoDB connected","readyState":1,"service":"aerive-backend","timestamp":"2025-11-30T10:39:51.611Z"}
+{"level":"info","message":"MongoDB reconnected","readyState":1,"service":"aerive-backend","timestamp":"2025-11-30T10:39:51.611Z"}
+{"level":"info","message":"MongoDB reconnected","readyState":0,"service":"aerive-backend","timestamp":"2025-11-30T10:57:49.214Z"}
+{"level":"info","message":"MongoDB reconnected","readyState":0,"service":"aerive-backend","timestamp":"2025-11-30T10:57:49.215Z"}
+{"level":"warn","message":"MongoDB disconnected","readyState":0,"service":"aerive-backend","timestamp":"2025-11-30T10:57:59.591Z"}
+{"level":"info","message":"MongoDB connected","readyState":1,"service":"aerive-backend","timestamp":"2025-11-30T10:57:59.598Z"}
+{"level":"info","message":"MongoDB reconnected","readyState":1,"service":"aerive-backend","timestamp":"2025-11-30T10:57:59.599Z"}
+{"level":"info","message":"MongoDB reconnected","readyState":0,"service":"aerive-backend","timestamp":"2025-11-30T11:16:13.131Z"}
+{"level":"info","message":"MongoDB reconnected","readyState":0,"service":"aerive-backend","timestamp":"2025-11-30T11:16:13.131Z"}
+{"level":"warn","message":"MongoDB disconnected","readyState":0,"service":"aerive-backend","timestamp":"2025-11-30T11:16:23.367Z"}
+{"level":"info","message":"MongoDB connected","readyState":1,"service":"aerive-backend","timestamp":"2025-11-30T11:16:23.377Z"}
+{"level":"info","message":"MongoDB reconnected","readyState":1,"service":"aerive-backend","timestamp":"2025-11-30T11:16:23.377Z"}
+{"level":"info","message":"MongoDB reconnected","readyState":0,"service":"aerive-backend","timestamp":"2025-11-30T12:24:48.047Z"}
+{"level":"warn","message":"MongoDB disconnected","readyState":0,"service":"aerive-backend","timestamp":"2025-11-30T12:24:58.341Z"}
+{"level":"info","message":"MongoDB connected","readyState":1,"service":"aerive-backend","timestamp":"2025-11-30T12:24:58.387Z"}
+{"level":"info","message":"MongoDB reconnected","readyState":1,"service":"aerive-backend","timestamp":"2025-11-30T12:24:58.387Z"}
+{"level":"info","message":"MongoDB reconnected","readyState":0,"service":"aerive-backend","timestamp":"2025-11-30T12:42:07.011Z"}
+{"level":"info","message":"MongoDB reconnected","readyState":0,"service":"aerive-backend","timestamp":"2025-11-30T12:42:07.014Z"}
+{"level":"warn","message":"MongoDB disconnected","readyState":0,"service":"aerive-backend","timestamp":"2025-11-30T12:42:17.316Z"}
+{"level":"info","message":"MongoDB connected","readyState":1,"service":"aerive-backend","timestamp":"2025-11-30T12:42:17.366Z"}
+{"level":"info","message":"MongoDB reconnected","readyState":1,"service":"aerive-backend","timestamp":"2025-11-30T12:42:17.367Z"}
+{"level":"warn","message":"MongoDB disconnected","readyState":0,"service":"aerive-backend","timestamp":"2025-11-30T13:11:40.276Z"}
+{"level":"info","message":"MongoDB connected","readyState":1,"service":"aerive-backend","timestamp":"2025-11-30T13:11:40.285Z"}
+{"level":"info","message":"MongoDB reconnected","readyState":1,"service":"aerive-backend","timestamp":"2025-11-30T13:11:40.285Z"}
+{"level":"info","message":"MongoDB reconnected","readyState":0,"service":"aerive-backend","timestamp":"2025-11-30T13:25:48.853Z"}
+{"level":"warn","message":"MongoDB disconnected","readyState":0,"service":"aerive-backend","timestamp":"2025-11-30T13:25:59.248Z"}
+{"level":"info","message":"MongoDB connected","readyState":1,"service":"aerive-backend","timestamp":"2025-11-30T13:25:59.288Z"}
+{"level":"info","message":"MongoDB reconnected","readyState":1,"service":"aerive-backend","timestamp":"2025-11-30T13:25:59.288Z"}
+{"level":"info","message":"MongoDB reconnected","readyState":0,"service":"aerive-backend","timestamp":"2025-11-30T13:34:09.845Z"}
+{"level":"warn","message":"MongoDB disconnected","readyState":0,"service":"aerive-backend","timestamp":"2025-11-30T13:34:20.148Z"}
+{"level":"info","message":"MongoDB connected","readyState":1,"service":"aerive-backend","timestamp":"2025-11-30T13:34:20.158Z"}
+{"level":"info","message":"MongoDB reconnected","readyState":1,"service":"aerive-backend","timestamp":"2025-11-30T13:34:20.158Z"}
+{"level":"info","message":"MongoDB reconnected","readyState":0,"service":"aerive-backend","timestamp":"2025-11-30T13:52:06.732Z"}
+{"level":"warn","message":"MongoDB disconnected","readyState":0,"service":"aerive-backend","timestamp":"2025-11-30T14:08:24.246Z"}
+{"level":"info","message":"MongoDB connected","readyState":1,"service":"aerive-backend","timestamp":"2025-11-30T14:08:24.330Z"}
+{"level":"info","message":"MongoDB reconnected","readyState":1,"service":"aerive-backend","timestamp":"2025-11-30T14:08:24.330Z"}
+{"level":"warn","message":"MongoDB disconnected","readyState":0,"service":"aerive-backend","timestamp":"2025-11-30T15:20:10.873Z"}
+{"level":"info","message":"MongoDB connected","readyState":1,"service":"aerive-backend","timestamp":"2025-11-30T15:20:10.885Z"}
+{"level":"info","message":"MongoDB reconnected","readyState":1,"service":"aerive-backend","timestamp":"2025-11-30T15:20:10.885Z"}
+{"level":"warn","message":"MongoDB disconnected","readyState":0,"service":"aerive-backend","timestamp":"2025-11-30T15:36:36.343Z"}
+{"level":"info","message":"MongoDB connected","readyState":1,"service":"aerive-backend","timestamp":"2025-11-30T15:36:36.454Z"}
+{"level":"info","message":"MongoDB reconnected","readyState":1,"service":"aerive-backend","timestamp":"2025-11-30T15:36:36.454Z"}
+{"level":"info","message":"MongoDB reconnected","readyState":0,"service":"aerive-backend","timestamp":"2025-11-30T15:37:33.917Z"}
+{"level":"info","message":"MongoDB reconnected","readyState":0,"service":"aerive-backend","timestamp":"2025-11-30T15:37:33.918Z"}
+{"level":"warn","message":"MongoDB disconnected","readyState":0,"service":"aerive-backend","timestamp":"2025-11-30T15:37:44.334Z"}
+{"level":"info","message":"MongoDB connected","readyState":1,"service":"aerive-backend","timestamp":"2025-11-30T15:37:44.336Z"}
+{"level":"info","message":"MongoDB reconnected","readyState":1,"service":"aerive-backend","timestamp":"2025-11-30T15:37:44.336Z"}
+{"level":"info","message":"MongoDB reconnected","readyState":0,"service":"aerive-backend","timestamp":"2025-11-30T17:00:00.308Z"}
+{"level":"warn","message":"MongoDB disconnected","readyState":0,"service":"aerive-backend","timestamp":"2025-11-30T17:16:25.703Z"}
+{"level":"info","message":"MongoDB connected","readyState":1,"service":"aerive-backend","timestamp":"2025-11-30T17:16:25.710Z"}
+{"level":"info","message":"MongoDB reconnected","readyState":1,"service":"aerive-backend","timestamp":"2025-11-30T17:16:25.710Z"}
+{"level":"warn","message":"MongoDB disconnected","readyState":0,"service":"aerive-backend","timestamp":"2025-11-30T17:31:25.635Z"}
+{"level":"info","message":"MongoDB connected","readyState":1,"service":"aerive-backend","timestamp":"2025-11-30T17:31:25.747Z"}
+{"level":"info","message":"MongoDB reconnected","readyState":1,"service":"aerive-backend","timestamp":"2025-11-30T17:31:25.747Z"}
+{"level":"info","message":"MongoDB reconnected","readyState":0,"service":"aerive-backend","timestamp":"2025-11-30T17:49:24.085Z"}
+{"level":"info","message":"MongoDB reconnected","readyState":0,"service":"aerive-backend","timestamp":"2025-11-30T17:49:24.085Z"}
+{"level":"warn","message":"MongoDB disconnected","readyState":0,"service":"aerive-backend","timestamp":"2025-11-30T18:07:00.009Z"}
+{"level":"info","message":"MongoDB connected","readyState":1,"service":"aerive-backend","timestamp":"2025-11-30T18:07:00.020Z"}
+{"level":"info","message":"MongoDB reconnected","readyState":1,"service":"aerive-backend","timestamp":"2025-11-30T18:07:00.020Z"}
+{"level":"info","message":"MongoDB reconnected","readyState":0,"service":"aerive-backend","timestamp":"2025-11-30T18:23:55.601Z"}
+{"level":"warn","message":"MongoDB disconnected","readyState":0,"service":"aerive-backend","timestamp":"2025-11-30T19:59:33.420Z"}
+{"level":"info","message":"MongoDB connected","readyState":1,"service":"aerive-backend","timestamp":"2025-11-30T19:59:33.427Z"}
+{"level":"info","message":"MongoDB reconnected","readyState":1,"service":"aerive-backend","timestamp":"2025-11-30T19:59:33.427Z"}
+{"level":"info","message":"Connecting to MongoDB...","service":"aerive-backend","timestamp":"2025-11-30T22:10:47.971Z"}
+{"level":"info","message":"MongoDB connecting...","service":"aerive-backend","timestamp":"2025-11-30T22:10:47.975Z"}
+{"level":"info","message":"MongoDB connected","readyState":1,"service":"aerive-backend","timestamp":"2025-11-30T22:10:47.994Z"}
+{"dbName":"aerive","level":"info","message":"MongoDB Atlas connected and ready for queries","readyState":1,"service":"aerive-backend","timestamp":"2025-11-30T22:10:47.998Z"}
+{"level":"info","message":"MongoDB connected and ready for queries","service":"aerive-backend","timestamp":"2025-11-30T22:10:47.998Z"}
+{"dbName":"aerive","level":"info","message":"MongoDB connection verified before loading routes","readyState":1,"service":"aerive-backend","timestamp":"2025-11-30T22:10:47.998Z"}
+{"level":"info","message":"Loading admin routes...","service":"aerive-backend","timestamp":"2025-11-30T22:10:47.999Z"}
+{"level":"info","message":"Admin routes registered successfully","service":"aerive-backend","timestamp":"2025-11-30T22:10:49.487Z"}
+{"level":"info","message":"Redis client connected","service":"aerive-backend","timestamp":"2025-11-30T22:10:49.492Z"}
+{"level":"info","message":"Admin service running on port 3006","service":"aerive-backend","timestamp":"2025-11-30T22:10:49.505Z"}
+{"level":"info","message":"Connecting to MongoDB...","service":"aerive-backend","timestamp":"2025-11-30T22:49:18.457Z"}
+{"level":"info","message":"MongoDB connecting...","service":"aerive-backend","timestamp":"2025-11-30T22:49:18.461Z"}
+{"level":"info","message":"MongoDB connected","readyState":1,"service":"aerive-backend","timestamp":"2025-11-30T22:49:18.484Z"}
+{"dbName":"aerive","level":"info","message":"MongoDB Atlas connected and ready for queries","readyState":1,"service":"aerive-backend","timestamp":"2025-11-30T22:49:18.491Z"}
+{"level":"info","message":"MongoDB connected and ready for queries","service":"aerive-backend","timestamp":"2025-11-30T22:49:18.491Z"}
+{"dbName":"aerive","level":"info","message":"MongoDB connection verified before loading routes","readyState":1,"service":"aerive-backend","timestamp":"2025-11-30T22:49:18.491Z"}
+{"level":"info","message":"Loading admin routes...","service":"aerive-backend","timestamp":"2025-11-30T22:49:18.491Z"}
+{"level":"info","message":"Admin routes registered successfully","service":"aerive-backend","timestamp":"2025-11-30T22:49:19.577Z"}
+{"level":"info","message":"Redis client connected","service":"aerive-backend","timestamp":"2025-11-30T22:49:19.581Z"}
+{"level":"info","message":"Admin service running on port 3006","service":"aerive-backend","timestamp":"2025-11-30T22:49:19.585Z"}
+{"level":"warn","message":"MongoDB disconnected","readyState":0,"service":"aerive-backend","timestamp":"2025-12-01T00:13:33.301Z"}
+{"level":"info","message":"MongoDB connected","readyState":1,"service":"aerive-backend","timestamp":"2025-12-01T00:13:43.324Z"}
+{"level":"info","message":"MongoDB reconnected","readyState":1,"service":"aerive-backend","timestamp":"2025-12-01T00:13:43.325Z"}
+{"level":"warn","message":"MongoDB disconnected","readyState":0,"service":"aerive-backend","timestamp":"2025-12-01T00:34:51.433Z"}
+{"level":"info","message":"MongoDB connected","readyState":1,"service":"aerive-backend","timestamp":"2025-12-01T00:35:01.466Z"}
+{"level":"info","message":"MongoDB reconnected","readyState":1,"service":"aerive-backend","timestamp":"2025-12-01T00:35:01.466Z"}
+{"level":"warn","message":"MongoDB disconnected","readyState":0,"service":"aerive-backend","timestamp":"2025-12-01T00:36:25.788Z"}
+{"level":"info","message":"MongoDB connected","readyState":1,"service":"aerive-backend","timestamp":"2025-12-01T00:36:35.806Z"}
+{"level":"info","message":"MongoDB reconnected","readyState":1,"service":"aerive-backend","timestamp":"2025-12-01T00:36:35.807Z"}

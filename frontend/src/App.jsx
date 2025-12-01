@@ -7,6 +7,9 @@ import { loginSuccess } from './store/slices/authSlice'
 // Layouts
 import Navbar from './components/layout/Navbar'
 import ProtectedRoute from './components/auth/ProtectedRoute'
+import AIChatModal from './components/chat/AIChatModal'
+import Notification from './components/common/Notification'
+import useRecommendationEvents from './hooks/useRecommendationEvents'
 
 // Pages
 import LandingPage from './pages/LandingPage'
@@ -23,6 +26,7 @@ import FlightDetailPage from './pages/traveler/FlightDetailPage'
 import CarDetailPage from './pages/traveler/CarDetailPage'
 import CheckoutPage from './pages/traveler/CheckoutPage'
 import PaymentPage from './pages/traveler/PaymentPage'
+import AIPaymentQuotePage from './pages/traveler/AIPaymentQuotePage'
 import MyBookings from './pages/traveler/MyBookings'
 import ProfilePage from './pages/traveler/ProfilePage'
 import AdminDashboard from './pages/admin/AdminDashboard'
@@ -33,6 +37,9 @@ import HostProfilePage from './pages/host/HostProfilePage'
 function App() {
   const dispatch = useDispatch()
   const { isAuthenticated, userType } = useSelector((state) => state.auth)
+  const notifications = useSelector((state) => state.notifications.items)
+
+  useRecommendationEvents()
 
   useEffect(() => {
     // Restore auth state from localStorage
@@ -48,6 +55,22 @@ function App() {
   return (
     <div className="min-h-screen bg-gray-50">
       <Navbar />
+      {/* Global notification bar (top of app) */}
+      {notifications && notifications.length > 0 && (
+        <div className="fixed top-16 left-0 right-0 z-40 flex flex-col items-center px-4">
+          <div className="w-full max-w-3xl">
+            {notifications.map((n) => (
+              <Notification
+                key={n.id}
+                type={n.type}
+                message={n.message}
+                onClose={() => dispatch({ type: 'notifications/removeNotification', payload: n.id })}
+                duration={6000}
+              />
+            ))}
+          </div>
+        </div>
+      )}
       <Routes>
         <Route 
           path="/" 
@@ -138,6 +161,14 @@ function App() {
           }
         />
         <Route
+          path="/ai/quote/:quoteId"
+          element={
+            <ProtectedRoute userType="traveler">
+              <AIPaymentQuotePage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
           path="/my-bookings"
           element={
             <ProtectedRoute userType="traveler">
@@ -192,6 +223,7 @@ function App() {
         
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>
+      <AIChatModal />
     </div>
   )
 }
