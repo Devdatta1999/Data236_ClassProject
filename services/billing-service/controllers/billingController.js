@@ -8,7 +8,7 @@ const { getPostgresPool, mongoose, waitForMongoDBReady } = require('../../../sha
 const { NotFoundError, ValidationError, TransactionError, asyncHandler } = require('../../../shared/utils/errors');
 const { validateZipCode } = require('../../../shared/utils/validators');
 const { decrypt } = require('../../../shared/utils/encryption');
-const { deleteCache } = require('../../../shared/config/redis');
+const { deleteCache, deleteCachePattern } = require('../../../shared/config/redis');
 const logger = require('../../../shared/utils/logger');
 const axios = require('axios');
 
@@ -721,11 +721,11 @@ const processPayment = asyncHandler(async (req, res) => {
         await deleteCache(`booking:${booking.bookingId}`);
       }
 
-      // Invalidate user bookings cache
-      await deleteCache(`user:${userId}:bookings:Confirmed`);
-      await deleteCache(`user:${userId}:bookings:all`);
-      await deleteCache(`user:${userId}:bookings:Pending`);
-      await deleteCache(`user:${userId}:bookings`);
+      // Invalidate user bookings cache - use pattern matching to catch all variations
+      // Cache keys are: user:${userId}:bookings:${status}:${billingId}
+      // Pattern will match all combinations (status + billingId variations)
+      await deleteCachePattern(`user:${userId}:bookings:*`);
+      logger.info(`Invalidated all booking cache patterns for user ${userId} after payment confirmation`);
     } catch (bookingUpdateError) {
       // Rollback: mark bookings as Failed
       await markBookingsAsFailed(bookings.map(b => b.bookingId));

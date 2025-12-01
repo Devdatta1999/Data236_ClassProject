@@ -7,7 +7,7 @@ const { NotFoundError, ValidationError, TransactionError } = require('../../../s
 const { sendMessage } = require('../../../shared/config/kafka');
 const { validateZipCode } = require('../../../shared/utils/validators');
 const { decrypt } = require('../../../shared/utils/encryption');
-const { deleteCache } = require('../../../shared/config/redis');
+const { deleteCache, deleteCachePattern } = require('../../../shared/config/redis');
 const logger = require('../../../shared/utils/logger');
 const axios = require('axios');
 
@@ -859,13 +859,11 @@ async function handlePaymentComplete(event) {
       }
       
       // Invalidate user bookings cache for all status variations to ensure fresh data
-      // The booking service caches with key: user:${userId}:bookings:${status}
+      // Cache keys are: user:${userId}:bookings:${status}:${billingId}
+      // Use pattern matching to catch all combinations (status + billingId variations)
       try {
-        await deleteCache(`user:${userId}:bookings:Confirmed`);
-        await deleteCache(`user:${userId}:bookings:all`);
-        await deleteCache(`user:${userId}:bookings:Pending`);
-        await deleteCache(`user:${userId}:bookings`); // Generic key without status
-        logger.info(`Invalidated booking cache for user ${userId} after payment confirmation`);
+        await deleteCachePattern(`user:${userId}:bookings:*`);
+        logger.info(`Invalidated all booking cache patterns for user ${userId} after payment confirmation`);
       } catch (cacheError) {
         logger.warn(`Failed to invalidate booking cache: ${cacheError.message}`);
         // Non-critical - continue even if cache invalidation fails
