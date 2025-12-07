@@ -7,7 +7,7 @@ import json
 import re
 from contextlib import asynccontextmanager
 from typing import List
-from datetime import datetime, timedelta
+from datetime import datetime as dt_datetime, timedelta
 from decimal import Decimal
 
 from fastapi import FastAPI, Depends, WebSocket, WebSocketDisconnect, HTTPException, BackgroundTasks
@@ -26,12 +26,28 @@ from models import (
     Watch, WatchStatus, BundleRecommendation, BundleFlight, BundleHotel,
     SelectedBundle, SelectBundleRequest, SelectBundleResponse, CheckoutQuote
 )
-from concierge_agent.llm_client import parse_intent, explain_bundle, generate_watch_notes
+from concierge_agent.llm_client import (
+    parse_intent, explain_bundle, generate_watch_notes,
+    MessageIntent, classify_message_intent, answer_bundle_question
+)
 from concierge_agent.trip_planner import TripPlanner
 from websocket_manager import websocket_manager
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+
+
+def decimal_to_str(obj):
+    """Recursively convert Decimal and datetime objects to strings for JSON serialization."""
+    if isinstance(obj, Decimal):
+        return str(obj)
+    elif isinstance(obj, dt_datetime):
+        return obj.isoformat()
+    elif isinstance(obj, dict):
+        return {k: decimal_to_str(v) for k, v in obj.items()}
+    elif isinstance(obj, list):
+        return [decimal_to_str(item) for item in obj]
+    return obj
 
 
 @asynccontextmanager
@@ -111,40 +127,72 @@ async def chat(request: ChatRequest, session: Session = Depends(get_session)):
     session.add(user_turn)
     session.commit()
 
-    # If the user just sends a short greeting or small-talk (e.g. "hi"),
-    # don't re-run the planner or repeat previous bundles. Instead, reply
-    # with a friendly clarifying prompt.
-    normalized = request.message.strip().lower()
-    if normalized:
-        tokens = normalized.split()
-        is_short = len(tokens) <= 4
-        is_greeting = re.search(
-            r"\b(hi|hello|hey|thanks|thank you|hola|yo)\b", normalized
+    # Check if we have recent bundles (within last hour)
+    has_recent_bundles = (
+        user_session.last_bundles_data and
+        user_session.last_bundles_shown_at and
+        (dt_datetime.utcnow() - user_session.last_bundles_shown_at).total_seconds() < 3600  # 1 hour
+    )
+
+    # Classify the message intent
+    message_intent = await classify_message_intent(
+        request.message,
+        chat_history,
+        has_recent_bundles
+    )
+
+    logger.info(f"Message intent classified as: {message_intent}")
+
+    # Handle bundle questions
+    if message_intent == MessageIntent.BUNDLE_QUESTION and has_recent_bundles:
+        bundles_data = user_session.last_bundles_data.get("bundles", [])
+
+        if not bundles_data:
+            assistant_text = "I don't have any bundles to reference. Could you tell me about your trip first?"
+        else:
+            assistant_text = await answer_bundle_question(
+                request.message,
+                bundles_data,
+                chat_history
+            )
+
+        # Save Q&A to chat history
+        assistant_turn = ChatTurn(
+            session_id=user_session.id,
+            role="assistant",
+            message=assistant_text
         )
-        has_airport_code = re.search(r"\b[A-Z]{3}\b", request.message)
+        session.add(assistant_turn)
+        session.commit()
 
-        if is_short and is_greeting and not has_airport_code:
-            assistant_text = (
-                "Hi! Tell me where you're traveling from and to, your dates, "
-                "budget, and how many people are traveling."
-            )
+        return ChatResponse(
+            session_id=request.session_id,
+            message=assistant_text,
+            intent_parsed={"type": "bundle_question"}
+        )
 
-            assistant_turn = ChatTurn(
-                session_id=user_session.id,
-                role="assistant",
-                message=assistant_text,
-            )
-            session.add(assistant_turn)
-            session.commit()
+    # Handle greetings
+    if message_intent == MessageIntent.GREETING:
+        assistant_text = (
+            "Hi! Tell me where you're traveling from and to, your dates, "
+            "budget, and how many people are traveling."
+        )
 
-            return ChatResponse(
-                session_id=request.session_id,
-                message=assistant_text,
-                # ChatResponse expects a dict here, so return an empty object
-                # rather than None when we're only sending a greeting reply.
-                intent_parsed={},
-            )
-    
+        assistant_turn = ChatTurn(
+            session_id=user_session.id,
+            role="assistant",
+            message=assistant_text,
+        )
+        session.add(assistant_turn)
+        session.commit()
+
+        return ChatResponse(
+            session_id=request.session_id,
+            message=assistant_text,
+            intent_parsed={},
+        )
+
+    # Handle new trip planning (existing logic)
     # Parse intent
     intent = await parse_intent(chat_history)
     
@@ -315,8 +363,19 @@ async def chat(request: ChatRequest, session: Session = Depends(get_session)):
         intent_data=intent.model_dump()
     )
     session.add(assistant_turn)
+
+    # Store bundles in session for Q&A (convert Decimals to strings for JSON storage)
+    bundles_dict = {
+        "bundles": [bundle.model_dump() for bundle in bundle_responses],
+        "generated_at": dt_datetime.utcnow().isoformat()
+    }
+    user_session.last_bundles_data = decimal_to_str(bundles_dict)
+    user_session.last_bundles_shown_at = dt_datetime.utcnow()
+    session.add(user_session)
+
     session.commit()
-    
+    logger.info(f"Stored {len(bundle_responses)} bundles in session for Q&A")
+
     return ChatResponse(
         session_id=request.session_id,
         message=assistant_message,
@@ -757,10 +816,10 @@ def _create_checkout_quote(bundle: BundleRecommendation, user_session: UserSessi
                 hotel.price_per_night_usd = Decimal(str(float(hotel.price_per_night_usd) * discount_multiplier))
 
     # Generate quote ID
-    quote_id = f"QUOTE-{bundle.id}-{int(datetime.utcnow().timestamp())}"
+    quote_id = f"QUOTE-{bundle.id}-{int(dt_datetime.utcnow().timestamp())}"
 
     # Quote expires in 30 minutes
-    quote_expires_at = datetime.utcnow() + timedelta(minutes=30)
+    quote_expires_at = dt_datetime.utcnow() + timedelta(minutes=30)
 
     # For MVP, checkout URL is just a placeholder - in production, this would be a real checkout page
     checkout_url = f"/checkout?quote_id={quote_id}"

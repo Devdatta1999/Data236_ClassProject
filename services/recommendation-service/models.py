@@ -150,13 +150,17 @@ class OfferTag(SQLModel, table=True):
 class UserSession(SQLModel, table=True):
     """User chat session."""
     __tablename__ = "user_sessions"
-    
+
     id: Optional[int] = Field(default=None, primary_key=True)
     session_id: str = Field(index=True, unique=True)
     user_id: Optional[str] = None  # Optional link to user service
     created_at: datetime = Field(default_factory=datetime.utcnow)
     updated_at: datetime = Field(default_factory=datetime.utcnow)
-    
+
+    # Store last shown bundles for Q&A
+    last_bundles_data: Dict[str, Any] = Field(default_factory=dict, sa_column=Column(JSON))
+    last_bundles_shown_at: Optional[datetime] = None
+
     # Relationships
     chat_turns: List["ChatTurn"] = Relationship(back_populates="session")
     bundles: List["BundleRecommendation"] = Relationship(back_populates="session")

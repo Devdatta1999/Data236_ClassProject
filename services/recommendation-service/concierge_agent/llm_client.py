@@ -7,6 +7,7 @@ import logging
 import re
 from datetime import datetime, timedelta
 from typing import Dict, Any, List, Optional
+from enum import Enum
 
 from dotenv import load_dotenv
 from openai import AsyncOpenAI
@@ -33,6 +34,14 @@ def get_client():
         # Initialize client with only api_key to avoid any proxy/environment issues
         _client = AsyncOpenAI(api_key=api_key)
     return _client
+
+
+class MessageIntent(str, Enum):
+    """User message intent classification."""
+    NEW_TRIP_PLANNING = "new_trip_planning"
+    BUNDLE_QUESTION = "bundle_question"
+    GENERAL_QUESTION = "general_question"
+    GREETING = "greeting"
 
 
 class TravelIntent(BaseModel):
@@ -365,4 +374,174 @@ Provide a short, factual answer based only on the facts above. If the informatio
     except Exception as e:
         logger.error(f"Error answering policy question: {e}")
         return "I don't have that information available."
+
+
+async def classify_message_intent(
+    message: str,
+    chat_history: List[Dict[str, str]],
+    has_recent_bundles: bool
+) -> MessageIntent:
+    """
+    Classify user's message intent to determine how to respond.
+
+    Args:
+        message: Current user message
+        chat_history: Previous conversation history
+        has_recent_bundles: Whether bundles were shown in the last hour
+
+    Returns:
+        MessageIntent enum indicating the type of message
+    """
+    message_lower = message.lower().strip()
+
+    # Check for greetings first (highest priority for short messages)
+    greeting_patterns = r"\b(hi|hello|hey|thanks|thank you|hola|yo|good morning|good afternoon)\b"
+    if re.search(greeting_patterns, message_lower) and len(message.split()) <= 4:
+        # Don't treat as greeting if it contains airport codes or trip keywords
+        if not re.search(r"\b[A-Z]{3}\b", message) and not re.search(r"\b(trip|flight|hotel|bundle)\b", message_lower):
+            return MessageIntent.GREETING
+
+    # Check for bundle questions (only if bundles were recently shown)
+    if has_recent_bundles:
+        bundle_question_patterns = [
+            r"\bbundle\s*\d+",  # "bundle 1", "bundle 2"
+            r"\boption\s*\d+",  # "option 1", "option 2"
+            r"\bfirst\s+(one|bundle|option)",  # "first one", "first bundle"
+            r"\bsecond\s+(one|bundle|option)",
+            r"\bthird\s+(one|bundle|option)",
+            r"\bthe\s+(hotel|flight)\s+in\s+(bundle|option)",  # "the hotel in bundle 1"
+            r"\btell me (more )?about\s+(bundle|option)",  # "tell me about bundle 1"
+            r"\bwhat'?s?\s+the\s+(hotel|flight)",  # "what's the hotel like"
+            r"\bdoes\s+(bundle|option|the|it)",  # "does bundle 1 include", "does it have"
+            r"\bis\s+(the|it)\s+(refundable|pet.?friendly)",  # "is the hotel refundable"
+            r"\bhow many\s+(stops|nights)",  # "how many stops"
+            r"\bwhich\s+(bundle|option)\s+(has|is)",  # "which bundle has"
+            r"\bdifference\s+between",  # "difference between bundle 1 and 2"
+            r"\bcompare\s+(bundle|option|them)",  # "compare the bundles"
+            r"\bbreakfast\s+(included|available)",  # "breakfast included?"
+        ]
+
+        for pattern in bundle_question_patterns:
+            if re.search(pattern, message_lower):
+                logger.info(f"Classified as BUNDLE_QUESTION (matched pattern: {pattern})")
+                return MessageIntent.BUNDLE_QUESTION
+
+    # Check for new trip planning - look for travel indicators
+    trip_planning_patterns = [
+        r"\b[A-Z]{3}\b.*\bto\b.*\b[A-Z]{3}\b",  # "SFO to LAX"
+        r"\bfrom\b.*\bto\b",  # "from ... to ..."
+        r"\btrip\s+to\b",  # "trip to NYC"
+        r"\btravel\s+to\b",  # "travel to Boston"
+        r"\bgoing\s+to\b",  # "going to Paris"
+        r"\b(january|february|march|april|may|june|july|august|september|october|november|december)\b",  # month names
+        r"\b\d{4}-\d{2}-\d{2}\b",  # date format 2025-11-29
+        r"\b(budget|spend|cost).*\$\d+",  # "budget of $1000"
+        r"\$\d+.*budget",  # "$1000 budget"
+        r"\b\d+\s+(people|travelers|persons|adults)",  # "3 people"
+        r"\bneed\s+(a\s+)?(flight|hotel|trip)",  # "need a trip"
+    ]
+
+    for pattern in trip_planning_patterns:
+        if re.search(pattern, message, re.IGNORECASE):
+            logger.info(f"Classified as NEW_TRIP_PLANNING (matched pattern: {pattern})")
+            return MessageIntent.NEW_TRIP_PLANNING
+
+    # Default to general question
+    logger.info("Classified as GENERAL_QUESTION (no specific patterns matched)")
+    return MessageIntent.GENERAL_QUESTION
+
+
+async def answer_bundle_question(
+    question: str,
+    bundles_data: List[Dict[str, Any]],
+    chat_history: List[Dict[str, str]]
+) -> str:
+    """
+    Answer questions about previously shown bundles using LLM.
+
+    Args:
+        question: User's question about bundles
+        bundles_data: List of bundle data from session
+        chat_history: Conversation history for context
+
+    Returns:
+        Natural language answer to the question
+    """
+    # Format bundles for LLM context
+    bundles_context = ""
+    for i, bundle in enumerate(bundles_data, 1):
+        bundles_context += f"\n\n=== Bundle {i} ==="
+        bundles_context += f"\n  Total Price: ${bundle.get('total_price_usd', 0)}"
+        bundles_context += f"\n  Fit Score: {bundle.get('fit_score', 0)}/100"
+        bundles_context += f"\n  Explanation: {bundle.get('explanation', 'N/A')}"
+
+        # Flight details
+        flights = bundle.get('flights', [])
+        if flights:
+            bundles_context += "\n\n  Flights:"
+            for flight in flights:
+                bundles_context += f"\n    - Airline: {flight.get('airline', 'N/A')} {flight.get('flight_number', '')}"
+                bundles_context += f"\n      Route: {flight.get('origin', 'N/A')} → {flight.get('destination', 'N/A')}"
+                bundles_context += f"\n      Departure: {flight.get('departure_date', 'N/A')}"
+                if flight.get('return_date'):
+                    bundles_context += f"\n      Return: {flight.get('return_date')}"
+                bundles_context += f"\n      Price: ${flight.get('price_usd', 0)}"
+                bundles_context += f"\n      Stops: {flight.get('stops', 0)}"
+                bundles_context += f"\n      Duration: {flight.get('duration_minutes', 'N/A')} minutes"
+                bundles_context += f"\n      Baggage included: {flight.get('baggage_included', False)}"
+                bundles_context += f"\n      Red-eye: {flight.get('is_red_eye', False)}"
+
+        # Hotel details
+        hotels = bundle.get('hotels', [])
+        if hotels:
+            bundles_context += "\n\n  Hotels:"
+            for hotel in hotels:
+                bundles_context += f"\n    - Name: {hotel.get('hotel_name', 'N/A')}"
+                bundles_context += f"\n      Location: {hotel.get('city', 'N/A')}"
+                if hotel.get('neighborhood'):
+                    bundles_context += f"\n      Neighborhood: {hotel.get('neighborhood')}"
+                bundles_context += f"\n      Star Rating: {hotel.get('star_rating', 'N/A')}⭐"
+                bundles_context += f"\n      Price/night: ${hotel.get('price_per_night_usd', 0)}"
+                bundles_context += f"\n      Total price: ${hotel.get('total_price_usd', 0)}"
+                bundles_context += f"\n      Check-in: {hotel.get('check_in_date', 'N/A')}"
+                bundles_context += f"\n      Check-out: {hotel.get('check_out_date', 'N/A')}"
+                bundles_context += f"\n      Refundable: {hotel.get('is_refundable', False)}"
+                bundles_context += f"\n      Breakfast included: {hotel.get('breakfast_included', False)}"
+                bundles_context += f"\n      Pet friendly: {hotel.get('pet_friendly', False)}"
+                bundles_context += f"\n      Near transit: {hotel.get('near_transit', False)}"
+                bundles_context += f"\n      Parking: {hotel.get('parking_available', False)}"
+
+    prompt = f"""You are a helpful travel assistant. Answer the user's question about the travel bundles shown below.
+
+Previously shown travel bundles:
+{bundles_context}
+
+User's question: {question}
+
+Instructions:
+- Provide a helpful, concise answer based on the bundle data above
+- If asking about a specific bundle number, reference that bundle's details
+- If comparing bundles, highlight the key differences
+- Keep the answer friendly and conversational
+- Stay under 150 words
+- If the information isn't in the data, say so politely
+
+Answer:"""
+
+    try:
+        client = get_client()
+        response = await client.chat.completions.create(
+            model="gpt-4o-mini",
+            messages=[{"role": "user", "content": prompt}],
+            temperature=0.7,
+            max_tokens=250
+        )
+
+        answer = response.choices[0].message.content.strip()
+        logger.info(f"Generated bundle answer: {answer[:100]}...")
+        return answer
+
+    except Exception as e:
+        logger.error(f"Error answering bundle question: {e}")
+        return "I'd be happy to answer questions about the bundles I showed you, but I'm having trouble accessing that information right now. Could you ask your question again?"
 
