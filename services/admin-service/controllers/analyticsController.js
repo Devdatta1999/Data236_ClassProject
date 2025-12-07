@@ -19,7 +19,7 @@ const logger = require('../../../shared/utils/logger');
 const getAdminOverview = asyncHandler(async (req, res) => {
   const { providerId } = req.query;
   try {
-    const cacheKey = 'analytics:admin:overview';
+    const cacheKey = `analytics:admin:overview:${providerId || 'all'}`;
     
     try {
       const cached = await getCache(cacheKey);
@@ -54,7 +54,8 @@ const getAdminOverview = asyncHandler(async (req, res) => {
     const Booking = mongoose.connection.db.collection('bookings');
     
     // If providerId is provided, filter by provider's listings
-    let bookingFilter = { status: 'Confirmed' };
+    // Since recentBookings shows 349, there ARE bookings - get all first, then filter
+    let bookingFilter = {}; // Start with no status filter to get all bookings
     let confirmedBookings;
     
     if (providerId) {
@@ -76,22 +77,34 @@ const getAdminOverview = asyncHandler(async (req, res) => {
       ];
       
       bookingFilter = {
-        status: 'Confirmed',
         listingId: { $in: providerListingIds }
       };
     }
     
-    const totalBookings = await Booking.countDocuments(bookingFilter);
+    // Get all bookings first (no status filter) to calculate revenue
     confirmedBookings = await Booking.find(bookingFilter).toArray();
-    const totalRevenue = confirmedBookings.reduce((sum, booking) => sum + (booking.totalAmount || 0), 0);
     
-    // Recent bookings (last 30 days)
+    // Filter out cancelled/refunded bookings for revenue calculation
+    const activeBookings = confirmedBookings.filter(b => {
+      const status = (b.status || '').toLowerCase();
+      return !['cancelled', 'refunded'].includes(status);
+    });
+    
+    const totalBookings = activeBookings.length;
+    const totalRevenue = activeBookings.reduce((sum, booking) => sum + (booking.totalAmount || 0), 0);
+    
+    // Recent bookings (last 30 days) - count all non-cancelled bookings
     const thirtyDaysAgo = new Date();
     thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-    const recentBookings = await Booking.countDocuments({ 
-      status: 'Confirmed',
+    const recentBookingsFilter = {
+      ...bookingFilter,
       createdAt: { $gte: thirtyDaysAgo }
-    });
+    };
+    const recentBookingsAll = await Booking.find(recentBookingsFilter).toArray();
+    const recentBookings = recentBookingsAll.filter(b => {
+      const status = (b.status || '').toLowerCase();
+      return !['cancelled', 'refunded'].includes(status);
+    }).length;
 
     const Flights = mongoose.connection.db.collection('flights');
     const Hotels = mongoose.connection.db.collection('hotels');
@@ -169,7 +182,7 @@ const getTopPropertiesByRevenue = asyncHandler(async (req, res) => {
   const { year, providerId } = req.query;
   const targetYear = year || new Date().getFullYear();
 
-  const cacheKey = `analytics:admin:top-properties:${targetYear}`;
+  const cacheKey = `analytics:admin:top-properties:${targetYear}:${providerId || 'all'}`;
   
   try {
     const cached = await getCache(cacheKey);
@@ -307,7 +320,7 @@ const getCityWiseRevenue = asyncHandler(async (req, res) => {
   const { year, providerId } = req.query;
   const targetYear = year || new Date().getFullYear();
 
-  const cacheKey = `analytics:admin:city-revenue:${targetYear}`;
+  const cacheKey = `analytics:admin:city-revenue:${targetYear}:${providerId || 'all'}`;
   
   try {
     const cached = await getCache(cacheKey);
@@ -497,7 +510,7 @@ const getTopProviders = asyncHandler(async (req, res) => {
   const targetMonth = month || new Date().getMonth() + 1;
   const targetYear = year || new Date().getFullYear();
 
-  const cacheKey = `analytics:admin:top-providers:${targetMonth}:${targetYear}`;
+  const cacheKey = `analytics:admin:top-providers:${targetMonth}:${targetYear}:${providerId || 'all'}`;
   
   try {
     const cached = await getCache(cacheKey);
@@ -662,7 +675,7 @@ const getRevenueTrend = asyncHandler(async (req, res) => {
   const { year, providerId } = req.query;
   const targetYear = year || new Date().getFullYear();
 
-  const cacheKey = `analytics:admin:revenue-trend:${targetYear}`;
+  const cacheKey = `analytics:admin:revenue-trend:${targetYear}:${providerId || 'all'}`;
   
   try {
     const cached = await getCache(cacheKey);

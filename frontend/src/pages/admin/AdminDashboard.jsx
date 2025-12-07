@@ -8,7 +8,6 @@ import PendingRequestsTab from '../../components/admin/PendingRequestsTab'
 import ApprovedListingsTab from '../../components/admin/ApprovedListingsTab'
 import CreateListingTab from '../../components/admin/CreateListingTab'
 import EnhancedAdminAnalyticsTab from '../../components/admin/EnhancedAdminAnalyticsTab'
-import HostAnalyticsTab from '../../components/admin/HostAnalyticsTab'
 import UserManagementTab from '../../components/admin/UserManagementTab'
 import BillManagementTab from '../../components/admin/BillManagementTab'
 
@@ -66,8 +65,7 @@ const AdminDashboard = () => {
     { id: 'create', label: 'Create Listing', icon: Plus },
     { id: 'users', label: 'User Management', icon: Users },
     { id: 'bills', label: 'Bill Management', icon: Receipt },
-    { id: 'admin-dashboard', label: 'Admin Dashboard', icon: BarChart3 },
-    { id: 'host-dashboard', label: 'Host Dashboard', icon: TrendingUp },
+    { id: 'admin-dashboard', label: 'Admin Analytics', icon: BarChart3 },
   ]
 
   return (
@@ -113,7 +111,6 @@ const AdminDashboard = () => {
         {selectedTab === 'users' && <UserManagementTab />}
         {selectedTab === 'bills' && <BillManagementTab />}
         {selectedTab === 'admin-dashboard' && <EnhancedAdminAnalyticsTab />}
-        {selectedTab === 'host-dashboard' && <HostAnalyticsTab />}
       </div>
     </div>
   )
