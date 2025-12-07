@@ -7,7 +7,7 @@ import { CheckCircle, XCircle, Plus, BarChart3, Users, TrendingUp, ListChecks, R
 import PendingRequestsTab from '../../components/admin/PendingRequestsTab'
 import ApprovedListingsTab from '../../components/admin/ApprovedListingsTab'
 import CreateListingTab from '../../components/admin/CreateListingTab'
-import AdminAnalyticsTab from '../../components/admin/AdminAnalyticsTab'
+import EnhancedAdminAnalyticsTab from '../../components/admin/EnhancedAdminAnalyticsTab'
 import HostAnalyticsTab from '../../components/admin/HostAnalyticsTab'
 import UserManagementTab from '../../components/admin/UserManagementTab'
 import BillManagementTab from '../../components/admin/BillManagementTab'
@@ -112,7 +112,7 @@ const AdminDashboard = () => {
         {selectedTab === 'create' && <CreateListingTab />}
         {selectedTab === 'users' && <UserManagementTab />}
         {selectedTab === 'bills' && <BillManagementTab />}
-        {selectedTab === 'admin-dashboard' && <AdminAnalyticsTab analytics={analytics} />}
+        {selectedTab === 'admin-dashboard' && <EnhancedAdminAnalyticsTab />}
         {selectedTab === 'host-dashboard' && <HostAnalyticsTab />}
       </div>
     </div>

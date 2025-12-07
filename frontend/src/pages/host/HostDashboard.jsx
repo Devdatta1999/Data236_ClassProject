@@ -4,7 +4,7 @@ import { setProvider, setListings, setProfitability } from '../../store/slices/h
 import api from '../../services/apiService'
 import { Plus, TrendingUp, DollarSign, List, Star, BarChart3, Package } from 'lucide-react'
 import CreateListingRequest from '../../components/host/CreateListingRequest'
-import HostProfitability from '../../components/host/HostProfitability'
+import HostAnalyticsTab from '../../components/host/HostAnalyticsTab'
 import MyListingsTab from '../../components/host/MyListingsTab'
 
 const HostDashboard = () => {
@@ -213,7 +213,7 @@ const HostDashboard = () => {
 
         {activeTab === 'listings' && <MyListingsTab onRefresh={fetchListings} />}
         {activeTab === 'create' && <CreateListingRequest onSuccess={fetchListings} />}
-        {activeTab === 'profitability' && <HostProfitability profitability={profitability} />}
+        {activeTab === 'profitability' && <HostAnalyticsTab />}
       </div>
     </div>
   )
