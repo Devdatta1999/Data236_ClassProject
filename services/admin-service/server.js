@@ -76,11 +76,23 @@ async function startServer() {
     app.use('/api/admin', adminRoutes);
     logger.info('Admin routes registered successfully');
     
+    // Load analytics routes
+    logger.info('Loading analytics routes...');
+    const analyticsRoutes = require('./routes/analyticsRoutes');
+    app.use('/api/analytics', analyticsRoutes);
+    logger.info('Analytics routes registered successfully');
+    
     // Add error handler AFTER routes
     app.use(errorHandler);
     
-    // Connect to Redis
-    await getRedisClient();
+    // Connect to Redis (non-blocking - optional caching)
+    try {
+      await getRedisClient();
+      logger.info('Redis connected successfully');
+    } catch (redisError) {
+      logger.warn('Redis connection failed - caching disabled:', redisError.message);
+      // Continue without Redis - caching will be disabled but analytics will work
+    }
     
     app.listen(PORT, () => {
       logger.info(`Admin service running on port ${PORT}`);
