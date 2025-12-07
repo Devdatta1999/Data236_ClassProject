@@ -77,7 +77,7 @@ const CheckoutPage = () => {
           listingType: item.listingType,
           quantity: item.quantity,
         }
-        
+
         // Add dates if they exist (for hotels, cars, and flights)
         if (item.checkInDate) cartItem.checkInDate = item.checkInDate
         if (item.checkOutDate) cartItem.checkOutDate = item.checkOutDate
@@ -85,7 +85,12 @@ const CheckoutPage = () => {
         if (item.returnDate) cartItem.returnDate = item.returnDate
         if (item.travelDate) cartItem.travelDate = item.travelDate
         if (item.roomType) cartItem.roomType = item.roomType // For hotels (also used for flight seat types)
-        
+
+        // Add price information from cart (for AI-discounted bundles)
+        if (item.price) cartItem.price = item.price // Per-person price for flights
+        if (item.totalPrice) cartItem.totalPrice = item.totalPrice // Total price for the item
+        if (item.pricePerNight) cartItem.pricePerNight = item.pricePerNight // Per-night price for hotels
+
         return cartItem
       })
 

@@ -300,7 +300,7 @@ class HotelDealResponse(BaseModel):
 class BundleResponse(BaseModel):
     """API response for bundle recommendation."""
     model_config = ConfigDict(from_attributes=True)
-    
+
     id: int
     bundle_name: Optional[str] = None
     total_price_usd: Decimal
@@ -309,6 +309,7 @@ class BundleResponse(BaseModel):
     watch_notes: Optional[str] = None
     flights: List[FlightDealResponse] = PydanticField(default_factory=list)
     hotels: List[HotelDealResponse] = PydanticField(default_factory=list)
+    travelers: int = 1  # Number of travelers for this bundle
 
 
 class ChatRequest(BaseModel):

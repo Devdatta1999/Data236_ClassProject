@@ -379,20 +379,27 @@ const checkout = asyncHandler(async (req, res) => {
       });
 
       // Call booking service to create booking
+      const bookingRequest = {
+        userId,
+        listingId: item.listingId,
+        listingType: item.listingType,
+        quantity: item.quantity,
+        checkInDate,
+        checkOutDate,
+        travelDate: item.travelDate,
+        roomType: item.roomType || null,
+        checkoutId,
+        parentRequestId: checkoutId
+      };
+
+      // Include price overrides from cart (for AI-discounted bundles)
+      if (item.price !== undefined) bookingRequest.priceOverride = item.price;
+      if (item.totalPrice !== undefined) bookingRequest.totalPriceOverride = item.totalPrice;
+      if (item.pricePerNight !== undefined) bookingRequest.pricePerNightOverride = item.pricePerNight;
+
       const bookingResponse = await axios.post(
         `${BOOKING_SERVICE_URL}/api/bookings/create`,
-        {
-          userId,
-          listingId: item.listingId,
-          listingType: item.listingType,
-          quantity: item.quantity,
-          checkInDate,
-          checkOutDate,
-          travelDate: item.travelDate,
-          roomType: item.roomType || null,
-          checkoutId,
-          parentRequestId: checkoutId
-        },
+        bookingRequest,
         { timeout: 30000 }
       );
 
@@ -721,11 +728,21 @@ const processPayment = asyncHandler(async (req, res) => {
         await deleteCache(`booking:${booking.bookingId}`);
       }
 
-      // Invalidate user bookings cache
+      // Invalidate user bookings cache (all possible combinations with status and billingId)
+      await deleteCache(`user:${userId}:bookings:Confirmed:all`);
+      await deleteCache(`user:${userId}:bookings:all:all`);
+      await deleteCache(`user:${userId}:bookings:Pending:all`);
       await deleteCache(`user:${userId}:bookings:Confirmed`);
       await deleteCache(`user:${userId}:bookings:all`);
       await deleteCache(`user:${userId}:bookings:Pending`);
       await deleteCache(`user:${userId}:bookings`);
+      // Also invalidate cache for specific billingId
+      for (const booking of bookings) {
+        if (booking.billingId) {
+          await deleteCache(`user:${userId}:bookings:all:${booking.billingId}`);
+          await deleteCache(`user:${userId}:bookings:Confirmed:${booking.billingId}`);
+        }
+      }
     } catch (bookingUpdateError) {
       // Rollback: mark bookings as Failed
       await markBookingsAsFailed(bookings.map(b => b.bookingId));

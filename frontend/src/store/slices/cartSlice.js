@@ -13,6 +13,8 @@ const cartSlice = createSlice({
   reducers: {
     addToCart: (state, action) => {
       const item = action.payload
+      console.log('[Cart] addToCart called with:', item)
+      console.log('[Cart] Current cart items:', state.items)
       // For cars, check if item with same dates already exists
       // For hotels, check if item with same listingId, roomType, and dates already exists
       // For flights, check if item already exists
@@ -44,17 +46,43 @@ const cartSlice = createSlice({
       }
       
       if (existingIndex >= 0) {
-        // Update quantity if exists (for same room type + dates for hotels, or same dates for cars)
-        state.items[existingIndex].quantity += item.quantity || 1
+        // Check if price has changed (e.g., from price drop discount)
+        const existingItem = state.items[existingIndex]
+        console.log('[Cart] Found existing item at index', existingIndex, ':', existingItem)
+        const priceChanged =
+          (item.price && existingItem.price && item.price !== existingItem.price) ||
+          (item.pricePerNight && existingItem.pricePerNight && item.pricePerNight !== existingItem.pricePerNight) ||
+          (item.totalPrice && existingItem.totalPrice && item.totalPrice !== existingItem.totalPrice)
+
+        console.log('[Cart] Price changed?', priceChanged, {
+          newPrice: item.price || item.pricePerNight || item.totalPrice,
+          oldPrice: existingItem.price || existingItem.pricePerNight || existingItem.totalPrice
+        })
+
+        if (priceChanged) {
+          // Replace the entire item if price changed (e.g., from discount)
+          console.log('[Cart] Replacing item with new prices')
+          state.items[existingIndex] = {
+            ...item,
+            quantity: item.quantity || 1,
+            addedAt: Date.now(),
+          }
+        } else {
+          // Update quantity if exists (for same room type + dates for hotels, or same dates for cars)
+          console.log('[Cart] Incrementing quantity')
+          state.items[existingIndex].quantity += item.quantity || 1
+        }
       } else {
         // Add new item
+        console.log('[Cart] Adding new item to cart')
         state.items.push({
           ...item,
           quantity: item.quantity || 1,
           addedAt: Date.now(),
         })
       }
-      
+
+      console.log('[Cart] Cart after update:', state.items)
       localStorage.setItem('cart', JSON.stringify(state.items))
     },
     removeFromCart: (state, action) => {

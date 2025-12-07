@@ -65,9 +65,9 @@ const AIChatModal = () => {
       const listing = await fetchListingDetails('flight', externalId)
       const listingId = listing?.flightId || externalId
       const travelers = Math.max(quote.travelers || 1, 1)
-      const totalFlightPrice = Number(flight.price_usd || 0)
-      const perSeatPriceRaw = travelers > 0 ? totalFlightPrice / travelers : totalFlightPrice
-      const perSeatPrice = Number(Number.isFinite(perSeatPriceRaw) ? perSeatPriceRaw.toFixed(2) : 0)
+      // flight.price_usd is per-person price from the API
+      const pricePerPerson = Number(flight.price_usd || 0)
+      const totalFlightPrice = pricePerPerson * travelers
       const seatType = listing?.seatTypes?.[0]?.type || 'Economy'
 
       cartItems.push({
@@ -79,7 +79,7 @@ const AIChatModal = () => {
         listing,
         roomType: seatType,
         quantity: travelers,
-        price: perSeatPrice || totalFlightPrice,
+        price: pricePerPerson,
         totalPrice: totalFlightPrice,
         travelDate: flight.departure_date,
         returnDate: flight.return_date,
@@ -100,8 +100,9 @@ const AIChatModal = () => {
       const totalHotelPrice = Number(hotel.total_price_usd || 0)
       const nightlyRaw = nights > 0 ? totalHotelPrice / nights : totalHotelPrice
       const pricePerNight = Number(Number.isFinite(nightlyRaw) ? nightlyRaw.toFixed(2) : 0)
-      const travelers = Math.max(quote.travelers || 1, 1)
-      const quantity = Math.max(1, Math.ceil(travelers / 2))
+      // Default to 1 room to match the bundle pricing shown to user
+      // Users can manually adjust quantity in cart if they need more rooms
+      const quantity = 1
       const roomType = listing?.roomTypes?.[0]?.type || 'Standard'
 
       cartItems.push({
@@ -349,7 +350,110 @@ const AIChatModal = () => {
                       {bundle.explanation && (
                         <p className="text-sm text-gray-600 mb-2">{bundle.explanation}</p>
                       )}
-                      <div className="flex items-center space-x-4 text-xs text-gray-500">
+
+                      {/* Flight Details */}
+                      {bundle.flights && bundle.flights.length > 0 && (
+                        <div className="mt-3 pt-3 border-t border-gray-100">
+                          <p className="text-xs font-semibold text-gray-700 mb-2">Flight Details:</p>
+                          {bundle.flights.map((flight, idx) => {
+                            const travelers = bundle.travelers || 1;
+                            const pricePerPerson = parseFloat(flight.price_usd);
+                            const totalFlightPrice = pricePerPerson * travelers;
+                            return (
+                              <div key={idx} className="bg-blue-50 rounded-lg p-3 mb-2 text-xs">
+                                <div className="flex justify-between items-start mb-1">
+                                  <div>
+                                    <p className="font-semibold text-gray-900">{flight.airline}</p>
+                                    <p className="text-gray-600">
+                                      {flight.origin} → {flight.destination}
+                                    </p>
+                                  </div>
+                                  <div className="text-right">
+                                    <p className="font-semibold text-primary-600">
+                                      ${pricePerPerson.toFixed(2)}/person
+                                    </p>
+                                    {travelers > 1 && (
+                                      <p className="text-gray-500 text-xs">
+                                        Total: ${totalFlightPrice.toFixed(2)} ({travelers} travelers)
+                                      </p>
+                                    )}
+                                  </div>
+                                </div>
+                                <div className="flex gap-3 mt-2 text-gray-600">
+                                  {flight.departure_date && (
+                                    <span>Departure: {new Date(flight.departure_date).toLocaleDateString()}</span>
+                                  )}
+                                  {flight.duration_minutes && (
+                                    <span>Duration: {Math.floor(flight.duration_minutes / 60)}h {flight.duration_minutes % 60}m</span>
+                                  )}
+                                  {flight.stops !== undefined && (
+                                    <span>{flight.stops === 0 ? 'Non-stop' : `${flight.stops} stop${flight.stops > 1 ? 's' : ''}`}</span>
+                                  )}
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      )}
+
+                      {/* Hotel Details */}
+                      {bundle.hotels && bundle.hotels.length > 0 && (
+                        <div className="mt-3 pt-3 border-t border-gray-100">
+                          <p className="text-xs font-semibold text-gray-700 mb-2">Hotel Details:</p>
+                          {bundle.hotels.map((hotel, idx) => {
+                            const pricePerNight = parseFloat(hotel.price_per_night_usd);
+                            const totalPrice = parseFloat(hotel.total_price_usd);
+                            const nights = pricePerNight > 0 ? Math.round(totalPrice / pricePerNight) : 0;
+                            return (
+                              <div key={idx} className="bg-green-50 rounded-lg p-3 mb-2 text-xs">
+                                <div className="flex justify-between items-start mb-1">
+                                  <div>
+                                    <p className="font-semibold text-gray-900">{hotel.hotel_name}</p>
+                                    <p className="text-gray-600">{hotel.city}</p>
+                                    {hotel.star_rating && (
+                                      <p className="text-yellow-600 mt-1">
+                                        {'★'.repeat(hotel.star_rating)}
+                                      </p>
+                                    )}
+                                  </div>
+                                  <div className="text-right">
+                                    <p className="font-semibold text-primary-600">
+                                      ${pricePerNight.toFixed(2)}/night
+                                    </p>
+                                    <p className="text-gray-500 text-xs">
+                                      Total: ${totalPrice.toFixed(2)} ({nights} night{nights !== 1 ? 's' : ''})
+                                    </p>
+                                  </div>
+                                </div>
+                              <div className="flex flex-wrap gap-1 mt-2">
+                                {hotel.breakfast_included && (
+                                  <span className="px-2 py-0.5 bg-green-100 text-green-700 rounded-full text-xs">
+                                    Breakfast
+                                  </span>
+                                )}
+                                {hotel.is_refundable && (
+                                  <span className="px-2 py-0.5 bg-blue-100 text-blue-700 rounded-full text-xs">
+                                    Refundable
+                                  </span>
+                                )}
+                                {hotel.pet_friendly && (
+                                  <span className="px-2 py-0.5 bg-purple-100 text-purple-700 rounded-full text-xs">
+                                    Pet-Friendly
+                                  </span>
+                                )}
+                                {hotel.near_transit && (
+                                  <span className="px-2 py-0.5 bg-orange-100 text-orange-700 rounded-full text-xs">
+                                    Near Transit
+                                  </span>
+                                )}
+                              </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      )}
+
+                      <div className="flex items-center space-x-4 text-xs text-gray-500 mt-3">
                         {bundle.flights && bundle.flights.length > 0 && (
                           <span>{bundle.flights.length} Flight{bundle.flights.length > 1 ? 's' : ''}</span>
                         )}

@@ -115,14 +115,19 @@ async function startServer() {
     await getRedisClient();
     
     // Setup Kafka consumer for search events (also loads models, so after connection)
+    // Make this non-blocking so service can start even if Kafka isn't ready
     logger.info('Loading search event consumer...');
     const { handleSearchEvent } = require('./consumers/searchEventConsumer');
-    await createConsumer(
+    createConsumer(
       'listing-service-group',
       ['search-events'],
       handleSearchEvent
-    );
-    logger.info('Kafka consumer subscribed to: search-events');
+    ).then(() => {
+      logger.info('Kafka consumer subscribed to: search-events');
+    }).catch((error) => {
+      logger.warn('Kafka consumer setup failed, but service will continue. Consumer will retry automatically:', error.message);
+      logger.warn('Service is ready to accept HTTP requests, but Kafka events will not be processed until Kafka is available.');
+    });
     
     app.listen(PORT, () => {
       logger.info(`Listing service running on port ${PORT}`);

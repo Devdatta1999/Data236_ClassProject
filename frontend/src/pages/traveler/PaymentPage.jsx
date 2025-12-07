@@ -42,24 +42,27 @@ const PaymentPage = () => {
     }
     fetchSavedCards()
 
-    // Cleanup function: Mark bookings as Failed if user navigates away without completing payment
-    return () => {
+    // Only mark bookings as Failed if user explicitly navigates away from the site
+    // Don't trigger on component re-renders or page refreshes
+    const handleBeforeUnload = (e) => {
       if (!paymentCompleted && checkoutData?.bookings && checkoutData.bookings.length > 0) {
-        // User is navigating away - mark bookings as Failed
+        // Browser is closing or navigating away from site
         const bookingIds = checkoutData.bookings.map(b => b.bookingId)
-        
-        // Use a fire-and-forget approach to avoid blocking navigation
-        // Use fetch with keepalive for reliability
         const BOOKING_SERVICE_URL = import.meta.env.VITE_BOOKING_SERVICE_URL || 'http://localhost:3003'
-        fetch(`${BOOKING_SERVICE_URL}/api/bookings/fail`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ bookingIds }),
-          keepalive: true // Keep request alive even after page unload
-        }).catch(err => {
-          console.error('Failed to mark bookings as Failed:', err)
-        })
+
+        // Use navigator.sendBeacon for reliability during unload
+        const blob = new Blob(
+          [JSON.stringify({ bookingIds })],
+          { type: 'application/json' }
+        )
+        navigator.sendBeacon(`${BOOKING_SERVICE_URL}/api/bookings/fail`, blob)
       }
+    }
+
+    window.addEventListener('beforeunload', handleBeforeUnload)
+
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload)
     }
   }, [checkoutId, checkoutData, navigate, user, paymentCompleted])
 

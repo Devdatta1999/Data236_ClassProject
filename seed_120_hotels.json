@@ -1,0 +1,2702 @@
+[
+  {
+    "hotelId": "HTL-6GT4-LAX-94519",
+    "hotelName": "Los Angeles Holiday Inn 49",
+    "providerId": "PROV-1763953801663-9C6GT4",
+    "providerName": "Provider-6GT4",
+    "address": "6368 Los Angeles Street",
+    "city": "Los Angeles",
+    "state": "CA",
+    "zipCode": "90001",
+    "country": "USA",
+    "starRating": 4,
+    "availableFrom": "2024-12-01T00:00:00.000Z",
+    "availableTo": "2025-01-31T23:59:59.000Z",
+    "totalRooms": 120,
+    "availableRooms": 120,
+    "roomTypes": [
+      {
+        "type": "Standard",
+        "pricePerNight": 100,
+        "availableCount": 60
+      },
+      {
+        "type": "Deluxe",
+        "pricePerNight": 150,
+        "availableCount": 40
+      },
+      {
+        "type": "Suite",
+        "pricePerNight": 200,
+        "availableCount": 20
+      }
+    ],
+    "amenities": [
+      "WiFi",
+      "Pool",
+      "Gym",
+      "Parking",
+      "Breakfast Included"
+    ],
+    "images": [],
+    "status": "Active",
+    "reviews": [],
+    "createdAt": "2025-12-06T23:13:03.662271Z",
+    "updatedAt": "2025-12-06T23:13:03.662276Z"
+  },
+  {
+    "hotelId": "HTL-6GT4-MIA-58399",
+    "hotelName": "Miami Holiday Inn 34",
+    "providerId": "PROV-1763953801663-9C6GT4",
+    "providerName": "Provider-6GT4",
+    "address": "9905 Miami Street",
+    "city": "Miami",
+    "state": "FL",
+    "zipCode": "33101",
+    "country": "USA",
+    "starRating": 4,
+    "availableFrom": "2024-12-01T00:00:00.000Z",
+    "availableTo": "2025-01-31T23:59:59.000Z",
+    "totalRooms": 120,
+    "availableRooms": 120,
+    "roomTypes": [
+      {
+        "type": "Standard",
+        "pricePerNight": 100,
+        "availableCount": 60
+      },
+      {
+        "type": "Deluxe",
+        "pricePerNight": 150,
+        "availableCount": 40
+      },
+      {
+        "type": "Suite",
+        "pricePerNight": 200,
+        "availableCount": 20
+      }
+    ],
+    "amenities": [
+      "WiFi",
+      "Pool",
+      "Gym",
+      "Parking",
+      "Breakfast Included"
+    ],
+    "images": [],
+    "status": "Active",
+    "reviews": [],
+    "createdAt": "2025-12-06T23:13:03.662284Z",
+    "updatedAt": "2025-12-06T23:13:03.662285Z"
+  },
+  {
+    "hotelId": "HTL-6GT4-MIA-86920",
+    "hotelName": "Miami Holiday Inn 23",
+    "providerId": "PROV-1763953801663-9C6GT4",
+    "providerName": "Provider-6GT4",
+    "address": "2819 Miami Street",
+    "city": "Miami",
+    "state": "FL",
+    "zipCode": "33101",
+    "country": "USA",
+    "starRating": 4,
+    "availableFrom": "2024-12-01T00:00:00.000Z",
+    "availableTo": "2025-01-31T23:59:59.000Z",
+    "totalRooms": 120,
+    "availableRooms": 120,
+    "roomTypes": [
+      {
+        "type": "Standard",
+        "pricePerNight": 100,
+        "availableCount": 60
+      },
+      {
+        "type": "Deluxe",
+        "pricePerNight": 150,
+        "availableCount": 40
+      },
+      {
+        "type": "Suite",
+        "pricePerNight": 200,
+        "availableCount": 20
+      }
+    ],
+    "amenities": [
+      "WiFi",
+      "Pool",
+      "Gym",
+      "Parking",
+      "Breakfast Included"
+    ],
+    "images": [],
+    "status": "Active",
+    "reviews": [],
+    "createdAt": "2025-12-06T23:13:03.662290Z",
+    "updatedAt": "2025-12-06T23:13:03.662291Z"
+  },
+  {
+    "hotelId": "HTL-6GT4-LAX-98484",
+    "hotelName": "Los Angeles Holiday Inn 95",
+    "providerId": "PROV-1763953801663-9C6GT4",
+    "providerName": "Provider-6GT4",
+    "address": "5899 Los Angeles Street",
+    "city": "Los Angeles",
+    "state": "CA",
+    "zipCode": "90001",
+    "country": "USA",
+    "starRating": 4,
+    "availableFrom": "2024-12-01T00:00:00.000Z",
+    "availableTo": "2025-01-31T23:59:59.000Z",
+    "totalRooms": 120,
+    "availableRooms": 120,
+    "roomTypes": [
+      {
+        "type": "Standard",
+        "pricePerNight": 100,
+        "availableCount": 60
+      },
+      {
+        "type": "Deluxe",
+        "pricePerNight": 150,
+        "availableCount": 40
+      },
+      {
+        "type": "Suite",
+        "pricePerNight": 200,
+        "availableCount": 20
+      }
+    ],
+    "amenities": [
+      "WiFi",
+      "Pool",
+      "Gym",
+      "Parking",
+      "Breakfast Included"
+    ],
+    "images": [],
+    "status": "Active",
+    "reviews": [],
+    "createdAt": "2025-12-06T23:13:03.662295Z",
+    "updatedAt": "2025-12-06T23:13:03.662297Z"
+  },
+  {
+    "hotelId": "HTL-6GT4-MIA-41182",
+    "hotelName": "Miami Holiday Inn 78",
+    "providerId": "PROV-1763953801663-9C6GT4",
+    "providerName": "Provider-6GT4",
+    "address": "9314 Miami Street",
+    "city": "Miami",
+    "state": "FL",
+    "zipCode": "33101",
+    "country": "USA",
+    "starRating": 4,
+    "availableFrom": "2024-12-01T00:00:00.000Z",
+    "availableTo": "2025-01-31T23:59:59.000Z",
+    "totalRooms": 120,
+    "availableRooms": 120,
+    "roomTypes": [
+      {
+        "type": "Standard",
+        "pricePerNight": 100,
+        "availableCount": 60
+      },
+      {
+        "type": "Deluxe",
+        "pricePerNight": 150,
+        "availableCount": 40
+      },
+      {
+        "type": "Suite",
+        "pricePerNight": 200,
+        "availableCount": 20
+      }
+    ],
+    "amenities": [
+      "WiFi",
+      "Pool",
+      "Gym",
+      "Parking",
+      "Breakfast Included"
+    ],
+    "images": [],
+    "status": "Active",
+    "reviews": [],
+    "createdAt": "2025-12-06T23:13:03.662300Z",
+    "updatedAt": "2025-12-06T23:13:03.662302Z"
+  },
+  {
+    "hotelId": "HTL-6GT4-LAX-55250",
+    "hotelName": "Los Angeles Holiday Inn 21",
+    "providerId": "PROV-1763953801663-9C6GT4",
+    "providerName": "Provider-6GT4",
+    "address": "3567 Los Angeles Street",
+    "city": "Los Angeles",
+    "state": "CA",
+    "zipCode": "90001",
+    "country": "USA",
+    "starRating": 4,
+    "availableFrom": "2024-12-01T00:00:00.000Z",
+    "availableTo": "2025-01-31T23:59:59.000Z",
+    "totalRooms": 120,
+    "availableRooms": 120,
+    "roomTypes": [
+      {
+        "type": "Standard",
+        "pricePerNight": 100,
+        "availableCount": 60
+      },
+      {
+        "type": "Deluxe",
+        "pricePerNight": 150,
+        "availableCount": 40
+      },
+      {
+        "type": "Suite",
+        "pricePerNight": 200,
+        "availableCount": 20
+      }
+    ],
+    "amenities": [
+      "WiFi",
+      "Pool",
+      "Gym",
+      "Parking",
+      "Breakfast Included"
+    ],
+    "images": [],
+    "status": "Active",
+    "reviews": [],
+    "createdAt": "2025-12-06T23:13:03.662305Z",
+    "updatedAt": "2025-12-06T23:13:03.662306Z"
+  },
+  {
+    "hotelId": "HTL-6GT4-LAX-72486",
+    "hotelName": "Los Angeles Holiday Inn 41",
+    "providerId": "PROV-1763953801663-9C6GT4",
+    "providerName": "Provider-6GT4",
+    "address": "6179 Los Angeles Street",
+    "city": "Los Angeles",
+    "state": "CA",
+    "zipCode": "90001",
+    "country": "USA",
+    "starRating": 4,
+    "availableFrom": "2024-12-01T00:00:00.000Z",
+    "availableTo": "2025-01-31T23:59:59.000Z",
+    "totalRooms": 120,
+    "availableRooms": 120,
+    "roomTypes": [
+      {
+        "type": "Standard",
+        "pricePerNight": 100,
+        "availableCount": 60
+      },
+      {
+        "type": "Deluxe",
+        "pricePerNight": 150,
+        "availableCount": 40
+      },
+      {
+        "type": "Suite",
+        "pricePerNight": 200,
+        "availableCount": 20
+      }
+    ],
+    "amenities": [
+      "WiFi",
+      "Pool",
+      "Gym",
+      "Parking",
+      "Breakfast Included"
+    ],
+    "images": [],
+    "status": "Active",
+    "reviews": [],
+    "createdAt": "2025-12-06T23:13:03.662309Z",
+    "updatedAt": "2025-12-06T23:13:03.662311Z"
+  },
+  {
+    "hotelId": "HTL-6GT4-MIA-89289",
+    "hotelName": "Miami Holiday Inn 95",
+    "providerId": "PROV-1763953801663-9C6GT4",
+    "providerName": "Provider-6GT4",
+    "address": "2891 Miami Street",
+    "city": "Miami",
+    "state": "FL",
+    "zipCode": "33101",
+    "country": "USA",
+    "starRating": 4,
+    "availableFrom": "2024-12-01T00:00:00.000Z",
+    "availableTo": "2025-01-31T23:59:59.000Z",
+    "totalRooms": 120,
+    "availableRooms": 120,
+    "roomTypes": [
+      {
+        "type": "Standard",
+        "pricePerNight": 100,
+        "availableCount": 60
+      },
+      {
+        "type": "Deluxe",
+        "pricePerNight": 150,
+        "availableCount": 40
+      },
+      {
+        "type": "Suite",
+        "pricePerNight": 200,
+        "availableCount": 20
+      }
+    ],
+    "amenities": [
+      "WiFi",
+      "Pool",
+      "Gym",
+      "Parking",
+      "Breakfast Included"
+    ],
+    "images": [],
+    "status": "Active",
+    "reviews": [],
+    "createdAt": "2025-12-06T23:13:03.662314Z",
+    "updatedAt": "2025-12-06T23:13:03.662315Z"
+  },
+  {
+    "hotelId": "HTL-6GT4-MIA-96155",
+    "hotelName": "Miami Holiday Inn 49",
+    "providerId": "PROV-1763953801663-9C6GT4",
+    "providerName": "Provider-6GT4",
+    "address": "2611 Miami Street",
+    "city": "Miami",
+    "state": "FL",
+    "zipCode": "33101",
+    "country": "USA",
+    "starRating": 4,
+    "availableFrom": "2024-12-01T00:00:00.000Z",
+    "availableTo": "2025-01-31T23:59:59.000Z",
+    "totalRooms": 120,
+    "availableRooms": 120,
+    "roomTypes": [
+      {
+        "type": "Standard",
+        "pricePerNight": 100,
+        "availableCount": 60
+      },
+      {
+        "type": "Deluxe",
+        "pricePerNight": 150,
+        "availableCount": 40
+      },
+      {
+        "type": "Suite",
+        "pricePerNight": 200,
+        "availableCount": 20
+      }
+    ],
+    "amenities": [
+      "WiFi",
+      "Pool",
+      "Gym",
+      "Parking",
+      "Breakfast Included"
+    ],
+    "images": [],
+    "status": "Active",
+    "reviews": [],
+    "createdAt": "2025-12-06T23:13:03.662318Z",
+    "updatedAt": "2025-12-06T23:13:03.662319Z"
+  },
+  {
+    "hotelId": "HTL-6GT4-SEA-54619",
+    "hotelName": "Seattle Holiday Inn 57",
+    "providerId": "PROV-1763953801663-9C6GT4",
+    "providerName": "Provider-6GT4",
+    "address": "3278 Seattle Street",
+    "city": "Seattle",
+    "state": "WA",
+    "zipCode": "98101",
+    "country": "USA",
+    "starRating": 4,
+    "availableFrom": "2024-12-01T00:00:00.000Z",
+    "availableTo": "2025-01-31T23:59:59.000Z",
+    "totalRooms": 120,
+    "availableRooms": 120,
+    "roomTypes": [
+      {
+        "type": "Standard",
+        "pricePerNight": 100,
+        "availableCount": 60
+      },
+      {
+        "type": "Deluxe",
+        "pricePerNight": 150,
+        "availableCount": 40
+      },
+      {
+        "type": "Suite",
+        "pricePerNight": 200,
+        "availableCount": 20
+      }
+    ],
+    "amenities": [
+      "WiFi",
+      "Pool",
+      "Gym",
+      "Parking",
+      "Breakfast Included"
+    ],
+    "images": [],
+    "status": "Active",
+    "reviews": [],
+    "createdAt": "2025-12-06T23:13:03.662322Z",
+    "updatedAt": "2025-12-06T23:13:03.662323Z"
+  },
+  {
+    "hotelId": "HTL-6GT4-MIA-69642",
+    "hotelName": "Miami Holiday Inn 78",
+    "providerId": "PROV-1763953801663-9C6GT4",
+    "providerName": "Provider-6GT4",
+    "address": "1104 Miami Street",
+    "city": "Miami",
+    "state": "FL",
+    "zipCode": "33101",
+    "country": "USA",
+    "starRating": 4,
+    "availableFrom": "2024-12-01T00:00:00.000Z",
+    "availableTo": "2025-01-31T23:59:59.000Z",
+    "totalRooms": 120,
+    "availableRooms": 120,
+    "roomTypes": [
+      {
+        "type": "Standard",
+        "pricePerNight": 100,
+        "availableCount": 60
+      },
+      {
+        "type": "Deluxe",
+        "pricePerNight": 150,
+        "availableCount": 40
+      },
+      {
+        "type": "Suite",
+        "pricePerNight": 200,
+        "availableCount": 20
+      }
+    ],
+    "amenities": [
+      "WiFi",
+      "Pool",
+      "Gym",
+      "Parking",
+      "Breakfast Included"
+    ],
+    "images": [],
+    "status": "Active",
+    "reviews": [],
+    "createdAt": "2025-12-06T23:13:03.662326Z",
+    "updatedAt": "2025-12-06T23:13:03.662327Z"
+  },
+  {
+    "hotelId": "HTL-6GT4-LAX-35698",
+    "hotelName": "Los Angeles Holiday Inn 33",
+    "providerId": "PROV-1763953801663-9C6GT4",
+    "providerName": "Provider-6GT4",
+    "address": "9251 Los Angeles Street",
+    "city": "Los Angeles",
+    "state": "CA",
+    "zipCode": "90001",
+    "country": "USA",
+    "starRating": 4,
+    "availableFrom": "2024-12-01T00:00:00.000Z",
+    "availableTo": "2025-01-31T23:59:59.000Z",
+    "totalRooms": 120,
+    "availableRooms": 120,
+    "roomTypes": [
+      {
+        "type": "Standard",
+        "pricePerNight": 100,
+        "availableCount": 60
+      },
+      {
+        "type": "Deluxe",
+        "pricePerNight": 150,
+        "availableCount": 40
+      },
+      {
+        "type": "Suite",
+        "pricePerNight": 200,
+        "availableCount": 20
+      }
+    ],
+    "amenities": [
+      "WiFi",
+      "Pool",
+      "Gym",
+      "Parking",
+      "Breakfast Included"
+    ],
+    "images": [],
+    "status": "Active",
+    "reviews": [],
+    "createdAt": "2025-12-06T23:13:03.662330Z",
+    "updatedAt": "2025-12-06T23:13:03.662331Z"
+  },
+  {
+    "hotelId": "HTL-6GT4-LAX-37631",
+    "hotelName": "Los Angeles Holiday Inn 18",
+    "providerId": "PROV-1763953801663-9C6GT4",
+    "providerName": "Provider-6GT4",
+    "address": "5689 Los Angeles Street",
+    "city": "Los Angeles",
+    "state": "CA",
+    "zipCode": "90001",
+    "country": "USA",
+    "starRating": 4,
+    "availableFrom": "2024-12-01T00:00:00.000Z",
+    "availableTo": "2025-01-31T23:59:59.000Z",
+    "totalRooms": 120,
+    "availableRooms": 120,
+    "roomTypes": [
+      {
+        "type": "Standard",
+        "pricePerNight": 100,
+        "availableCount": 60
+      },
+      {
+        "type": "Deluxe",
+        "pricePerNight": 150,
+        "availableCount": 40
+      },
+      {
+        "type": "Suite",
+        "pricePerNight": 200,
+        "availableCount": 20
+      }
+    ],
+    "amenities": [
+      "WiFi",
+      "Pool",
+      "Gym",
+      "Parking",
+      "Breakfast Included"
+    ],
+    "images": [],
+    "status": "Active",
+    "reviews": [],
+    "createdAt": "2025-12-06T23:13:03.662334Z",
+    "updatedAt": "2025-12-06T23:13:03.662335Z"
+  },
+  {
+    "hotelId": "HTL-6GT4-LAX-29976",
+    "hotelName": "Los Angeles Holiday Inn 47",
+    "providerId": "PROV-1763953801663-9C6GT4",
+    "providerName": "Provider-6GT4",
+    "address": "2685 Los Angeles Street",
+    "city": "Los Angeles",
+    "state": "CA",
+    "zipCode": "90001",
+    "country": "USA",
+    "starRating": 4,
+    "availableFrom": "2024-12-01T00:00:00.000Z",
+    "availableTo": "2025-01-31T23:59:59.000Z",
+    "totalRooms": 120,
+    "availableRooms": 120,
+    "roomTypes": [
+      {
+        "type": "Standard",
+        "pricePerNight": 100,
+        "availableCount": 60
+      },
+      {
+        "type": "Deluxe",
+        "pricePerNight": 150,
+        "availableCount": 40
+      },
+      {
+        "type": "Suite",
+        "pricePerNight": 200,
+        "availableCount": 20
+      }
+    ],
+    "amenities": [
+      "WiFi",
+      "Pool",
+      "Gym",
+      "Parking",
+      "Breakfast Included"
+    ],
+    "images": [],
+    "status": "Active",
+    "reviews": [],
+    "createdAt": "2025-12-06T23:13:03.662338Z",
+    "updatedAt": "2025-12-06T23:13:03.662339Z"
+  },
+  {
+    "hotelId": "HTL-6GT4-SEA-73902",
+    "hotelName": "Seattle Holiday Inn 18",
+    "providerId": "PROV-1763953801663-9C6GT4",
+    "providerName": "Provider-6GT4",
+    "address": "7546 Seattle Street",
+    "city": "Seattle",
+    "state": "WA",
+    "zipCode": "98101",
+    "country": "USA",
+    "starRating": 4,
+    "availableFrom": "2024-12-01T00:00:00.000Z",
+    "availableTo": "2025-01-31T23:59:59.000Z",
+    "totalRooms": 120,
+    "availableRooms": 120,
+    "roomTypes": [
+      {
+        "type": "Standard",
+        "pricePerNight": 100,
+        "availableCount": 60
+      },
+      {
+        "type": "Deluxe",
+        "pricePerNight": 150,
+        "availableCount": 40
+      },
+      {
+        "type": "Suite",
+        "pricePerNight": 200,
+        "availableCount": 20
+      }
+    ],
+    "amenities": [
+      "WiFi",
+      "Pool",
+      "Gym",
+      "Parking",
+      "Breakfast Included"
+    ],
+    "images": [],
+    "status": "Active",
+    "reviews": [],
+    "createdAt": "2025-12-06T23:13:03.662342Z",
+    "updatedAt": "2025-12-06T23:13:03.662343Z"
+  },
+  {
+    "hotelId": "HTL-_001-LAX-43623",
+    "hotelName": "Los Angeles Holiday Inn 85",
+    "providerId": "SEED_HC2_PROV_001",
+    "providerName": "Provider-_001",
+    "address": "3710 Los Angeles Street",
+    "city": "Los Angeles",
+    "state": "CA",
+    "zipCode": "90001",
+    "country": "USA",
+    "starRating": 4,
+    "availableFrom": "2024-12-01T00:00:00.000Z",
+    "availableTo": "2025-01-31T23:59:59.000Z",
+    "totalRooms": 120,
+    "availableRooms": 120,
+    "roomTypes": [
+      {
+        "type": "Standard",
+        "pricePerNight": 100,
+        "availableCount": 60
+      },
+      {
+        "type": "Deluxe",
+        "pricePerNight": 150,
+        "availableCount": 40
+      },
+      {
+        "type": "Suite",
+        "pricePerNight": 200,
+        "availableCount": 20
+      }
+    ],
+    "amenities": [
+      "WiFi",
+      "Pool",
+      "Gym",
+      "Parking",
+      "Breakfast Included"
+    ],
+    "images": [],
+    "status": "Active",
+    "reviews": [],
+    "createdAt": "2025-12-06T23:13:03.662347Z",
+    "updatedAt": "2025-12-06T23:13:03.662348Z"
+  },
+  {
+    "hotelId": "HTL-_001-LAX-44676",
+    "hotelName": "Los Angeles Holiday Inn 46",
+    "providerId": "SEED_HC2_PROV_001",
+    "providerName": "Provider-_001",
+    "address": "8543 Los Angeles Street",
+    "city": "Los Angeles",
+    "state": "CA",
+    "zipCode": "90001",
+    "country": "USA",
+    "starRating": 4,
+    "availableFrom": "2024-12-01T00:00:00.000Z",
+    "availableTo": "2025-01-31T23:59:59.000Z",
+    "totalRooms": 120,
+    "availableRooms": 120,
+    "roomTypes": [
+      {
+        "type": "Standard",
+        "pricePerNight": 100,
+        "availableCount": 60
+      },
+      {
+        "type": "Deluxe",
+        "pricePerNight": 150,
+        "availableCount": 40
+      },
+      {
+        "type": "Suite",
+        "pricePerNight": 200,
+        "availableCount": 20
+      }
+    ],
+    "amenities": [
+      "WiFi",
+      "Pool",
+      "Gym",
+      "Parking",
+      "Breakfast Included"
+    ],
+    "images": [],
+    "status": "Active",
+    "reviews": [],
+    "createdAt": "2025-12-06T23:13:03.662351Z",
+    "updatedAt": "2025-12-06T23:13:03.662352Z"
+  },
+  {
+    "hotelId": "HTL-_001-LAX-86673",
+    "hotelName": "Los Angeles Holiday Inn 59",
+    "providerId": "SEED_HC2_PROV_001",
+    "providerName": "Provider-_001",
+    "address": "6902 Los Angeles Street",
+    "city": "Los Angeles",
+    "state": "CA",
+    "zipCode": "90001",
+    "country": "USA",
+    "starRating": 4,
+    "availableFrom": "2024-12-01T00:00:00.000Z",
+    "availableTo": "2025-01-31T23:59:59.000Z",
+    "totalRooms": 120,
+    "availableRooms": 120,
+    "roomTypes": [
+      {
+        "type": "Standard",
+        "pricePerNight": 100,
+        "availableCount": 60
+      },
+      {
+        "type": "Deluxe",
+        "pricePerNight": 150,
+        "availableCount": 40
+      },
+      {
+        "type": "Suite",
+        "pricePerNight": 200,
+        "availableCount": 20
+      }
+    ],
+    "amenities": [
+      "WiFi",
+      "Pool",
+      "Gym",
+      "Parking",
+      "Breakfast Included"
+    ],
+    "images": [],
+    "status": "Active",
+    "reviews": [],
+    "createdAt": "2025-12-06T23:13:03.662355Z",
+    "updatedAt": "2025-12-06T23:13:03.662356Z"
+  },
+  {
+    "hotelId": "HTL-_001-MIA-58459",
+    "hotelName": "Miami Holiday Inn 62",
+    "providerId": "SEED_HC2_PROV_001",
+    "providerName": "Provider-_001",
+    "address": "633 Miami Street",
+    "city": "Miami",
+    "state": "FL",
+    "zipCode": "33101",
+    "country": "USA",
+    "starRating": 4,
+    "availableFrom": "2024-12-01T00:00:00.000Z",
+    "availableTo": "2025-01-31T23:59:59.000Z",
+    "totalRooms": 120,
+    "availableRooms": 120,
+    "roomTypes": [
+      {
+        "type": "Standard",
+        "pricePerNight": 100,
+        "availableCount": 60
+      },
+      {
+        "type": "Deluxe",
+        "pricePerNight": 150,
+        "availableCount": 40
+      },
+      {
+        "type": "Suite",
+        "pricePerNight": 200,
+        "availableCount": 20
+      }
+    ],
+    "amenities": [
+      "WiFi",
+      "Pool",
+      "Gym",
+      "Parking",
+      "Breakfast Included"
+    ],
+    "images": [],
+    "status": "Active",
+    "reviews": [],
+    "createdAt": "2025-12-06T23:13:03.662359Z",
+    "updatedAt": "2025-12-06T23:13:03.662360Z"
+  },
+  {
+    "hotelId": "HTL-_001-SEA-75379",
+    "hotelName": "Seattle Holiday Inn 93",
+    "providerId": "SEED_HC2_PROV_001",
+    "providerName": "Provider-_001",
+    "address": "5404 Seattle Street",
+    "city": "Seattle",
+    "state": "WA",
+    "zipCode": "98101",
+    "country": "USA",
+    "starRating": 4,
+    "availableFrom": "2024-12-01T00:00:00.000Z",
+    "availableTo": "2025-01-31T23:59:59.000Z",
+    "totalRooms": 120,
+    "availableRooms": 120,
+    "roomTypes": [
+      {
+        "type": "Standard",
+        "pricePerNight": 100,
+        "availableCount": 60
+      },
+      {
+        "type": "Deluxe",
+        "pricePerNight": 150,
+        "availableCount": 40
+      },
+      {
+        "type": "Suite",
+        "pricePerNight": 200,
+        "availableCount": 20
+      }
+    ],
+    "amenities": [
+      "WiFi",
+      "Pool",
+      "Gym",
+      "Parking",
+      "Breakfast Included"
+    ],
+    "images": [],
+    "status": "Active",
+    "reviews": [],
+    "createdAt": "2025-12-06T23:13:03.662363Z",
+    "updatedAt": "2025-12-06T23:13:03.662364Z"
+  },
+  {
+    "hotelId": "HTL-_001-SEA-53043",
+    "hotelName": "Seattle Holiday Inn 66",
+    "providerId": "SEED_HC2_PROV_001",
+    "providerName": "Provider-_001",
+    "address": "2289 Seattle Street",
+    "city": "Seattle",
+    "state": "WA",
+    "zipCode": "98101",
+    "country": "USA",
+    "starRating": 4,
+    "availableFrom": "2024-12-01T00:00:00.000Z",
+    "availableTo": "2025-01-31T23:59:59.000Z",
+    "totalRooms": 120,
+    "availableRooms": 120,
+    "roomTypes": [
+      {
+        "type": "Standard",
+        "pricePerNight": 100,
+        "availableCount": 60
+      },
+      {
+        "type": "Deluxe",
+        "pricePerNight": 150,
+        "availableCount": 40
+      },
+      {
+        "type": "Suite",
+        "pricePerNight": 200,
+        "availableCount": 20
+      }
+    ],
+    "amenities": [
+      "WiFi",
+      "Pool",
+      "Gym",
+      "Parking",
+      "Breakfast Included"
+    ],
+    "images": [],
+    "status": "Active",
+    "reviews": [],
+    "createdAt": "2025-12-06T23:13:03.662367Z",
+    "updatedAt": "2025-12-06T23:13:03.662368Z"
+  },
+  {
+    "hotelId": "HTL-_001-SEA-90445",
+    "hotelName": "Seattle Holiday Inn 37",
+    "providerId": "SEED_HC2_PROV_001",
+    "providerName": "Provider-_001",
+    "address": "2863 Seattle Street",
+    "city": "Seattle",
+    "state": "WA",
+    "zipCode": "98101",
+    "country": "USA",
+    "starRating": 4,
+    "availableFrom": "2024-12-01T00:00:00.000Z",
+    "availableTo": "2025-01-31T23:59:59.000Z",
+    "totalRooms": 120,
+    "availableRooms": 120,
+    "roomTypes": [
+      {
+        "type": "Standard",
+        "pricePerNight": 100,
+        "availableCount": 60
+      },
+      {
+        "type": "Deluxe",
+        "pricePerNight": 150,
+        "availableCount": 40
+      },
+      {
+        "type": "Suite",
+        "pricePerNight": 200,
+        "availableCount": 20
+      }
+    ],
+    "amenities": [
+      "WiFi",
+      "Pool",
+      "Gym",
+      "Parking",
+      "Breakfast Included"
+    ],
+    "images": [],
+    "status": "Active",
+    "reviews": [],
+    "createdAt": "2025-12-06T23:13:03.662372Z",
+    "updatedAt": "2025-12-06T23:13:03.662373Z"
+  },
+  {
+    "hotelId": "HTL-_001-LAX-87551",
+    "hotelName": "Los Angeles Holiday Inn 22",
+    "providerId": "SEED_HC2_PROV_001",
+    "providerName": "Provider-_001",
+    "address": "1530 Los Angeles Street",
+    "city": "Los Angeles",
+    "state": "CA",
+    "zipCode": "90001",
+    "country": "USA",
+    "starRating": 4,
+    "availableFrom": "2024-12-01T00:00:00.000Z",
+    "availableTo": "2025-01-31T23:59:59.000Z",
+    "totalRooms": 120,
+    "availableRooms": 120,
+    "roomTypes": [
+      {
+        "type": "Standard",
+        "pricePerNight": 100,
+        "availableCount": 60
+      },
+      {
+        "type": "Deluxe",
+        "pricePerNight": 150,
+        "availableCount": 40
+      },
+      {
+        "type": "Suite",
+        "pricePerNight": 200,
+        "availableCount": 20
+      }
+    ],
+    "amenities": [
+      "WiFi",
+      "Pool",
+      "Gym",
+      "Parking",
+      "Breakfast Included"
+    ],
+    "images": [],
+    "status": "Active",
+    "reviews": [],
+    "createdAt": "2025-12-06T23:13:03.662376Z",
+    "updatedAt": "2025-12-06T23:13:03.662378Z"
+  },
+  {
+    "hotelId": "HTL-_001-SEA-30403",
+    "hotelName": "Seattle Holiday Inn 1",
+    "providerId": "SEED_HC2_PROV_001",
+    "providerName": "Provider-_001",
+    "address": "1256 Seattle Street",
+    "city": "Seattle",
+    "state": "WA",
+    "zipCode": "98101",
+    "country": "USA",
+    "starRating": 4,
+    "availableFrom": "2024-12-01T00:00:00.000Z",
+    "availableTo": "2025-01-31T23:59:59.000Z",
+    "totalRooms": 120,
+    "availableRooms": 120,
+    "roomTypes": [
+      {
+        "type": "Standard",
+        "pricePerNight": 100,
+        "availableCount": 60
+      },
+      {
+        "type": "Deluxe",
+        "pricePerNight": 150,
+        "availableCount": 40
+      },
+      {
+        "type": "Suite",
+        "pricePerNight": 200,
+        "availableCount": 20
+      }
+    ],
+    "amenities": [
+      "WiFi",
+      "Pool",
+      "Gym",
+      "Parking",
+      "Breakfast Included"
+    ],
+    "images": [],
+    "status": "Active",
+    "reviews": [],
+    "createdAt": "2025-12-06T23:13:03.662380Z",
+    "updatedAt": "2025-12-06T23:13:03.662382Z"
+  },
+  {
+    "hotelId": "HTL-_001-MIA-34636",
+    "hotelName": "Miami Holiday Inn 16",
+    "providerId": "SEED_HC2_PROV_001",
+    "providerName": "Provider-_001",
+    "address": "8258 Miami Street",
+    "city": "Miami",
+    "state": "FL",
+    "zipCode": "33101",
+    "country": "USA",
+    "starRating": 4,
+    "availableFrom": "2024-12-01T00:00:00.000Z",
+    "availableTo": "2025-01-31T23:59:59.000Z",
+    "totalRooms": 120,
+    "availableRooms": 120,
+    "roomTypes": [
+      {
+        "type": "Standard",
+        "pricePerNight": 100,
+        "availableCount": 60
+      },
+      {
+        "type": "Deluxe",
+        "pricePerNight": 150,
+        "availableCount": 40
+      },
+      {
+        "type": "Suite",
+        "pricePerNight": 200,
+        "availableCount": 20
+      }
+    ],
+    "amenities": [
+      "WiFi",
+      "Pool",
+      "Gym",
+      "Parking",
+      "Breakfast Included"
+    ],
+    "images": [],
+    "status": "Active",
+    "reviews": [],
+    "createdAt": "2025-12-06T23:13:03.662385Z",
+    "updatedAt": "2025-12-06T23:13:03.662386Z"
+  },
+  {
+    "hotelId": "HTL-_001-SEA-11057",
+    "hotelName": "Seattle Holiday Inn 69",
+    "providerId": "SEED_HC2_PROV_001",
+    "providerName": "Provider-_001",
+    "address": "2604 Seattle Street",
+    "city": "Seattle",
+    "state": "WA",
+    "zipCode": "98101",
+    "country": "USA",
+    "starRating": 4,
+    "availableFrom": "2024-12-01T00:00:00.000Z",
+    "availableTo": "2025-01-31T23:59:59.000Z",
+    "totalRooms": 120,
+    "availableRooms": 120,
+    "roomTypes": [
+      {
+        "type": "Standard",
+        "pricePerNight": 100,
+        "availableCount": 60
+      },
+      {
+        "type": "Deluxe",
+        "pricePerNight": 150,
+        "availableCount": 40
+      },
+      {
+        "type": "Suite",
+        "pricePerNight": 200,
+        "availableCount": 20
+      }
+    ],
+    "amenities": [
+      "WiFi",
+      "Pool",
+      "Gym",
+      "Parking",
+      "Breakfast Included"
+    ],
+    "images": [],
+    "status": "Active",
+    "reviews": [],
+    "createdAt": "2025-12-06T23:13:03.662389Z",
+    "updatedAt": "2025-12-06T23:13:03.662390Z"
+  },
+  {
+    "hotelId": "HTL-_001-LAX-16737",
+    "hotelName": "Los Angeles Holiday Inn 4",
+    "providerId": "SEED_HC2_PROV_001",
+    "providerName": "Provider-_001",
+    "address": "4180 Los Angeles Street",
+    "city": "Los Angeles",
+    "state": "CA",
+    "zipCode": "90001",
+    "country": "USA",
+    "starRating": 4,
+    "availableFrom": "2024-12-01T00:00:00.000Z",
+    "availableTo": "2025-01-31T23:59:59.000Z",
+    "totalRooms": 120,
+    "availableRooms": 120,
+    "roomTypes": [
+      {
+        "type": "Standard",
+        "pricePerNight": 100,
+        "availableCount": 60
+      },
+      {
+        "type": "Deluxe",
+        "pricePerNight": 150,
+        "availableCount": 40
+      },
+      {
+        "type": "Suite",
+        "pricePerNight": 200,
+        "availableCount": 20
+      }
+    ],
+    "amenities": [
+      "WiFi",
+      "Pool",
+      "Gym",
+      "Parking",
+      "Breakfast Included"
+    ],
+    "images": [],
+    "status": "Active",
+    "reviews": [],
+    "createdAt": "2025-12-06T23:13:03.662393Z",
+    "updatedAt": "2025-12-06T23:13:03.662394Z"
+  },
+  {
+    "hotelId": "HTL-_001-MIA-68914",
+    "hotelName": "Miami Holiday Inn 20",
+    "providerId": "SEED_HC2_PROV_001",
+    "providerName": "Provider-_001",
+    "address": "7831 Miami Street",
+    "city": "Miami",
+    "state": "FL",
+    "zipCode": "33101",
+    "country": "USA",
+    "starRating": 4,
+    "availableFrom": "2024-12-01T00:00:00.000Z",
+    "availableTo": "2025-01-31T23:59:59.000Z",
+    "totalRooms": 120,
+    "availableRooms": 120,
+    "roomTypes": [
+      {
+        "type": "Standard",
+        "pricePerNight": 100,
+        "availableCount": 60
+      },
+      {
+        "type": "Deluxe",
+        "pricePerNight": 150,
+        "availableCount": 40
+      },
+      {
+        "type": "Suite",
+        "pricePerNight": 200,
+        "availableCount": 20
+      }
+    ],
+    "amenities": [
+      "WiFi",
+      "Pool",
+      "Gym",
+      "Parking",
+      "Breakfast Included"
+    ],
+    "images": [],
+    "status": "Active",
+    "reviews": [],
+    "createdAt": "2025-12-06T23:13:03.662397Z",
+    "updatedAt": "2025-12-06T23:13:03.662398Z"
+  },
+  {
+    "hotelId": "HTL-_001-MIA-16916",
+    "hotelName": "Miami Holiday Inn 37",
+    "providerId": "SEED_HC2_PROV_001",
+    "providerName": "Provider-_001",
+    "address": "8794 Miami Street",
+    "city": "Miami",
+    "state": "FL",
+    "zipCode": "33101",
+    "country": "USA",
+    "starRating": 4,
+    "availableFrom": "2024-12-01T00:00:00.000Z",
+    "availableTo": "2025-01-31T23:59:59.000Z",
+    "totalRooms": 120,
+    "availableRooms": 120,
+    "roomTypes": [
+      {
+        "type": "Standard",
+        "pricePerNight": 100,
+        "availableCount": 60
+      },
+      {
+        "type": "Deluxe",
+        "pricePerNight": 150,
+        "availableCount": 40
+      },
+      {
+        "type": "Suite",
+        "pricePerNight": 200,
+        "availableCount": 20
+      }
+    ],
+    "amenities": [
+      "WiFi",
+      "Pool",
+      "Gym",
+      "Parking",
+      "Breakfast Included"
+    ],
+    "images": [],
+    "status": "Active",
+    "reviews": [],
+    "createdAt": "2025-12-06T23:13:03.662400Z",
+    "updatedAt": "2025-12-06T23:13:03.662402Z"
+  },
+  {
+    "hotelId": "HTL-_001-MIA-70201",
+    "hotelName": "Miami Holiday Inn 39",
+    "providerId": "SEED_HC2_PROV_001",
+    "providerName": "Provider-_001",
+    "address": "4053 Miami Street",
+    "city": "Miami",
+    "state": "FL",
+    "zipCode": "33101",
+    "country": "USA",
+    "starRating": 4,
+    "availableFrom": "2024-12-01T00:00:00.000Z",
+    "availableTo": "2025-01-31T23:59:59.000Z",
+    "totalRooms": 120,
+    "availableRooms": 120,
+    "roomTypes": [
+      {
+        "type": "Standard",
+        "pricePerNight": 100,
+        "availableCount": 60
+      },
+      {
+        "type": "Deluxe",
+        "pricePerNight": 150,
+        "availableCount": 40
+      },
+      {
+        "type": "Suite",
+        "pricePerNight": 200,
+        "availableCount": 20
+      }
+    ],
+    "amenities": [
+      "WiFi",
+      "Pool",
+      "Gym",
+      "Parking",
+      "Breakfast Included"
+    ],
+    "images": [],
+    "status": "Active",
+    "reviews": [],
+    "createdAt": "2025-12-06T23:13:03.662404Z",
+    "updatedAt": "2025-12-06T23:13:03.662406Z"
+  },
+  {
+    "hotelId": "HTL-_002-MIA-79180",
+    "hotelName": "Miami Holiday Inn 54",
+    "providerId": "SEED_HC2_PROV_002",
+    "providerName": "Provider-_002",
+    "address": "1192 Miami Street",
+    "city": "Miami",
+    "state": "FL",
+    "zipCode": "33101",
+    "country": "USA",
+    "starRating": 4,
+    "availableFrom": "2024-12-01T00:00:00.000Z",
+    "availableTo": "2025-01-31T23:59:59.000Z",
+    "totalRooms": 120,
+    "availableRooms": 120,
+    "roomTypes": [
+      {
+        "type": "Standard",
+        "pricePerNight": 100,
+        "availableCount": 60
+      },
+      {
+        "type": "Deluxe",
+        "pricePerNight": 150,
+        "availableCount": 40
+      },
+      {
+        "type": "Suite",
+        "pricePerNight": 200,
+        "availableCount": 20
+      }
+    ],
+    "amenities": [
+      "WiFi",
+      "Pool",
+      "Gym",
+      "Parking",
+      "Breakfast Included"
+    ],
+    "images": [],
+    "status": "Active",
+    "reviews": [],
+    "createdAt": "2025-12-06T23:13:03.662410Z",
+    "updatedAt": "2025-12-06T23:13:03.662411Z"
+  },
+  {
+    "hotelId": "HTL-_002-LAX-76880",
+    "hotelName": "Los Angeles Holiday Inn 15",
+    "providerId": "SEED_HC2_PROV_002",
+    "providerName": "Provider-_002",
+    "address": "2513 Los Angeles Street",
+    "city": "Los Angeles",
+    "state": "CA",
+    "zipCode": "90001",
+    "country": "USA",
+    "starRating": 4,
+    "availableFrom": "2024-12-01T00:00:00.000Z",
+    "availableTo": "2025-01-31T23:59:59.000Z",
+    "totalRooms": 120,
+    "availableRooms": 120,
+    "roomTypes": [
+      {
+        "type": "Standard",
+        "pricePerNight": 100,
+        "availableCount": 60
+      },
+      {
+        "type": "Deluxe",
+        "pricePerNight": 150,
+        "availableCount": 40
+      },
+      {
+        "type": "Suite",
+        "pricePerNight": 200,
+        "availableCount": 20
+      }
+    ],
+    "amenities": [
+      "WiFi",
+      "Pool",
+      "Gym",
+      "Parking",
+      "Breakfast Included"
+    ],
+    "images": [],
+    "status": "Active",
+    "reviews": [],
+    "createdAt": "2025-12-06T23:13:03.662414Z",
+    "updatedAt": "2025-12-06T23:13:03.662415Z"
+  },
+  {
+    "hotelId": "HTL-_002-LAX-46905",
+    "hotelName": "Los Angeles Holiday Inn 65",
+    "providerId": "SEED_HC2_PROV_002",
+    "providerName": "Provider-_002",
+    "address": "7913 Los Angeles Street",
+    "city": "Los Angeles",
+    "state": "CA",
+    "zipCode": "90001",
+    "country": "USA",
+    "starRating": 4,
+    "availableFrom": "2024-12-01T00:00:00.000Z",
+    "availableTo": "2025-01-31T23:59:59.000Z",
+    "totalRooms": 120,
+    "availableRooms": 120,
+    "roomTypes": [
+      {
+        "type": "Standard",
+        "pricePerNight": 100,
+        "availableCount": 60
+      },
+      {
+        "type": "Deluxe",
+        "pricePerNight": 150,
+        "availableCount": 40
+      },
+      {
+        "type": "Suite",
+        "pricePerNight": 200,
+        "availableCount": 20
+      }
+    ],
+    "amenities": [
+      "WiFi",
+      "Pool",
+      "Gym",
+      "Parking",
+      "Breakfast Included"
+    ],
+    "images": [],
+    "status": "Active",
+    "reviews": [],
+    "createdAt": "2025-12-06T23:13:03.662418Z",
+    "updatedAt": "2025-12-06T23:13:03.662419Z"
+  },
+  {
+    "hotelId": "HTL-_002-MIA-30741",
+    "hotelName": "Miami Holiday Inn 57",
+    "providerId": "SEED_HC2_PROV_002",
+    "providerName": "Provider-_002",
+    "address": "5513 Miami Street",
+    "city": "Miami",
+    "state": "FL",
+    "zipCode": "33101",
+    "country": "USA",
+    "starRating": 4,
+    "availableFrom": "2024-12-01T00:00:00.000Z",
+    "availableTo": "2025-01-31T23:59:59.000Z",
+    "totalRooms": 120,
+    "availableRooms": 120,
+    "roomTypes": [
+      {
+        "type": "Standard",
+        "pricePerNight": 100,
+        "availableCount": 60
+      },
+      {
+        "type": "Deluxe",
+        "pricePerNight": 150,
+        "availableCount": 40
+      },
+      {
+        "type": "Suite",
+        "pricePerNight": 200,
+        "availableCount": 20
+      }
+    ],
+    "amenities": [
+      "WiFi",
+      "Pool",
+      "Gym",
+      "Parking",
+      "Breakfast Included"
+    ],
+    "images": [],
+    "status": "Active",
+    "reviews": [],
+    "createdAt": "2025-12-06T23:13:03.662423Z",
+    "updatedAt": "2025-12-06T23:13:03.662424Z"
+  },
+  {
+    "hotelId": "HTL-_002-MIA-63786",
+    "hotelName": "Miami Holiday Inn 34",
+    "providerId": "SEED_HC2_PROV_002",
+    "providerName": "Provider-_002",
+    "address": "3315 Miami Street",
+    "city": "Miami",
+    "state": "FL",
+    "zipCode": "33101",
+    "country": "USA",
+    "starRating": 4,
+    "availableFrom": "2024-12-01T00:00:00.000Z",
+    "availableTo": "2025-01-31T23:59:59.000Z",
+    "totalRooms": 120,
+    "availableRooms": 120,
+    "roomTypes": [
+      {
+        "type": "Standard",
+        "pricePerNight": 100,
+        "availableCount": 60
+      },
+      {
+        "type": "Deluxe",
+        "pricePerNight": 150,
+        "availableCount": 40
+      },
+      {
+        "type": "Suite",
+        "pricePerNight": 200,
+        "availableCount": 20
+      }
+    ],
+    "amenities": [
+      "WiFi",
+      "Pool",
+      "Gym",
+      "Parking",
+      "Breakfast Included"
+    ],
+    "images": [],
+    "status": "Active",
+    "reviews": [],
+    "createdAt": "2025-12-06T23:13:03.662429Z",
+    "updatedAt": "2025-12-06T23:13:03.662430Z"
+  },
+  {
+    "hotelId": "HTL-_002-LAX-46432",
+    "hotelName": "Los Angeles Holiday Inn 67",
+    "providerId": "SEED_HC2_PROV_002",
+    "providerName": "Provider-_002",
+    "address": "8794 Los Angeles Street",
+    "city": "Los Angeles",
+    "state": "CA",
+    "zipCode": "90001",
+    "country": "USA",
+    "starRating": 4,
+    "availableFrom": "2024-12-01T00:00:00.000Z",
+    "availableTo": "2025-01-31T23:59:59.000Z",
+    "totalRooms": 120,
+    "availableRooms": 120,
+    "roomTypes": [
+      {
+        "type": "Standard",
+        "pricePerNight": 100,
+        "availableCount": 60
+      },
+      {
+        "type": "Deluxe",
+        "pricePerNight": 150,
+        "availableCount": 40
+      },
+      {
+        "type": "Suite",
+        "pricePerNight": 200,
+        "availableCount": 20
+      }
+    ],
+    "amenities": [
+      "WiFi",
+      "Pool",
+      "Gym",
+      "Parking",
+      "Breakfast Included"
+    ],
+    "images": [],
+    "status": "Active",
+    "reviews": [],
+    "createdAt": "2025-12-06T23:13:03.662433Z",
+    "updatedAt": "2025-12-06T23:13:03.662434Z"
+  },
+  {
+    "hotelId": "HTL-_002-LAX-61181",
+    "hotelName": "Los Angeles Holiday Inn 47",
+    "providerId": "SEED_HC2_PROV_002",
+    "providerName": "Provider-_002",
+    "address": "222 Los Angeles Street",
+    "city": "Los Angeles",
+    "state": "CA",
+    "zipCode": "90001",
+    "country": "USA",
+    "starRating": 4,
+    "availableFrom": "2024-12-01T00:00:00.000Z",
+    "availableTo": "2025-01-31T23:59:59.000Z",
+    "totalRooms": 120,
+    "availableRooms": 120,
+    "roomTypes": [
+      {
+        "type": "Standard",
+        "pricePerNight": 100,
+        "availableCount": 60
+      },
+      {
+        "type": "Deluxe",
+        "pricePerNight": 150,
+        "availableCount": 40
+      },
+      {
+        "type": "Suite",
+        "pricePerNight": 200,
+        "availableCount": 20
+      }
+    ],
+    "amenities": [
+      "WiFi",
+      "Pool",
+      "Gym",
+      "Parking",
+      "Breakfast Included"
+    ],
+    "images": [],
+    "status": "Active",
+    "reviews": [],
+    "createdAt": "2025-12-06T23:13:03.662437Z",
+    "updatedAt": "2025-12-06T23:13:03.662438Z"
+  },
+  {
+    "hotelId": "HTL-_002-MIA-19062",
+    "hotelName": "Miami Holiday Inn 28",
+    "providerId": "SEED_HC2_PROV_002",
+    "providerName": "Provider-_002",
+    "address": "164 Miami Street",
+    "city": "Miami",
+    "state": "FL",
+    "zipCode": "33101",
+    "country": "USA",
+    "starRating": 4,
+    "availableFrom": "2024-12-01T00:00:00.000Z",
+    "availableTo": "2025-01-31T23:59:59.000Z",
+    "totalRooms": 120,
+    "availableRooms": 120,
+    "roomTypes": [
+      {
+        "type": "Standard",
+        "pricePerNight": 100,
+        "availableCount": 60
+      },
+      {
+        "type": "Deluxe",
+        "pricePerNight": 150,
+        "availableCount": 40
+      },
+      {
+        "type": "Suite",
+        "pricePerNight": 200,
+        "availableCount": 20
+      }
+    ],
+    "amenities": [
+      "WiFi",
+      "Pool",
+      "Gym",
+      "Parking",
+      "Breakfast Included"
+    ],
+    "images": [],
+    "status": "Active",
+    "reviews": [],
+    "createdAt": "2025-12-06T23:13:03.662442Z",
+    "updatedAt": "2025-12-06T23:13:03.662443Z"
+  },
+  {
+    "hotelId": "HTL-_002-SEA-60857",
+    "hotelName": "Seattle Holiday Inn 26",
+    "providerId": "SEED_HC2_PROV_002",
+    "providerName": "Provider-_002",
+    "address": "1574 Seattle Street",
+    "city": "Seattle",
+    "state": "WA",
+    "zipCode": "98101",
+    "country": "USA",
+    "starRating": 4,
+    "availableFrom": "2024-12-01T00:00:00.000Z",
+    "availableTo": "2025-01-31T23:59:59.000Z",
+    "totalRooms": 120,
+    "availableRooms": 120,
+    "roomTypes": [
+      {
+        "type": "Standard",
+        "pricePerNight": 100,
+        "availableCount": 60
+      },
+      {
+        "type": "Deluxe",
+        "pricePerNight": 150,
+        "availableCount": 40
+      },
+      {
+        "type": "Suite",
+        "pricePerNight": 200,
+        "availableCount": 20
+      }
+    ],
+    "amenities": [
+      "WiFi",
+      "Pool",
+      "Gym",
+      "Parking",
+      "Breakfast Included"
+    ],
+    "images": [],
+    "status": "Active",
+    "reviews": [],
+    "createdAt": "2025-12-06T23:13:03.662445Z",
+    "updatedAt": "2025-12-06T23:13:03.662447Z"
+  },
+  {
+    "hotelId": "HTL-_002-MIA-23493",
+    "hotelName": "Miami Holiday Inn 96",
+    "providerId": "SEED_HC2_PROV_002",
+    "providerName": "Provider-_002",
+    "address": "9635 Miami Street",
+    "city": "Miami",
+    "state": "FL",
+    "zipCode": "33101",
+    "country": "USA",
+    "starRating": 4,
+    "availableFrom": "2024-12-01T00:00:00.000Z",
+    "availableTo": "2025-01-31T23:59:59.000Z",
+    "totalRooms": 120,
+    "availableRooms": 120,
+    "roomTypes": [
+      {
+        "type": "Standard",
+        "pricePerNight": 100,
+        "availableCount": 60
+      },
+      {
+        "type": "Deluxe",
+        "pricePerNight": 150,
+        "availableCount": 40
+      },
+      {
+        "type": "Suite",
+        "pricePerNight": 200,
+        "availableCount": 20
+      }
+    ],
+    "amenities": [
+      "WiFi",
+      "Pool",
+      "Gym",
+      "Parking",
+      "Breakfast Included"
+    ],
+    "images": [],
+    "status": "Active",
+    "reviews": [],
+    "createdAt": "2025-12-06T23:13:03.662450Z",
+    "updatedAt": "2025-12-06T23:13:03.662451Z"
+  },
+  {
+    "hotelId": "HTL-_002-LAX-99369",
+    "hotelName": "Los Angeles Holiday Inn 35",
+    "providerId": "SEED_HC2_PROV_002",
+    "providerName": "Provider-_002",
+    "address": "5338 Los Angeles Street",
+    "city": "Los Angeles",
+    "state": "CA",
+    "zipCode": "90001",
+    "country": "USA",
+    "starRating": 4,
+    "availableFrom": "2024-12-01T00:00:00.000Z",
+    "availableTo": "2025-01-31T23:59:59.000Z",
+    "totalRooms": 120,
+    "availableRooms": 120,
+    "roomTypes": [
+      {
+        "type": "Standard",
+        "pricePerNight": 100,
+        "availableCount": 60
+      },
+      {
+        "type": "Deluxe",
+        "pricePerNight": 150,
+        "availableCount": 40
+      },
+      {
+        "type": "Suite",
+        "pricePerNight": 200,
+        "availableCount": 20
+      }
+    ],
+    "amenities": [
+      "WiFi",
+      "Pool",
+      "Gym",
+      "Parking",
+      "Breakfast Included"
+    ],
+    "images": [],
+    "status": "Active",
+    "reviews": [],
+    "createdAt": "2025-12-06T23:13:03.662454Z",
+    "updatedAt": "2025-12-06T23:13:03.662455Z"
+  },
+  {
+    "hotelId": "HTL-_002-SEA-19910",
+    "hotelName": "Seattle Holiday Inn 29",
+    "providerId": "SEED_HC2_PROV_002",
+    "providerName": "Provider-_002",
+    "address": "3711 Seattle Street",
+    "city": "Seattle",
+    "state": "WA",
+    "zipCode": "98101",
+    "country": "USA",
+    "starRating": 4,
+    "availableFrom": "2024-12-01T00:00:00.000Z",
+    "availableTo": "2025-01-31T23:59:59.000Z",
+    "totalRooms": 120,
+    "availableRooms": 120,
+    "roomTypes": [
+      {
+        "type": "Standard",
+        "pricePerNight": 100,
+        "availableCount": 60
+      },
+      {
+        "type": "Deluxe",
+        "pricePerNight": 150,
+        "availableCount": 40
+      },
+      {
+        "type": "Suite",
+        "pricePerNight": 200,
+        "availableCount": 20
+      }
+    ],
+    "amenities": [
+      "WiFi",
+      "Pool",
+      "Gym",
+      "Parking",
+      "Breakfast Included"
+    ],
+    "images": [],
+    "status": "Active",
+    "reviews": [],
+    "createdAt": "2025-12-06T23:13:03.662458Z",
+    "updatedAt": "2025-12-06T23:13:03.662459Z"
+  },
+  {
+    "hotelId": "HTL-_002-SEA-15132",
+    "hotelName": "Seattle Holiday Inn 59",
+    "providerId": "SEED_HC2_PROV_002",
+    "providerName": "Provider-_002",
+    "address": "4893 Seattle Street",
+    "city": "Seattle",
+    "state": "WA",
+    "zipCode": "98101",
+    "country": "USA",
+    "starRating": 4,
+    "availableFrom": "2024-12-01T00:00:00.000Z",
+    "availableTo": "2025-01-31T23:59:59.000Z",
+    "totalRooms": 120,
+    "availableRooms": 120,
+    "roomTypes": [
+      {
+        "type": "Standard",
+        "pricePerNight": 100,
+        "availableCount": 60
+      },
+      {
+        "type": "Deluxe",
+        "pricePerNight": 150,
+        "availableCount": 40
+      },
+      {
+        "type": "Suite",
+        "pricePerNight": 200,
+        "availableCount": 20
+      }
+    ],
+    "amenities": [
+      "WiFi",
+      "Pool",
+      "Gym",
+      "Parking",
+      "Breakfast Included"
+    ],
+    "images": [],
+    "status": "Active",
+    "reviews": [],
+    "createdAt": "2025-12-06T23:13:03.662461Z",
+    "updatedAt": "2025-12-06T23:13:03.662463Z"
+  },
+  {
+    "hotelId": "HTL-_002-SEA-53405",
+    "hotelName": "Seattle Holiday Inn 5",
+    "providerId": "SEED_HC2_PROV_002",
+    "providerName": "Provider-_002",
+    "address": "1935 Seattle Street",
+    "city": "Seattle",
+    "state": "WA",
+    "zipCode": "98101",
+    "country": "USA",
+    "starRating": 4,
+    "availableFrom": "2024-12-01T00:00:00.000Z",
+    "availableTo": "2025-01-31T23:59:59.000Z",
+    "totalRooms": 120,
+    "availableRooms": 120,
+    "roomTypes": [
+      {
+        "type": "Standard",
+        "pricePerNight": 100,
+        "availableCount": 60
+      },
+      {
+        "type": "Deluxe",
+        "pricePerNight": 150,
+        "availableCount": 40
+      },
+      {
+        "type": "Suite",
+        "pricePerNight": 200,
+        "availableCount": 20
+      }
+    ],
+    "amenities": [
+      "WiFi",
+      "Pool",
+      "Gym",
+      "Parking",
+      "Breakfast Included"
+    ],
+    "images": [],
+    "status": "Active",
+    "reviews": [],
+    "createdAt": "2025-12-06T23:13:03.662467Z",
+    "updatedAt": "2025-12-06T23:13:03.662468Z"
+  },
+  {
+    "hotelId": "HTL-_002-LAX-38155",
+    "hotelName": "Los Angeles Holiday Inn 18",
+    "providerId": "SEED_HC2_PROV_002",
+    "providerName": "Provider-_002",
+    "address": "5011 Los Angeles Street",
+    "city": "Los Angeles",
+    "state": "CA",
+    "zipCode": "90001",
+    "country": "USA",
+    "starRating": 4,
+    "availableFrom": "2024-12-01T00:00:00.000Z",
+    "availableTo": "2025-01-31T23:59:59.000Z",
+    "totalRooms": 120,
+    "availableRooms": 120,
+    "roomTypes": [
+      {
+        "type": "Standard",
+        "pricePerNight": 100,
+        "availableCount": 60
+      },
+      {
+        "type": "Deluxe",
+        "pricePerNight": 150,
+        "availableCount": 40
+      },
+      {
+        "type": "Suite",
+        "pricePerNight": 200,
+        "availableCount": 20
+      }
+    ],
+    "amenities": [
+      "WiFi",
+      "Pool",
+      "Gym",
+      "Parking",
+      "Breakfast Included"
+    ],
+    "images": [],
+    "status": "Active",
+    "reviews": [],
+    "createdAt": "2025-12-06T23:13:03.662471Z",
+    "updatedAt": "2025-12-06T23:13:03.662472Z"
+  },
+  {
+    "hotelId": "HTL-_003-LAX-57742",
+    "hotelName": "Los Angeles Holiday Inn 5",
+    "providerId": "SEED_HC2_PROV_003",
+    "providerName": "Provider-_003",
+    "address": "2191 Los Angeles Street",
+    "city": "Los Angeles",
+    "state": "CA",
+    "zipCode": "90001",
+    "country": "USA",
+    "starRating": 4,
+    "availableFrom": "2024-12-01T00:00:00.000Z",
+    "availableTo": "2025-01-31T23:59:59.000Z",
+    "totalRooms": 120,
+    "availableRooms": 120,
+    "roomTypes": [
+      {
+        "type": "Standard",
+        "pricePerNight": 100,
+        "availableCount": 60
+      },
+      {
+        "type": "Deluxe",
+        "pricePerNight": 150,
+        "availableCount": 40
+      },
+      {
+        "type": "Suite",
+        "pricePerNight": 200,
+        "availableCount": 20
+      }
+    ],
+    "amenities": [
+      "WiFi",
+      "Pool",
+      "Gym",
+      "Parking",
+      "Breakfast Included"
+    ],
+    "images": [],
+    "status": "Active",
+    "reviews": [],
+    "createdAt": "2025-12-06T23:13:03.662475Z",
+    "updatedAt": "2025-12-06T23:13:03.662476Z"
+  },
+  {
+    "hotelId": "HTL-_003-MIA-76196",
+    "hotelName": "Miami Holiday Inn 65",
+    "providerId": "SEED_HC2_PROV_003",
+    "providerName": "Provider-_003",
+    "address": "9840 Miami Street",
+    "city": "Miami",
+    "state": "FL",
+    "zipCode": "33101",
+    "country": "USA",
+    "starRating": 4,
+    "availableFrom": "2024-12-01T00:00:00.000Z",
+    "availableTo": "2025-01-31T23:59:59.000Z",
+    "totalRooms": 120,
+    "availableRooms": 120,
+    "roomTypes": [
+      {
+        "type": "Standard",
+        "pricePerNight": 100,
+        "availableCount": 60
+      },
+      {
+        "type": "Deluxe",
+        "pricePerNight": 150,
+        "availableCount": 40
+      },
+      {
+        "type": "Suite",
+        "pricePerNight": 200,
+        "availableCount": 20
+      }
+    ],
+    "amenities": [
+      "WiFi",
+      "Pool",
+      "Gym",
+      "Parking",
+      "Breakfast Included"
+    ],
+    "images": [],
+    "status": "Active",
+    "reviews": [],
+    "createdAt": "2025-12-06T23:13:03.662479Z",
+    "updatedAt": "2025-12-06T23:13:03.662480Z"
+  },
+  {
+    "hotelId": "HTL-_003-MIA-94256",
+    "hotelName": "Miami Holiday Inn 86",
+    "providerId": "SEED_HC2_PROV_003",
+    "providerName": "Provider-_003",
+    "address": "292 Miami Street",
+    "city": "Miami",
+    "state": "FL",
+    "zipCode": "33101",
+    "country": "USA",
+    "starRating": 4,
+    "availableFrom": "2024-12-01T00:00:00.000Z",
+    "availableTo": "2025-01-31T23:59:59.000Z",
+    "totalRooms": 120,
+    "availableRooms": 120,
+    "roomTypes": [
+      {
+        "type": "Standard",
+        "pricePerNight": 100,
+        "availableCount": 60
+      },
+      {
+        "type": "Deluxe",
+        "pricePerNight": 150,
+        "availableCount": 40
+      },
+      {
+        "type": "Suite",
+        "pricePerNight": 200,
+        "availableCount": 20
+      }
+    ],
+    "amenities": [
+      "WiFi",
+      "Pool",
+      "Gym",
+      "Parking",
+      "Breakfast Included"
+    ],
+    "images": [],
+    "status": "Active",
+    "reviews": [],
+    "createdAt": "2025-12-06T23:13:03.662483Z",
+    "updatedAt": "2025-12-06T23:13:03.662484Z"
+  },
+  {
+    "hotelId": "HTL-_003-SEA-78260",
+    "hotelName": "Seattle Holiday Inn 50",
+    "providerId": "SEED_HC2_PROV_003",
+    "providerName": "Provider-_003",
+    "address": "3898 Seattle Street",
+    "city": "Seattle",
+    "state": "WA",
+    "zipCode": "98101",
+    "country": "USA",
+    "starRating": 4,
+    "availableFrom": "2024-12-01T00:00:00.000Z",
+    "availableTo": "2025-01-31T23:59:59.000Z",
+    "totalRooms": 120,
+    "availableRooms": 120,
+    "roomTypes": [
+      {
+        "type": "Standard",
+        "pricePerNight": 100,
+        "availableCount": 60
+      },
+      {
+        "type": "Deluxe",
+        "pricePerNight": 150,
+        "availableCount": 40
+      },
+      {
+        "type": "Suite",
+        "pricePerNight": 200,
+        "availableCount": 20
+      }
+    ],
+    "amenities": [
+      "WiFi",
+      "Pool",
+      "Gym",
+      "Parking",
+      "Breakfast Included"
+    ],
+    "images": [],
+    "status": "Active",
+    "reviews": [],
+    "createdAt": "2025-12-06T23:13:03.662487Z",
+    "updatedAt": "2025-12-06T23:13:03.662488Z"
+  },
+  {
+    "hotelId": "HTL-_003-MIA-48758",
+    "hotelName": "Miami Holiday Inn 17",
+    "providerId": "SEED_HC2_PROV_003",
+    "providerName": "Provider-_003",
+    "address": "1356 Miami Street",
+    "city": "Miami",
+    "state": "FL",
+    "zipCode": "33101",
+    "country": "USA",
+    "starRating": 4,
+    "availableFrom": "2024-12-01T00:00:00.000Z",
+    "availableTo": "2025-01-31T23:59:59.000Z",
+    "totalRooms": 120,
+    "availableRooms": 120,
+    "roomTypes": [
+      {
+        "type": "Standard",
+        "pricePerNight": 100,
+        "availableCount": 60
+      },
+      {
+        "type": "Deluxe",
+        "pricePerNight": 150,
+        "availableCount": 40
+      },
+      {
+        "type": "Suite",
+        "pricePerNight": 200,
+        "availableCount": 20
+      }
+    ],
+    "amenities": [
+      "WiFi",
+      "Pool",
+      "Gym",
+      "Parking",
+      "Breakfast Included"
+    ],
+    "images": [],
+    "status": "Active",
+    "reviews": [],
+    "createdAt": "2025-12-06T23:13:03.662491Z",
+    "updatedAt": "2025-12-06T23:13:03.662492Z"
+  },
+  {
+    "hotelId": "HTL-_003-SEA-94589",
+    "hotelName": "Seattle Holiday Inn 40",
+    "providerId": "SEED_HC2_PROV_003",
+    "providerName": "Provider-_003",
+    "address": "9777 Seattle Street",
+    "city": "Seattle",
+    "state": "WA",
+    "zipCode": "98101",
+    "country": "USA",
+    "starRating": 4,
+    "availableFrom": "2024-12-01T00:00:00.000Z",
+    "availableTo": "2025-01-31T23:59:59.000Z",
+    "totalRooms": 120,
+    "availableRooms": 120,
+    "roomTypes": [
+      {
+        "type": "Standard",
+        "pricePerNight": 100,
+        "availableCount": 60
+      },
+      {
+        "type": "Deluxe",
+        "pricePerNight": 150,
+        "availableCount": 40
+      },
+      {
+        "type": "Suite",
+        "pricePerNight": 200,
+        "availableCount": 20
+      }
+    ],
+    "amenities": [
+      "WiFi",
+      "Pool",
+      "Gym",
+      "Parking",
+      "Breakfast Included"
+    ],
+    "images": [],
+    "status": "Active",
+    "reviews": [],
+    "createdAt": "2025-12-06T23:13:03.662495Z",
+    "updatedAt": "2025-12-06T23:13:03.662496Z"
+  },
+  {
+    "hotelId": "HTL-_003-SEA-46573",
+    "hotelName": "Seattle Holiday Inn 5",
+    "providerId": "SEED_HC2_PROV_003",
+    "providerName": "Provider-_003",
+    "address": "8625 Seattle Street",
+    "city": "Seattle",
+    "state": "WA",
+    "zipCode": "98101",
+    "country": "USA",
+    "starRating": 4,
+    "availableFrom": "2024-12-01T00:00:00.000Z",
+    "availableTo": "2025-01-31T23:59:59.000Z",
+    "totalRooms": 120,
+    "availableRooms": 120,
+    "roomTypes": [
+      {
+        "type": "Standard",
+        "pricePerNight": 100,
+        "availableCount": 60
+      },
+      {
+        "type": "Deluxe",
+        "pricePerNight": 150,
+        "availableCount": 40
+      },
+      {
+        "type": "Suite",
+        "pricePerNight": 200,
+        "availableCount": 20
+      }
+    ],
+    "amenities": [
+      "WiFi",
+      "Pool",
+      "Gym",
+      "Parking",
+      "Breakfast Included"
+    ],
+    "images": [],
+    "status": "Active",
+    "reviews": [],
+    "createdAt": "2025-12-06T23:13:03.662499Z",
+    "updatedAt": "2025-12-06T23:13:03.662500Z"
+  },
+  {
+    "hotelId": "HTL-_003-MIA-33653",
+    "hotelName": "Miami Holiday Inn 38",
+    "providerId": "SEED_HC2_PROV_003",
+    "providerName": "Provider-_003",
+    "address": "5475 Miami Street",
+    "city": "Miami",
+    "state": "FL",
+    "zipCode": "33101",
+    "country": "USA",
+    "starRating": 4,
+    "availableFrom": "2024-12-01T00:00:00.000Z",
+    "availableTo": "2025-01-31T23:59:59.000Z",
+    "totalRooms": 120,
+    "availableRooms": 120,
+    "roomTypes": [
+      {
+        "type": "Standard",
+        "pricePerNight": 100,
+        "availableCount": 60
+      },
+      {
+        "type": "Deluxe",
+        "pricePerNight": 150,
+        "availableCount": 40
+      },
+      {
+        "type": "Suite",
+        "pricePerNight": 200,
+        "availableCount": 20
+      }
+    ],
+    "amenities": [
+      "WiFi",
+      "Pool",
+      "Gym",
+      "Parking",
+      "Breakfast Included"
+    ],
+    "images": [],
+    "status": "Active",
+    "reviews": [],
+    "createdAt": "2025-12-06T23:13:03.662503Z",
+    "updatedAt": "2025-12-06T23:13:03.662504Z"
+  },
+  {
+    "hotelId": "HTL-_003-SEA-60152",
+    "hotelName": "Seattle Holiday Inn 22",
+    "providerId": "SEED_HC2_PROV_003",
+    "providerName": "Provider-_003",
+    "address": "3842 Seattle Street",
+    "city": "Seattle",
+    "state": "WA",
+    "zipCode": "98101",
+    "country": "USA",
+    "starRating": 4,
+    "availableFrom": "2024-12-01T00:00:00.000Z",
+    "availableTo": "2025-01-31T23:59:59.000Z",
+    "totalRooms": 120,
+    "availableRooms": 120,
+    "roomTypes": [
+      {
+        "type": "Standard",
+        "pricePerNight": 100,
+        "availableCount": 60
+      },
+      {
+        "type": "Deluxe",
+        "pricePerNight": 150,
+        "availableCount": 40
+      },
+      {
+        "type": "Suite",
+        "pricePerNight": 200,
+        "availableCount": 20
+      }
+    ],
+    "amenities": [
+      "WiFi",
+      "Pool",
+      "Gym",
+      "Parking",
+      "Breakfast Included"
+    ],
+    "images": [],
+    "status": "Active",
+    "reviews": [],
+    "createdAt": "2025-12-06T23:13:03.662507Z",
+    "updatedAt": "2025-12-06T23:13:03.662508Z"
+  },
+  {
+    "hotelId": "HTL-_003-SEA-41294",
+    "hotelName": "Seattle Holiday Inn 59",
+    "providerId": "SEED_HC2_PROV_003",
+    "providerName": "Provider-_003",
+    "address": "7740 Seattle Street",
+    "city": "Seattle",
+    "state": "WA",
+    "zipCode": "98101",
+    "country": "USA",
+    "starRating": 4,
+    "availableFrom": "2024-12-01T00:00:00.000Z",
+    "availableTo": "2025-01-31T23:59:59.000Z",
+    "totalRooms": 120,
+    "availableRooms": 120,
+    "roomTypes": [
+      {
+        "type": "Standard",
+        "pricePerNight": 100,
+        "availableCount": 60
+      },
+      {
+        "type": "Deluxe",
+        "pricePerNight": 150,
+        "availableCount": 40
+      },
+      {
+        "type": "Suite",
+        "pricePerNight": 200,
+        "availableCount": 20
+      }
+    ],
+    "amenities": [
+      "WiFi",
+      "Pool",
+      "Gym",
+      "Parking",
+      "Breakfast Included"
+    ],
+    "images": [],
+    "status": "Active",
+    "reviews": [],
+    "createdAt": "2025-12-06T23:13:03.662511Z",
+    "updatedAt": "2025-12-06T23:13:03.662512Z"
+  },
+  {
+    "hotelId": "HTL-_003-MIA-37592",
+    "hotelName": "Miami Holiday Inn 70",
+    "providerId": "SEED_HC2_PROV_003",
+    "providerName": "Provider-_003",
+    "address": "3175 Miami Street",
+    "city": "Miami",
+    "state": "FL",
+    "zipCode": "33101",
+    "country": "USA",
+    "starRating": 4,
+    "availableFrom": "2024-12-01T00:00:00.000Z",
+    "availableTo": "2025-01-31T23:59:59.000Z",
+    "totalRooms": 120,
+    "availableRooms": 120,
+    "roomTypes": [
+      {
+        "type": "Standard",
+        "pricePerNight": 100,
+        "availableCount": 60
+      },
+      {
+        "type": "Deluxe",
+        "pricePerNight": 150,
+        "availableCount": 40
+      },
+      {
+        "type": "Suite",
+        "pricePerNight": 200,
+        "availableCount": 20
+      }
+    ],
+    "amenities": [
+      "WiFi",
+      "Pool",
+      "Gym",
+      "Parking",
+      "Breakfast Included"
+    ],
+    "images": [],
+    "status": "Active",
+    "reviews": [],
+    "createdAt": "2025-12-06T23:13:03.662527Z",
+    "updatedAt": "2025-12-06T23:13:03.662528Z"
+  },
+  {
+    "hotelId": "HTL-_003-MIA-24993",
+    "hotelName": "Miami Holiday Inn 26",
+    "providerId": "SEED_HC2_PROV_003",
+    "providerName": "Provider-_003",
+    "address": "7173 Miami Street",
+    "city": "Miami",
+    "state": "FL",
+    "zipCode": "33101",
+    "country": "USA",
+    "starRating": 4,
+    "availableFrom": "2024-12-01T00:00:00.000Z",
+    "availableTo": "2025-01-31T23:59:59.000Z",
+    "totalRooms": 120,
+    "availableRooms": 120,
+    "roomTypes": [
+      {
+        "type": "Standard",
+        "pricePerNight": 100,
+        "availableCount": 60
+      },
+      {
+        "type": "Deluxe",
+        "pricePerNight": 150,
+        "availableCount": 40
+      },
+      {
+        "type": "Suite",
+        "pricePerNight": 200,
+        "availableCount": 20
+      }
+    ],
+    "amenities": [
+      "WiFi",
+      "Pool",
+      "Gym",
+      "Parking",
+      "Breakfast Included"
+    ],
+    "images": [],
+    "status": "Active",
+    "reviews": [],
+    "createdAt": "2025-12-06T23:13:03.662531Z",
+    "updatedAt": "2025-12-06T23:13:03.662532Z"
+  },
+  {
+    "hotelId": "HTL-_003-SEA-17034",
+    "hotelName": "Seattle Holiday Inn 94",
+    "providerId": "SEED_HC2_PROV_003",
+    "providerName": "Provider-_003",
+    "address": "8404 Seattle Street",
+    "city": "Seattle",
+    "state": "WA",
+    "zipCode": "98101",
+    "country": "USA",
+    "starRating": 4,
+    "availableFrom": "2024-12-01T00:00:00.000Z",
+    "availableTo": "2025-01-31T23:59:59.000Z",
+    "totalRooms": 120,
+    "availableRooms": 120,
+    "roomTypes": [
+      {
+        "type": "Standard",
+        "pricePerNight": 100,
+        "availableCount": 60
+      },
+      {
+        "type": "Deluxe",
+        "pricePerNight": 150,
+        "availableCount": 40
+      },
+      {
+        "type": "Suite",
+        "pricePerNight": 200,
+        "availableCount": 20
+      }
+    ],
+    "amenities": [
+      "WiFi",
+      "Pool",
+      "Gym",
+      "Parking",
+      "Breakfast Included"
+    ],
+    "images": [],
+    "status": "Active",
+    "reviews": [],
+    "createdAt": "2025-12-06T23:13:03.662535Z",
+    "updatedAt": "2025-12-06T23:13:03.662536Z"
+  },
+  {
+    "hotelId": "HTL-_003-MIA-15426",
+    "hotelName": "Miami Holiday Inn 46",
+    "providerId": "SEED_HC2_PROV_003",
+    "providerName": "Provider-_003",
+    "address": "3838 Miami Street",
+    "city": "Miami",
+    "state": "FL",
+    "zipCode": "33101",
+    "country": "USA",
+    "starRating": 4,
+    "availableFrom": "2024-12-01T00:00:00.000Z",
+    "availableTo": "2025-01-31T23:59:59.000Z",
+    "totalRooms": 120,
+    "availableRooms": 120,
+    "roomTypes": [
+      {
+        "type": "Standard",
+        "pricePerNight": 100,
+        "availableCount": 60
+      },
+      {
+        "type": "Deluxe",
+        "pricePerNight": 150,
+        "availableCount": 40
+      },
+      {
+        "type": "Suite",
+        "pricePerNight": 200,
+        "availableCount": 20
+      }
+    ],
+    "amenities": [
+      "WiFi",
+      "Pool",
+      "Gym",
+      "Parking",
+      "Breakfast Included"
+    ],
+    "images": [],
+    "status": "Active",
+    "reviews": [],
+    "createdAt": "2025-12-06T23:13:03.662539Z",
+    "updatedAt": "2025-12-06T23:13:03.662540Z"
+  },
+  {
+    "hotelId": "HTL-_003-MIA-85850",
+    "hotelName": "Miami Holiday Inn 17",
+    "providerId": "SEED_HC2_PROV_003",
+    "providerName": "Provider-_003",
+    "address": "2116 Miami Street",
+    "city": "Miami",
+    "state": "FL",
+    "zipCode": "33101",
+    "country": "USA",
+    "starRating": 4,
+    "availableFrom": "2024-12-01T00:00:00.000Z",
+    "availableTo": "2025-01-31T23:59:59.000Z",
+    "totalRooms": 120,
+    "availableRooms": 120,
+    "roomTypes": [
+      {
+        "type": "Standard",
+        "pricePerNight": 100,
+        "availableCount": 60
+      },
+      {
+        "type": "Deluxe",
+        "pricePerNight": 150,
+        "availableCount": 40
+      },
+      {
+        "type": "Suite",
+        "pricePerNight": 200,
+        "availableCount": 20
+      }
+    ],
+    "amenities": [
+      "WiFi",
+      "Pool",
+      "Gym",
+      "Parking",
+      "Breakfast Included"
+    ],
+    "images": [],
+    "status": "Active",
+    "reviews": [],
+    "createdAt": "2025-12-06T23:13:03.662543Z",
+    "updatedAt": "2025-12-06T23:13:03.662544Z"
+  }
+]

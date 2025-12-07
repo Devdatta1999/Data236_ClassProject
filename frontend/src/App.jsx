@@ -3,6 +3,7 @@ import { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 // Kafka proxy handles connection, no need to initialize
 import { loginSuccess } from './store/slices/authSlice'
+import { clearCart, addToCart } from './store/slices/cartSlice'
 
 // Layouts
 import Navbar from './components/layout/Navbar'
@@ -11,6 +12,8 @@ import AIChatModal from './components/chat/AIChatModal'
 import Notification from './components/common/Notification'
 import useRecommendationEvents from './hooks/useRecommendationEvents'
 import { removeNotification } from './store/slices/notificationSlice'
+import { selectBundle } from './services/chatService'
+import { differenceInDays } from 'date-fns'
 
 // Pages
 import LandingPage from './pages/LandingPage'
@@ -54,10 +57,120 @@ function App() {
     }
   }, [dispatch])
 
-  const handleNotificationAction = (notification) => {
+  const handleNotificationAction = async (notification) => {
+    // If this is a price drop notification, refresh the quote with new prices
+    if (notification.metadata?.shouldRefreshQuote && notification.metadata?.bundleId && notification.metadata?.sessionId) {
+      try {
+        // Fetch the updated bundle quote with discounted price
+        console.log('[Price Drop] Fetching bundle:', {
+          sessionId: notification.metadata.sessionId,
+          bundleId: notification.metadata.bundleId
+        })
+        const response = await selectBundle(notification.metadata.sessionId, notification.metadata.bundleId)
+        console.log('[Price Drop] selectBundle response:', response)
+
+        if (response.success && response.quote) {
+          const quote = response.quote
+          console.log('[Price Drop] Quote details:', {
+            flights: quote.flights,
+            hotels: quote.hotels,
+            travel_dates: quote.travel_dates,
+            travelers: quote.travelers,
+            total_price: quote.total_price_usd
+          })
+
+          // Clear cart and wait a bit to ensure it's cleared
+          dispatch(clearCart())
+          // Also force-clear localStorage to ensure no stale data
+          localStorage.removeItem('cart')
+          console.log('[Price Drop] Cart cleared, localStorage removed')
+
+          // Small delay to ensure clearCart completes before adding new items
+          await new Promise(resolve => setTimeout(resolve, 100))
+
+          const departureDateStr = quote.travel_dates?.departure_date || null
+          const returnDateStr = quote.travel_dates?.return_date || null
+
+          // Add flights to cart
+          for (const flight of quote.flights || []) {
+            const travelers = Math.max(quote.travelers || 1, 1)
+            const pricePerPerson = Number(flight.price_usd || 0)  // This is already per-person price
+            const totalFlightPrice = pricePerPerson * travelers
+
+            const flightCartItem = {
+              listingId: flight.external_id,
+              listingType: 'Flight',
+              listingName: `${flight.origin} → ${flight.destination}`,
+              roomType: 'Economy',
+              quantity: travelers,
+              price: pricePerPerson,  // Price per person
+              totalPrice: totalFlightPrice,  // Total for all travelers
+              travelDate: flight.departure_date,
+              returnDate: flight.return_date,
+              address: `${flight.origin} → ${flight.destination}`,
+            }
+            console.log('[Price Drop] Adding flight to cart:', flightCartItem)
+            dispatch(addToCart(flightCartItem))
+          }
+
+          // Add hotels to cart
+          for (const hotel of quote.hotels || []) {
+            const checkIn = departureDateStr ? new Date(departureDateStr) : new Date(hotel.check_in_date)
+            const checkOut = returnDateStr ? new Date(returnDateStr) : new Date(hotel.check_out_date)
+            const nights = Math.max(differenceInDays(checkOut, checkIn), 1)
+            const totalHotelPrice = Number(hotel.total_price_usd || 0)
+            const pricePerNight = nights > 0 ? totalHotelPrice / nights : totalHotelPrice
+            // Default to 1 room to match the bundle pricing
+            // Users can manually adjust quantity in cart if needed
+            const quantity = 1
+
+            const hotelCartItem = {
+              listingId: hotel.external_id,
+              listingType: 'Hotel',
+              listingName: hotel.hotel_name,
+              roomType: 'Standard',
+              quantity,
+              pricePerNight: Number(pricePerNight.toFixed(2)),
+              totalPrice: totalHotelPrice,
+              checkInDate: checkIn.toISOString(),
+              checkOutDate: checkOut.toISOString(),
+              numberOfNights: nights,
+              address: hotel.city,
+            }
+            console.log('[Price Drop] Adding hotel to cart:', {
+              ...hotelCartItem,
+              checkIn: checkIn.toISOString(),
+              checkOut: checkOut.toISOString(),
+              departureDateStr,
+              returnDateStr,
+              nights
+            })
+            dispatch(addToCart(hotelCartItem))
+          }
+
+          console.log('[Price Drop] All items added to cart, waiting before navigation')
+
+          // Wait for Redux state to update before navigating
+          // Use setTimeout to ensure cart state is fully updated
+          setTimeout(() => {
+            console.log('[Price Drop] Navigating to:', notification.actionPath)
+            if (notification.actionPath) {
+              navigate(notification.actionPath)
+            }
+            dispatch(removeNotification(notification.id))
+          }, 150)
+          return  // Exit early to prevent double navigation/removal
+        }
+      } catch (error) {
+        console.error('Error refreshing quote:', error)
+      }
+    }
+
+    // Navigate to the action path (for non-price-drop notifications)
     if (notification.actionPath) {
       navigate(notification.actionPath)
     }
+
     dispatch(removeNotification(notification.id))
   }
 

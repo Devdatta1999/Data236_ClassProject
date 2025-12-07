@@ -124,13 +124,18 @@ async function startServer() {
     logger.info('Redis connected successfully');
     
     // Setup Kafka consumer for user events (automatic reconnection is built-in)
+    // Make this non-blocking so service can start even if Kafka isn't ready
     logger.info('Setting up Kafka consumer...');
-    await createConsumer(
+    createConsumer(
       'user-service-group',
       ['user-events'],
       handleUserEvent
-    );
-    logger.info('Kafka consumer subscribed to: user-events (with automatic reconnection enabled)');
+    ).then(() => {
+      logger.info('Kafka consumer subscribed to: user-events (with automatic reconnection enabled)');
+    }).catch((error) => {
+      logger.warn('Kafka consumer setup failed, but service will continue. Consumer will retry automatically:', error.message);
+      logger.warn('Service is ready to accept HTTP requests, but Kafka events will not be processed until Kafka is available.');
+    });
     
     // Add readiness probe endpoint AFTER MongoDB is connected
     app.get('/readyz', (req, res) => {

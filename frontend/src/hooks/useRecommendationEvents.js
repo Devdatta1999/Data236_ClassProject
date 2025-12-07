@@ -25,6 +25,7 @@ const useRecommendationEvents = () => {
         if (data.type === 'deal_update' && data.data?.reason === 'simulated_price_drop') {
           const oldPrice = Number(data.data.old_total_price_usd || 0)
           const newPrice = Number(data.data.new_total_price_usd || 0)
+          const bundleId = data.data.bundle_id
           const message =
             newPrice && oldPrice
               ? `Good news! Your selected package dropped from $${oldPrice.toFixed(
@@ -40,6 +41,12 @@ const useRecommendationEvents = () => {
               message,
               actionLabel: 'Book now',
               actionPath: '/checkout',
+              // Store bundle_id and session_id for refreshing the quote with new price
+              metadata: {
+                bundleId,
+                sessionId,
+                shouldRefreshQuote: true
+              }
             })
           )
         } else if (data.type === 'watch_triggered') {

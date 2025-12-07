@@ -1,1 +1,9 @@
-    I need a trip from SFO to LAX from 2025-11-27 to 2025-11-29 for 2 people with a budget of $70000.
+h
+    fit_score=Sprice +Sdeal +Sprefs +Sconvenience
+
+    Why SQLite?
+    -> simplicity, reliability, and “no-ops” deployment:
+    -> Embedded, no server to run
+
+
+    I need a trip from SFO to LAX from 2025-11-29 to 2025-11-30 for 3 people with a budget of $1000

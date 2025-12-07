@@ -1,0 +1,477 @@
+RECOMMENDATION SYSTEM: END-TO-END LOGIC REPORT
+==============================================
+
+EXECUTIVE SUMMARY
+-----------------
+The AI Travel Concierge Recommendation System is a multi-agent system that processes travel inventory from MongoDB, scores deals, understands natural language queries, and generates personalized flight+hotel bundle recommendations. The system operates through a pipeline of data ingestion, normalization, scoring, and intelligent query processing.
+
+1. SYSTEM ARCHITECTURE OVERVIEW
+--------------------------------
+
+Components:
+- Data Pipeline: MongoDB → Kafka → SQLite (deals processing)
+- AI Agent: FastAPI service with OpenAI integration for intent parsing
+- Trip Planner: Bundle composition engine with fit scoring
+- Real-time Events: WebSocket-based notifications
+
+Data Stores:
+- MongoDB: Source of truth for flights/hotels inventory
+- SQLite: Normalized deals, bundles, chat sessions, watches
+- Kafka: Event streaming for deal processing pipeline
+
+2. DATA INGESTION PIPELINE
+---------------------------
+
+2.1 MongoDB Reader (deals_agent/mongo_reader.py)
+Purpose: Extract active inventory from MongoDB and publish to Kafka
+
+Process:
+1. Connects to MongoDB using MONGODB_URI
+2. Queries flights and hotels collections where status: "Active"
+3. Transforms documents:
+   - Flights: Extracts origin, destination, dates, price, airline, duration, stops
+   - Hotels: Extracts hotel name, city, dates, price per night, amenities, room types
+4. Publishes to Kafka topic: raw_supplier_feeds
+   - Message format: { "deal_type": "flight"|"hotel", "data": {...} }
+
+Key Logic:
+- One hotel document can produce multiple deals (one per room type)
+- Validates required fields before publishing
+- Handles date format conversions (ISO strings → datetime)
+
+2.2 Normalizer (deals_agent/normalizer.py)
+Purpose: Normalize raw MongoDB data into structured FlightDeal and HotelDeal records
+
+Process:
+1. Consumes from raw_supplier_feeds topic
+2. Normalizes data:
+   - Currency conversion: All prices → USD (if needed)
+   - Date parsing: Handles multiple date formats
+   - Field mapping: Maps MongoDB fields to SQLModel fields
+   - Data validation: Ensures required fields exist
+3. Creates/updates records in SQLite:
+   - FlightDeal: origin, destination, dates, price, airline, duration, stops, etc.
+   - HotelDeal: hotel_name, city, dates, price, amenities, policies, etc.
+4. Publishes to deals.normalized topic with db_id reference
+
+Key Logic:
+- Uses external_id (MongoDB _id) for deduplication
+- Updates existing records if external_id matches
+- Stores raw data in raw_data JSON field for audit
+- Handles missing optional fields gracefully
+
+2.3 Deal Detector (deals_agent/deal_detector.py)
+Purpose: Compute deal scores and price metrics
+
+Process:
+1. Consumes from deals.normalized topic
+2. Computes metrics:
+   - Price History: Tracks 30-day and 60-day averages
+   - Price Drop %: (current_price - 30d_avg) / 30d_avg * 100
+   - Scarcity: available_seats < 5 or available_rooms < 5
+   - Promo Status: Checks if promo_end_date > now()
+3. Calculates deal_score (0-100):
+   - Price drop: up to 40 points (based on % drop)
+   - Scarcity: 20 points if scarce
+   - Promo: 20 points if active promo
+   - Inventory bonus: up to 20 points (based on availability)
+4. Updates SQLite records with scores
+5. Publishes to deals.scored topic
+
+Deal Score Formula:
+deal_score = min(100, price_drop_score + scarcity_bonus + promo_bonus + inventory_bonus)
+
+2.4 Offer Tagger (deals_agent/offer_tagger.py)
+Purpose: Apply semantic tags to deals for filtering
+
+Process:
+1. Consumes from deals.scored topic
+2. Extracts tags based on deal metadata:
+   - Hotels: refundable, non_refundable, pet_friendly, near_transit, breakfast
+   - Flights: (currently minimal, extensible)
+3. Creates OfferTag records in SQLite
+4. Removes old tags before adding new ones (idempotent)
+5. Publishes to deals.tagged topic
+
+Tag Logic:
+- is_refundable == True → REFUNDABLE tag
+- pet_friendly == True → PET_FRIENDLY tag
+- near_transit == True → NEAR_TRANSIT tag
+- breakfast_included == True → BREAKFAST tag
+
+2.5 Event Emitter (deals_agent/event_emitter.py)
+Purpose: Emit lightweight events for real-time notifications
+
+Process:
+1. Consumes from deals.tagged topic
+2. Creates concise event payloads
+3. Publishes to deal.events topic
+4. Events consumed by WebSocket manager for client notifications
+
+3. CHAT QUERY PROCESSING FLOW
+------------------------------
+
+3.1 Request Handling (main.py: POST /chat)
+Input: { "session_id": "string", "message": "user query" }
+
+Step 1: Session Management
+- Get or create UserSession by session_id
+- Load all prior ChatTurn records (chat history)
+- Save new user message as ChatTurn with role="user"
+
+Step 2: Greeting Detection (Early Exit)
+- Checks if message is a short greeting (≤4 tokens, contains "hi|hello|hey|thanks")
+- If greeting AND no airport codes → return friendly prompt
+- Response: "Hi! Tell me where you're traveling from and to, your dates, budget, and how many people are traveling."
+
+Step 3: Intent Parsing (concierge_agent/llm_client.py: parse_intent)
+
+Primary Path (OpenAI):
+- Uses GPT-4o-mini with structured JSON output
+- System prompt instructs:
+  - Preserve context from previous messages
+  - Extract: dates, origin, destination, budget, travelers, constraints
+  - Update only fields mentioned in latest message
+- Returns TravelIntent object with dates, origin, destination, budget_usd, travelers, constraints, needs_clarification
+
+Fallback Path (Rule-based):
+- If OpenAI fails or no API key:
+  - Regex extraction: airport codes ([A-Z]{3}), dates (YYYY-MM-DD), budget (largest 3-5 digit number)
+  - If critical fields missing → needs_clarification=True
+
+Step 4: Clarification Handling
+- If intent.needs_clarification == True:
+  - Return intent.clarifying_question
+  - No bundle generation
+  - Example: "To help you book a trip, please tell me your origin, destination, exact dates, budget, and how many people are traveling."
+
+Step 5: Trip Planning (See Section 4)
+
+Step 6: Response Generation
+- Generate assistant message: "I found X bundle(s) for you. Top recommendation: [name] at $[price]. [explanation]"
+- Save assistant ChatTurn
+- Return ChatResponse with bundles and intent data
+
+4. BUNDLE GENERATION LOGIC
+--------------------------
+
+4.1 Trip Planner (concierge_agent/trip_planner.py)
+Method: plan_bundles(intent, session_id, max_bundles=3)
+
+Step 1: Parse Intent
+- Extract dates: start_date, end_date (defaults to start + 2 days if missing)
+- Validate: origin required, dates required
+
+Step 2: Flight Search (_find_flights)
+
+Primary Search:
+- Window: start_date ± 2 days
+- Filters:
+  - origin == intent.origin (required)
+  - destination normalized via airport_mapper.py:
+    - "Los Angeles" → ["LAX"]
+    - "NYC" → ["JFK", "LGA", "EWR"]
+  - avoid_red_eye == False if constraint set
+  - deal_score >= 10 (quality threshold)
+- Order: deal_score DESC, price_usd ASC
+- Limit: Top 20 candidates
+
+Fallback Search (if no results):
+- Window: start_date ± 14 days
+- Same filters and ordering
+- Logs fallback for monitoring
+
+Step 3: Hotel Search (_find_hotels)
+
+Date Overlap Logic:
+- Hotel must overlap with trip dates:
+  - hotel.check_in_date <= trip.check_out
+  - hotel.check_out_date >= trip.check_in
+
+Destination Matching:
+- Maps airport codes to city names (LAX → "Los Angeles")
+- Searches: hotel.city ILIKE '%city%' OR hotel.neighborhood ILIKE '%city%'
+- Supports partial matches
+
+Constraint Filters:
+- pet_friendly == True if constraint set
+- breakfast_included == True if constraint set
+- near_transit == True if constraint set
+- is_refundable == True if constraint set
+- deal_score >= 10
+
+Ordering: deal_score DESC, total_price_usd ASC
+Limit: Top 20 candidates
+
+Step 4: Bundle Composition
+
+Cartesian Product:
+- For each flight in top 10:
+  - For each hotel in top 10:
+    - Check date overlap
+    - Compute bundle price: (flight.price_usd * travelers) + hotel.total_price_usd
+    - Budget check: Allow up to 20% over budget
+    - Compute fit score (see below)
+    - Create BundleRecommendation record
+    - Link via BundleFlight and BundleHotel junction tables
+
+Fit Score Calculation (_compute_fit_score)
+
+Formula (0-100 points):
+1. Price vs Budget (0-40 points):
+   - If under budget: 40 * (1.0 - ratio * 0.3) where ratio = price_per_person / budget_per_person
+   - If over budget: 20 * ratio (penalty)
+2. Deal Score (0-20 points):
+   - 20 * (avg_deal_score / 100) where avg_deal_score = (flight_score + hotel_score) / 2
+3. Constraint Match (0-20 points):
+   - Count matching constraints / total constraints * 20
+   - Constraints: pet_friendly, breakfast_included, near_transit, refundable, avoid_red_eye
+4. Convenience (0-20 points):
+   - Flight duration < 5 hours: +10 points
+   - Hotel star rating >= 4: +10 points
+
+Final Score: min(100.0, sum of all components)
+
+Step 5: Bundle Explanation Generation
+
+For each bundle:
+- explain_bundle(bundle_data, constraints):
+  - Uses GPT-4o-mini to generate ≤25 word explanation
+  - Example: "This affordable bundle offers direct flights and hotel stay in Los Angeles, aligning with your preferences."
+- generate_watch_notes(bundle_data):
+  - Uses GPT-4o-mini to generate ≤12 word watch summary
+  - Example: "Watch for price drops and inventory changes."
+
+Step 6: Return Top Bundles
+- Sorted by fit_score DESC
+- Returns top max_bundles (default: 3)
+- Each bundle includes: flights, hotels, price, fit_score, explanation, watch_notes
+
+5. BUNDLE SELECTION & CHECKOUT FLOW
+------------------------------------
+
+5.1 Bundle Selection (POST /bundles/select)
+Input: { "session_id": "string", "bundle_id": int }
+
+Process:
+1. Validate bundle belongs to session
+2. Check if SelectedBundle already exists (idempotent)
+3. Create SelectedBundle record with status="pending"
+4. Build CheckoutQuote:
+   - Extract travelers from recent ChatTurn.intent_data
+   - Extract travel dates from flight/hotel records
+   - Generate quote_id: QUOTE-{bundle_id}-{timestamp}
+   - Set expiry: now() + 30 minutes
+   - Build checkout URL: /checkout?quote_id={quote_id}
+
+Response: SelectBundleResponse with CheckoutQuote
+
+5.2 Simulated Price Drop (simulate_price_drop_for_bundle)
+Trigger: Background task after bundle selection
+
+Process:
+1. Wait 5 seconds (simulates real-time price change)
+2. Apply 5% discount: new_price = old_price * 0.95
+3. Update BundleRecommendation.total_price_usd in DB
+4. Create event payload with event_type: "deal_update", reason: "simulated_price_drop"
+5. Send via WebSocket to all connections for that session_id
+
+Frontend Handling:
+- useRecommendationEvents hook receives event
+- Dispatches notification: "Price dropped! New price: $55,632.00"
+- User can navigate to checkout
+
+6. REAL-TIME EVENTS & WEBSOCKETS
+--------------------------------
+
+6.1 WebSocket Endpoint (/events)
+Connection: ws://host:8000/events?session_id={session_id}
+
+Manager (websocket_manager.py):
+- Maintains connection pool per session_id
+- send_personal_message(payload, session_id): Broadcasts to all connections for session
+
+Event Types:
+1. deal_update: Price changes, inventory updates
+2. watch_triggered: Watch threshold crossed
+
+6.2 Watch System
+
+Create Watch (POST /watches):
+- Target: bundle, flight_deal, or hotel_deal
+- Thresholds: price_threshold_usd and/or inventory_threshold
+- Status: ACTIVE, TRIGGERED, CANCELLED
+
+Watch Evaluation (watch_manager.py):
+- Periodically checks watches against current deal state
+- If threshold crossed → emit watch_triggered event
+- Update watch: status=TRIGGERED, increment trigger_count
+
+7. DATA MODELS & RELATIONSHIPS
+------------------------------
+
+Core Entities:
+
+FlightDeal:
+- Fields: origin, destination, dates, price, airline, duration, stops, deal_score
+- Relationships: tags, bundle_flights
+
+HotelDeal:
+- Fields: hotel_name, city, dates, price, amenities, policies, deal_score
+- Relationships: tags, bundle_hotels
+
+BundleRecommendation:
+- Fields: bundle_name, total_price_usd, fit_score, explanation, watch_notes
+- Relationships: session, flights (via BundleFlight), hotels (via BundleHotel)
+
+UserSession:
+- Fields: session_id (string, unique), user_id (optional)
+- Relationships: chat_turns, bundles, watches, selected_bundles
+
+ChatTurn:
+- Fields: role ("user"|"assistant"), message, intent_data (JSON)
+- Relationships: session
+
+OfferTag:
+- Fields: tag_type (enum), flight_deal_id or hotel_deal_id
+- Relationships: flight_deal, hotel_deal
+
+Watch:
+- Fields: bundle_id/flight_deal_id/hotel_deal_id, thresholds, status
+- Relationships: session
+
+8. ERROR HANDLING & RESILIENCE
+-------------------------------
+
+8.1 Intent Parsing Fallback
+- OpenAI failure → Rule-based extraction
+- Missing API key → Rule-based extraction
+- System remains usable without OpenAI
+
+8.2 Date Flexibility
+- Primary search: ±2 days
+- Fallback: ±14 days if no results
+- Handles date format variations
+
+8.3 Budget Flexibility
+- Allows up to 20% over budget to show more options
+- Prevents overly restrictive filtering
+
+8.4 Missing Data Handling
+- Optional fields default to None or sensible defaults
+- Validation ensures required fields before processing
+- Graceful degradation if deals unavailable
+
+8.5 Database Transactions
+- SQLModel sessions ensure atomicity
+- Rollback on errors
+- Idempotent operations where possible
+
+9. EXAMPLE END-TO-END FLOW
+---------------------------
+
+Scenario: User Query "I need a trip from SFO to LAX from 2025-11-27 to 2025-11-29 for 2 people with a budget of $70000"
+
+Step 1: Data Pipeline (Background)
+- MongoDB → Kafka → Normalizer → Deal Detector → Offer Tagger
+- Result: FlightDeal and HotelDeal records in SQLite with scores
+
+Step 2: Chat Request
+- POST /chat with message
+- Session created/retrieved
+- Message saved to ChatTurn
+
+Step 3: Intent Parsing
+- OpenAI extracts: origin=SFO, destination=LAX, dates=2025-11-27 to 2025-11-29, travelers=2, budget=70000
+- Returns TravelIntent with needs_clarification=False
+
+Step 4: Flight Search
+- Query: origin='SFO', destination='LAX', departure_date BETWEEN '2025-11-25' AND '2025-11-29'
+- Returns top 20 flights, ordered by deal_score
+
+Step 5: Hotel Search
+- Query: city ILIKE '%Los Angeles%', check_in_date <= '2025-11-29', check_out_date >= '2025-11-27'
+- Returns top 20 hotels, ordered by deal_score
+
+Step 6: Bundle Composition
+- Combines top 10 flights × top 10 hotels = 100 potential bundles
+- Filters: date overlap, budget (allows up to $84,000)
+- Computes fit_score for each
+- Creates top 3 bundles
+
+Step 7: Explanation Generation
+- LLM generates explanations and watch notes for each bundle
+
+Step 8: Response
+- Returns: "I found 3 bundles for you. Top recommendation: SFO → LAX at $58560.00. [explanation]"
+- Frontend displays bundles with Select buttons
+
+Step 9: Selection (User clicks Select)
+- POST /bundles/select with bundle_id
+- Creates SelectedBundle and CheckoutQuote
+- Frontend adds to cart and navigates to checkout
+
+Step 10: Price Drop (5 seconds later)
+- Background task applies 5% discount
+- WebSocket event sent: "Price dropped to $55,632.00"
+- Frontend shows notification
+
+10. PERFORMANCE CHARACTERISTICS
+--------------------------------
+
+Latency:
+- Intent parsing: ~500ms (OpenAI API)
+- Bundle generation: ~100-500ms (SQL queries + scoring)
+- Explanation generation: ~300ms per bundle (OpenAI API)
+- Total response time: ~1-2 seconds for 3 bundles
+
+Scalability:
+- SQLite suitable for development/small scale
+- Can migrate to PostgreSQL for production
+- Kafka enables horizontal scaling of deal processing
+- WebSocket connections managed per session
+
+Optimization Opportunities:
+- Cache intent parsing results for similar queries
+- Pre-compute common bundle combinations
+- Batch explanation generation
+- Index optimization on SQLite queries
+
+11. CONFIGURATION & ENVIRONMENT
+--------------------------------
+
+Required Environment Variables:
+- OPENAI_API_KEY: For intent parsing and explanations
+- MONGODB_URI: For data ingestion
+- KAFKA_BOOTSTRAP_SERVERS: For event streaming
+- DATABASE_URL: SQLite path (default: ./recommendation_service.db)
+
+Kafka Topics:
+- raw_supplier_feeds: Raw MongoDB data
+- deals.normalized: Normalized deals
+- deals.scored: Scored deals
+- deals.tagged: Tagged deals
+- deal.events: Lightweight events
+- watch.events: Watch triggers
+
+12. TESTING & VALIDATION
+-------------------------
+
+Test Scenarios:
+1. Greeting: "hi" → Returns friendly prompt
+2. Complete Query: Full trip details → Returns bundles
+3. Incomplete Query: Missing origin → Returns clarification
+4. Context Preservation: "make it pet-friendly" after full query → Updates constraints only
+5. No Results: Dates outside available range → Returns "no matching deals"
+6. Price Drop: After selection → WebSocket notification received
+
+Validation Points:
+- Intent parsing accuracy
+- Bundle fit_score correctness
+- Date overlap logic
+- Budget constraint enforcement
+- Constraint filtering accuracy
+
+CONCLUSION
+----------
+The recommendation system provides an end-to-end pipeline from raw inventory data to personalized bundle recommendations, with intelligent query understanding, flexible matching, and real-time notifications. The architecture supports graceful degradation, extensibility, and scalability for production deployment.

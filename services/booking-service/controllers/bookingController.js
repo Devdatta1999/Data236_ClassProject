@@ -263,7 +263,10 @@ const createBooking = asyncHandler(async (req, res) => {
     travelDate,
     roomType,
     checkoutId,
-    parentRequestId
+    parentRequestId,
+    priceOverride,
+    totalPriceOverride,
+    pricePerNightOverride
   } = req.body;
 
   // Validate required fields
@@ -404,24 +407,28 @@ const createBooking = asyncHandler(async (req, res) => {
         }
         
         // Validate travel date is within flight's available date range
-        const availableFrom = new Date(listing.availableFrom);
-        const availableTo = new Date(listing.availableTo);
+        // NOTE: Disabled for AI Concierge deals system - allows flexible booking on any date
+        // const availableFrom = new Date(listing.availableFrom);
+        // const availableTo = new Date(listing.availableTo);
+        // const travelDateObj = new Date(travelDate);
+        //
+        // if (travelDateObj < availableFrom || travelDateObj > availableTo) {
+        //   throw new ValidationError('Selected travel date is outside the flight\'s availability period');
+        // }
+
         const travelDateObj = new Date(travelDate);
-        
-        if (travelDateObj < availableFrom || travelDateObj > availableTo) {
-          throw new ValidationError('Selected travel date is outside the flight\'s availability period');
-        }
-        
+
         // Validate that the travel date falls on an operating day
-        if (listing.operatingDays && Array.isArray(listing.operatingDays) && listing.operatingDays.length > 0) {
-          const dayIndex = travelDateObj.getDay();
-          const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-          const travelDayOfWeek = daysOfWeek[dayIndex];
-          
-          if (!listing.operatingDays.includes(travelDayOfWeek)) {
-            throw new ValidationError(`This flight does not operate on ${travelDayOfWeek}. Operating days: ${listing.operatingDays.join(', ')}`);
-          }
-        }
+        // NOTE: Disabled for AI Concierge deals system - allows flexible booking on any day
+        // if (listing.operatingDays && Array.isArray(listing.operatingDays) && listing.operatingDays.length > 0) {
+        //   const dayIndex = travelDateObj.getDay();
+        //   const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+        //   const travelDayOfWeek = daysOfWeek[dayIndex];
+        //
+        //   if (!listing.operatingDays.includes(travelDayOfWeek)) {
+        //     throw new ValidationError(`This flight does not operate on ${travelDayOfWeek}. Operating days: ${listing.operatingDays.join(', ')}`);
+        //   }
+        // }
       } else {
         // Legacy format - single seat type
         if (listing.flightClass !== seatType) {
@@ -464,13 +471,14 @@ const createBooking = asyncHandler(async (req, res) => {
       
       const checkIn = new Date(checkInDate);
       const checkOut = new Date(checkOutDate);
-      const availableFrom = new Date(listing.availableFrom);
-      const availableTo = new Date(listing.availableTo);
-      
-      if (checkIn < availableFrom || checkOut > availableTo) {
-        throw new ValidationError('Selected dates are outside the hotel\'s availability period');
-      }
-      
+      // NOTE: Disabled for AI Concierge deals system - allows flexible booking on any date
+      // const availableFrom = new Date(listing.availableFrom);
+      // const availableTo = new Date(listing.availableTo);
+      //
+      // if (checkIn < availableFrom || checkOut > availableTo) {
+      //   throw new ValidationError('Selected dates are outside the hotel\'s availability period');
+      // }
+
       if (checkIn >= checkOut) {
         throw new ValidationError('Check-out date must be after check-in date');
       }
@@ -513,13 +521,14 @@ const createBooking = asyncHandler(async (req, res) => {
       
       const pickupDate = new Date(checkInDate);
       const dropoffDate = new Date(checkOutDate);
-      const availableFrom = new Date(listing.availableFrom);
-      const availableTo = new Date(listing.availableTo);
-      
-      if (pickupDate < availableFrom || dropoffDate > availableTo) {
-        throw new ValidationError('Selected dates are outside the car\'s availability period');
-      }
-      
+      // NOTE: Disabled for AI Concierge deals system - allows flexible booking on any date
+      // const availableFrom = new Date(listing.availableFrom);
+      // const availableTo = new Date(listing.availableTo);
+      //
+      // if (pickupDate < availableFrom || dropoffDate > availableTo) {
+      //   throw new ValidationError('Selected dates are outside the car\'s availability period');
+      // }
+
       if (pickupDate >= dropoffDate) {
         throw new ValidationError('Drop-off date must be after pick-up date');
       }
@@ -544,18 +553,31 @@ const createBooking = asyncHandler(async (req, res) => {
     // Calculate total amount
     let totalAmount = 0;
     let seatType = roomType; // For flights, roomType is actually seatType
-    
-    if (listingType === 'Flight') {
+
+    // Check if price overrides are provided (for AI-discounted bundles)
+    if (totalPriceOverride !== undefined) {
+      // Use the total price override directly (already calculated with discounts)
+      totalAmount = Number(totalPriceOverride);
+      logger.info(`[createBooking] Using totalPriceOverride: ${totalAmount}`);
+    } else if (listingType === 'Flight') {
       if (listing.seatTypes && Array.isArray(listing.seatTypes)) {
         // New format - get price from seat type
         const selectedSeatType = listing.seatTypes.find(st => st.type === seatType);
         if (!selectedSeatType) {
           throw new ValidationError(`Seat type '${seatType}' not found for price calculation`);
         }
-        totalAmount = selectedSeatType.ticketPrice * quantity;
+        const pricePerSeat = priceOverride !== undefined ? Number(priceOverride) : selectedSeatType.ticketPrice;
+        totalAmount = pricePerSeat * quantity;
+        if (priceOverride !== undefined) {
+          logger.info(`[createBooking] Using priceOverride for flight: ${pricePerSeat} per seat`);
+        }
       } else {
         // Legacy format
-        totalAmount = listing.ticketPrice * quantity;
+        const pricePerSeat = priceOverride !== undefined ? Number(priceOverride) : listing.ticketPrice;
+        totalAmount = pricePerSeat * quantity;
+        if (priceOverride !== undefined) {
+          logger.info(`[createBooking] Using priceOverride for legacy flight: ${pricePerSeat} per seat`);
+        }
       }
     } else if (listingType === 'Hotel') {
       const nights = Math.ceil((new Date(checkOutDate) - new Date(checkInDate)) / (1000 * 60 * 60 * 24));
@@ -566,13 +588,21 @@ const createBooking = asyncHandler(async (req, res) => {
       if (!priceRoomType) {
         throw new ValidationError(`Room type '${roomType}' not found for price calculation`);
       }
-      totalAmount = priceRoomType.pricePerNight * nights * quantity;
+      const pricePerNight = pricePerNightOverride !== undefined ? Number(pricePerNightOverride) : priceRoomType.pricePerNight;
+      totalAmount = pricePerNight * nights * quantity;
+      if (pricePerNightOverride !== undefined) {
+        logger.info(`[createBooking] Using pricePerNightOverride for hotel: ${pricePerNight} per night`);
+      }
     } else if (listingType === 'Car') {
       const days = Math.ceil((new Date(checkOutDate) - new Date(checkInDate)) / (1000 * 60 * 60 * 24));
       if (days < 1) {
         throw new ValidationError('Rental period must be at least 1 day');
       }
-      totalAmount = listing.dailyRentalPrice * days * quantity;
+      const pricePerDay = priceOverride !== undefined ? Number(priceOverride) : listing.dailyRentalPrice;
+      totalAmount = pricePerDay * days * quantity;
+      if (priceOverride !== undefined) {
+        logger.info(`[createBooking] Using priceOverride for car: ${pricePerDay} per day`);
+      }
     }
 
     const bookingId = `BK-${Date.now()}-${Math.random().toString(36).substr(2, 9).toUpperCase()}`;

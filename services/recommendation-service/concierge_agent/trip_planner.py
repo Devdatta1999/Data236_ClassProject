@@ -364,9 +364,19 @@ class TripPlanner:
                     continue
                 if hotel.check_out_date < start_date:
                     continue
-                
-                # Compute bundle price
-                bundle_price = flight.price_usd * Decimal(str(travelers)) + hotel.total_price_usd
+
+                # Compute bundle price using user's requested dates
+                # Calculate nights from user's requested dates (not hotel deal dates)
+                nights = (end_date - start_date).days
+
+                # Calculate hotel price for requested nights
+                if hotel.price_per_night_usd:
+                    hotel_price = hotel.price_per_night_usd * Decimal(str(nights))
+                else:
+                    # Fallback to total_price_usd if price_per_night not available
+                    hotel_price = hotel.total_price_usd
+
+                bundle_price = flight.price_usd * Decimal(str(travelers)) + hotel_price
                 
                 # Check budget - allow 20% over budget for flexibility
                 if budget and float(bundle_price) > budget * 1.2:  # Allow 20% over budget

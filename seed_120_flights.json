@@ -1,0 +1,2702 @@
+[
+  {
+    "flightId": "FLT-6GT4-SFOLAX-79477",
+    "providerId": "PROV-1763953801663-9C6GT4",
+    "providerName": "Provider-6GT4",
+    "departureAirport": "SFO",
+    "arrivalAirport": "LAX",
+    "departureTime": "09:00",
+    "arrivalTime": "19:00",
+    "duration": 120,
+    "operatingDays": [
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday",
+      "Sunday"
+    ],
+    "availableFrom": "2024-12-01T00:00:00.000Z",
+    "availableTo": "2025-01-31T23:59:59.000Z",
+    "seatTypes": [
+      {
+        "type": "Economy",
+        "ticketPrice": 100,
+        "totalSeats": 150,
+        "availableSeats": 150
+      },
+      {
+        "type": "Business",
+        "ticketPrice": 200,
+        "totalSeats": 40,
+        "availableSeats": 40
+      },
+      {
+        "type": "First",
+        "ticketPrice": 500,
+        "totalSeats": 10,
+        "availableSeats": 10
+      }
+    ],
+    "status": "Active",
+    "reviews": [],
+    "createdAt": "2025-12-06T23:13:03.661479Z",
+    "updatedAt": "2025-12-06T23:13:03.661584Z"
+  },
+  {
+    "flightId": "FLT-6GT4-SFOLAX-40505",
+    "providerId": "PROV-1763953801663-9C6GT4",
+    "providerName": "Provider-6GT4",
+    "departureAirport": "SFO",
+    "arrivalAirport": "LAX",
+    "departureTime": "07:00",
+    "arrivalTime": "09:00",
+    "duration": 120,
+    "operatingDays": [
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday",
+      "Sunday"
+    ],
+    "availableFrom": "2024-12-01T00:00:00.000Z",
+    "availableTo": "2025-01-31T23:59:59.000Z",
+    "seatTypes": [
+      {
+        "type": "Economy",
+        "ticketPrice": 100,
+        "totalSeats": 150,
+        "availableSeats": 150
+      },
+      {
+        "type": "Business",
+        "ticketPrice": 200,
+        "totalSeats": 40,
+        "availableSeats": 40
+      },
+      {
+        "type": "First",
+        "ticketPrice": 500,
+        "totalSeats": 10,
+        "availableSeats": 10
+      }
+    ],
+    "status": "Active",
+    "reviews": [],
+    "createdAt": "2025-12-06T23:13:03.661593Z",
+    "updatedAt": "2025-12-06T23:13:03.661595Z"
+  },
+  {
+    "flightId": "FLT-6GT4-SFOMIA-94430",
+    "providerId": "PROV-1763953801663-9C6GT4",
+    "providerName": "Provider-6GT4",
+    "departureAirport": "SFO",
+    "arrivalAirport": "MIA",
+    "departureTime": "07:00",
+    "arrivalTime": "15:00",
+    "duration": 120,
+    "operatingDays": [
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday",
+      "Sunday"
+    ],
+    "availableFrom": "2024-12-01T00:00:00.000Z",
+    "availableTo": "2025-01-31T23:59:59.000Z",
+    "seatTypes": [
+      {
+        "type": "Economy",
+        "ticketPrice": 100,
+        "totalSeats": 150,
+        "availableSeats": 150
+      },
+      {
+        "type": "Business",
+        "ticketPrice": 200,
+        "totalSeats": 40,
+        "availableSeats": 40
+      },
+      {
+        "type": "First",
+        "ticketPrice": 500,
+        "totalSeats": 10,
+        "availableSeats": 10
+      }
+    ],
+    "status": "Active",
+    "reviews": [],
+    "createdAt": "2025-12-06T23:13:03.661599Z",
+    "updatedAt": "2025-12-06T23:13:03.661600Z"
+  },
+  {
+    "flightId": "FLT-6GT4-SFOSEA-72546",
+    "providerId": "PROV-1763953801663-9C6GT4",
+    "providerName": "Provider-6GT4",
+    "departureAirport": "SFO",
+    "arrivalAirport": "SEA",
+    "departureTime": "07:00",
+    "arrivalTime": "19:00",
+    "duration": 120,
+    "operatingDays": [
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday",
+      "Sunday"
+    ],
+    "availableFrom": "2024-12-01T00:00:00.000Z",
+    "availableTo": "2025-01-31T23:59:59.000Z",
+    "seatTypes": [
+      {
+        "type": "Economy",
+        "ticketPrice": 100,
+        "totalSeats": 150,
+        "availableSeats": 150
+      },
+      {
+        "type": "Business",
+        "ticketPrice": 200,
+        "totalSeats": 40,
+        "availableSeats": 40
+      },
+      {
+        "type": "First",
+        "ticketPrice": 500,
+        "totalSeats": 10,
+        "availableSeats": 10
+      }
+    ],
+    "status": "Active",
+    "reviews": [],
+    "createdAt": "2025-12-06T23:13:03.661603Z",
+    "updatedAt": "2025-12-06T23:13:03.661604Z"
+  },
+  {
+    "flightId": "FLT-6GT4-SFOMIA-97154",
+    "providerId": "PROV-1763953801663-9C6GT4",
+    "providerName": "Provider-6GT4",
+    "departureAirport": "SFO",
+    "arrivalAirport": "MIA",
+    "departureTime": "09:00",
+    "arrivalTime": "09:00",
+    "duration": 120,
+    "operatingDays": [
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday",
+      "Sunday"
+    ],
+    "availableFrom": "2024-12-01T00:00:00.000Z",
+    "availableTo": "2025-01-31T23:59:59.000Z",
+    "seatTypes": [
+      {
+        "type": "Economy",
+        "ticketPrice": 100,
+        "totalSeats": 150,
+        "availableSeats": 150
+      },
+      {
+        "type": "Business",
+        "ticketPrice": 200,
+        "totalSeats": 40,
+        "availableSeats": 40
+      },
+      {
+        "type": "First",
+        "ticketPrice": 500,
+        "totalSeats": 10,
+        "availableSeats": 10
+      }
+    ],
+    "status": "Active",
+    "reviews": [],
+    "createdAt": "2025-12-06T23:13:03.661607Z",
+    "updatedAt": "2025-12-06T23:13:03.661608Z"
+  },
+  {
+    "flightId": "FLT-6GT4-SFOSEA-20267",
+    "providerId": "PROV-1763953801663-9C6GT4",
+    "providerName": "Provider-6GT4",
+    "departureAirport": "SFO",
+    "arrivalAirport": "SEA",
+    "departureTime": "09:00",
+    "arrivalTime": "15:00",
+    "duration": 120,
+    "operatingDays": [
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday",
+      "Sunday"
+    ],
+    "availableFrom": "2024-12-01T00:00:00.000Z",
+    "availableTo": "2025-01-31T23:59:59.000Z",
+    "seatTypes": [
+      {
+        "type": "Economy",
+        "ticketPrice": 100,
+        "totalSeats": 150,
+        "availableSeats": 150
+      },
+      {
+        "type": "Business",
+        "ticketPrice": 200,
+        "totalSeats": 40,
+        "availableSeats": 40
+      },
+      {
+        "type": "First",
+        "ticketPrice": 500,
+        "totalSeats": 10,
+        "availableSeats": 10
+      }
+    ],
+    "status": "Active",
+    "reviews": [],
+    "createdAt": "2025-12-06T23:13:03.661611Z",
+    "updatedAt": "2025-12-06T23:13:03.661612Z"
+  },
+  {
+    "flightId": "FLT-6GT4-SFOSEA-77432",
+    "providerId": "PROV-1763953801663-9C6GT4",
+    "providerName": "Provider-6GT4",
+    "departureAirport": "SFO",
+    "arrivalAirport": "SEA",
+    "departureTime": "13:00",
+    "arrivalTime": "15:00",
+    "duration": 120,
+    "operatingDays": [
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday",
+      "Sunday"
+    ],
+    "availableFrom": "2024-12-01T00:00:00.000Z",
+    "availableTo": "2025-01-31T23:59:59.000Z",
+    "seatTypes": [
+      {
+        "type": "Economy",
+        "ticketPrice": 100,
+        "totalSeats": 150,
+        "availableSeats": 150
+      },
+      {
+        "type": "Business",
+        "ticketPrice": 200,
+        "totalSeats": 40,
+        "availableSeats": 40
+      },
+      {
+        "type": "First",
+        "ticketPrice": 500,
+        "totalSeats": 10,
+        "availableSeats": 10
+      }
+    ],
+    "status": "Active",
+    "reviews": [],
+    "createdAt": "2025-12-06T23:13:03.661615Z",
+    "updatedAt": "2025-12-06T23:13:03.661616Z"
+  },
+  {
+    "flightId": "FLT-6GT4-SFOLAX-91438",
+    "providerId": "PROV-1763953801663-9C6GT4",
+    "providerName": "Provider-6GT4",
+    "departureAirport": "SFO",
+    "arrivalAirport": "LAX",
+    "departureTime": "09:00",
+    "arrivalTime": "15:00",
+    "duration": 120,
+    "operatingDays": [
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday",
+      "Sunday"
+    ],
+    "availableFrom": "2024-12-01T00:00:00.000Z",
+    "availableTo": "2025-01-31T23:59:59.000Z",
+    "seatTypes": [
+      {
+        "type": "Economy",
+        "ticketPrice": 100,
+        "totalSeats": 150,
+        "availableSeats": 150
+      },
+      {
+        "type": "Business",
+        "ticketPrice": 200,
+        "totalSeats": 40,
+        "availableSeats": 40
+      },
+      {
+        "type": "First",
+        "ticketPrice": 500,
+        "totalSeats": 10,
+        "availableSeats": 10
+      }
+    ],
+    "status": "Active",
+    "reviews": [],
+    "createdAt": "2025-12-06T23:13:03.661618Z",
+    "updatedAt": "2025-12-06T23:13:03.661620Z"
+  },
+  {
+    "flightId": "FLT-6GT4-SFOLAX-67319",
+    "providerId": "PROV-1763953801663-9C6GT4",
+    "providerName": "Provider-6GT4",
+    "departureAirport": "SFO",
+    "arrivalAirport": "LAX",
+    "departureTime": "07:00",
+    "arrivalTime": "15:00",
+    "duration": 120,
+    "operatingDays": [
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday",
+      "Sunday"
+    ],
+    "availableFrom": "2024-12-01T00:00:00.000Z",
+    "availableTo": "2025-01-31T23:59:59.000Z",
+    "seatTypes": [
+      {
+        "type": "Economy",
+        "ticketPrice": 100,
+        "totalSeats": 150,
+        "availableSeats": 150
+      },
+      {
+        "type": "Business",
+        "ticketPrice": 200,
+        "totalSeats": 40,
+        "availableSeats": 40
+      },
+      {
+        "type": "First",
+        "ticketPrice": 500,
+        "totalSeats": 10,
+        "availableSeats": 10
+      }
+    ],
+    "status": "Active",
+    "reviews": [],
+    "createdAt": "2025-12-06T23:13:03.661623Z",
+    "updatedAt": "2025-12-06T23:13:03.661625Z"
+  },
+  {
+    "flightId": "FLT-6GT4-SFOMIA-82691",
+    "providerId": "PROV-1763953801663-9C6GT4",
+    "providerName": "Provider-6GT4",
+    "departureAirport": "SFO",
+    "arrivalAirport": "MIA",
+    "departureTime": "17:00",
+    "arrivalTime": "09:00",
+    "duration": 120,
+    "operatingDays": [
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday",
+      "Sunday"
+    ],
+    "availableFrom": "2024-12-01T00:00:00.000Z",
+    "availableTo": "2025-01-31T23:59:59.000Z",
+    "seatTypes": [
+      {
+        "type": "Economy",
+        "ticketPrice": 100,
+        "totalSeats": 150,
+        "availableSeats": 150
+      },
+      {
+        "type": "Business",
+        "ticketPrice": 200,
+        "totalSeats": 40,
+        "availableSeats": 40
+      },
+      {
+        "type": "First",
+        "ticketPrice": 500,
+        "totalSeats": 10,
+        "availableSeats": 10
+      }
+    ],
+    "status": "Active",
+    "reviews": [],
+    "createdAt": "2025-12-06T23:13:03.661627Z",
+    "updatedAt": "2025-12-06T23:13:03.661628Z"
+  },
+  {
+    "flightId": "FLT-6GT4-SFOLAX-85714",
+    "providerId": "PROV-1763953801663-9C6GT4",
+    "providerName": "Provider-6GT4",
+    "departureAirport": "SFO",
+    "arrivalAirport": "LAX",
+    "departureTime": "13:00",
+    "arrivalTime": "19:00",
+    "duration": 120,
+    "operatingDays": [
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday",
+      "Sunday"
+    ],
+    "availableFrom": "2024-12-01T00:00:00.000Z",
+    "availableTo": "2025-01-31T23:59:59.000Z",
+    "seatTypes": [
+      {
+        "type": "Economy",
+        "ticketPrice": 100,
+        "totalSeats": 150,
+        "availableSeats": 150
+      },
+      {
+        "type": "Business",
+        "ticketPrice": 200,
+        "totalSeats": 40,
+        "availableSeats": 40
+      },
+      {
+        "type": "First",
+        "ticketPrice": 500,
+        "totalSeats": 10,
+        "availableSeats": 10
+      }
+    ],
+    "status": "Active",
+    "reviews": [],
+    "createdAt": "2025-12-06T23:13:03.661632Z",
+    "updatedAt": "2025-12-06T23:13:03.661633Z"
+  },
+  {
+    "flightId": "FLT-6GT4-SFOSEA-48354",
+    "providerId": "PROV-1763953801663-9C6GT4",
+    "providerName": "Provider-6GT4",
+    "departureAirport": "SFO",
+    "arrivalAirport": "SEA",
+    "departureTime": "13:00",
+    "arrivalTime": "15:00",
+    "duration": 120,
+    "operatingDays": [
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday",
+      "Sunday"
+    ],
+    "availableFrom": "2024-12-01T00:00:00.000Z",
+    "availableTo": "2025-01-31T23:59:59.000Z",
+    "seatTypes": [
+      {
+        "type": "Economy",
+        "ticketPrice": 100,
+        "totalSeats": 150,
+        "availableSeats": 150
+      },
+      {
+        "type": "Business",
+        "ticketPrice": 200,
+        "totalSeats": 40,
+        "availableSeats": 40
+      },
+      {
+        "type": "First",
+        "ticketPrice": 500,
+        "totalSeats": 10,
+        "availableSeats": 10
+      }
+    ],
+    "status": "Active",
+    "reviews": [],
+    "createdAt": "2025-12-06T23:13:03.661635Z",
+    "updatedAt": "2025-12-06T23:13:03.661636Z"
+  },
+  {
+    "flightId": "FLT-6GT4-SFOSEA-70183",
+    "providerId": "PROV-1763953801663-9C6GT4",
+    "providerName": "Provider-6GT4",
+    "departureAirport": "SFO",
+    "arrivalAirport": "SEA",
+    "departureTime": "07:00",
+    "arrivalTime": "11:00",
+    "duration": 120,
+    "operatingDays": [
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday",
+      "Sunday"
+    ],
+    "availableFrom": "2024-12-01T00:00:00.000Z",
+    "availableTo": "2025-01-31T23:59:59.000Z",
+    "seatTypes": [
+      {
+        "type": "Economy",
+        "ticketPrice": 100,
+        "totalSeats": 150,
+        "availableSeats": 150
+      },
+      {
+        "type": "Business",
+        "ticketPrice": 200,
+        "totalSeats": 40,
+        "availableSeats": 40
+      },
+      {
+        "type": "First",
+        "ticketPrice": 500,
+        "totalSeats": 10,
+        "availableSeats": 10
+      }
+    ],
+    "status": "Active",
+    "reviews": [],
+    "createdAt": "2025-12-06T23:13:03.661639Z",
+    "updatedAt": "2025-12-06T23:13:03.661640Z"
+  },
+  {
+    "flightId": "FLT-6GT4-SFOLAX-15059",
+    "providerId": "PROV-1763953801663-9C6GT4",
+    "providerName": "Provider-6GT4",
+    "departureAirport": "SFO",
+    "arrivalAirport": "LAX",
+    "departureTime": "17:00",
+    "arrivalTime": "15:00",
+    "duration": 120,
+    "operatingDays": [
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday",
+      "Sunday"
+    ],
+    "availableFrom": "2024-12-01T00:00:00.000Z",
+    "availableTo": "2025-01-31T23:59:59.000Z",
+    "seatTypes": [
+      {
+        "type": "Economy",
+        "ticketPrice": 100,
+        "totalSeats": 150,
+        "availableSeats": 150
+      },
+      {
+        "type": "Business",
+        "ticketPrice": 200,
+        "totalSeats": 40,
+        "availableSeats": 40
+      },
+      {
+        "type": "First",
+        "ticketPrice": 500,
+        "totalSeats": 10,
+        "availableSeats": 10
+      }
+    ],
+    "status": "Active",
+    "reviews": [],
+    "createdAt": "2025-12-06T23:13:03.661642Z",
+    "updatedAt": "2025-12-06T23:13:03.661644Z"
+  },
+  {
+    "flightId": "FLT-6GT4-SFOLAX-23623",
+    "providerId": "PROV-1763953801663-9C6GT4",
+    "providerName": "Provider-6GT4",
+    "departureAirport": "SFO",
+    "arrivalAirport": "LAX",
+    "departureTime": "07:00",
+    "arrivalTime": "15:00",
+    "duration": 120,
+    "operatingDays": [
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday",
+      "Sunday"
+    ],
+    "availableFrom": "2024-12-01T00:00:00.000Z",
+    "availableTo": "2025-01-31T23:59:59.000Z",
+    "seatTypes": [
+      {
+        "type": "Economy",
+        "ticketPrice": 100,
+        "totalSeats": 150,
+        "availableSeats": 150
+      },
+      {
+        "type": "Business",
+        "ticketPrice": 200,
+        "totalSeats": 40,
+        "availableSeats": 40
+      },
+      {
+        "type": "First",
+        "ticketPrice": 500,
+        "totalSeats": 10,
+        "availableSeats": 10
+      }
+    ],
+    "status": "Active",
+    "reviews": [],
+    "createdAt": "2025-12-06T23:13:03.661646Z",
+    "updatedAt": "2025-12-06T23:13:03.661647Z"
+  },
+  {
+    "flightId": "FLT-_001-SFOMIA-11396",
+    "providerId": "SEED_HC2_PROV_001",
+    "providerName": "Provider-_001",
+    "departureAirport": "SFO",
+    "arrivalAirport": "MIA",
+    "departureTime": "07:00",
+    "arrivalTime": "15:00",
+    "duration": 120,
+    "operatingDays": [
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday",
+      "Sunday"
+    ],
+    "availableFrom": "2024-12-01T00:00:00.000Z",
+    "availableTo": "2025-01-31T23:59:59.000Z",
+    "seatTypes": [
+      {
+        "type": "Economy",
+        "ticketPrice": 100,
+        "totalSeats": 150,
+        "availableSeats": 150
+      },
+      {
+        "type": "Business",
+        "ticketPrice": 200,
+        "totalSeats": 40,
+        "availableSeats": 40
+      },
+      {
+        "type": "First",
+        "ticketPrice": 500,
+        "totalSeats": 10,
+        "availableSeats": 10
+      }
+    ],
+    "status": "Active",
+    "reviews": [],
+    "createdAt": "2025-12-06T23:13:03.661650Z",
+    "updatedAt": "2025-12-06T23:13:03.661651Z"
+  },
+  {
+    "flightId": "FLT-_001-SFOSEA-94900",
+    "providerId": "SEED_HC2_PROV_001",
+    "providerName": "Provider-_001",
+    "departureAirport": "SFO",
+    "arrivalAirport": "SEA",
+    "departureTime": "13:00",
+    "arrivalTime": "09:00",
+    "duration": 120,
+    "operatingDays": [
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday",
+      "Sunday"
+    ],
+    "availableFrom": "2024-12-01T00:00:00.000Z",
+    "availableTo": "2025-01-31T23:59:59.000Z",
+    "seatTypes": [
+      {
+        "type": "Economy",
+        "ticketPrice": 100,
+        "totalSeats": 150,
+        "availableSeats": 150
+      },
+      {
+        "type": "Business",
+        "ticketPrice": 200,
+        "totalSeats": 40,
+        "availableSeats": 40
+      },
+      {
+        "type": "First",
+        "ticketPrice": 500,
+        "totalSeats": 10,
+        "availableSeats": 10
+      }
+    ],
+    "status": "Active",
+    "reviews": [],
+    "createdAt": "2025-12-06T23:13:03.661654Z",
+    "updatedAt": "2025-12-06T23:13:03.662105Z"
+  },
+  {
+    "flightId": "FLT-_001-SFOLAX-39374",
+    "providerId": "SEED_HC2_PROV_001",
+    "providerName": "Provider-_001",
+    "departureAirport": "SFO",
+    "arrivalAirport": "LAX",
+    "departureTime": "17:00",
+    "arrivalTime": "11:00",
+    "duration": 120,
+    "operatingDays": [
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday",
+      "Sunday"
+    ],
+    "availableFrom": "2024-12-01T00:00:00.000Z",
+    "availableTo": "2025-01-31T23:59:59.000Z",
+    "seatTypes": [
+      {
+        "type": "Economy",
+        "ticketPrice": 100,
+        "totalSeats": 150,
+        "availableSeats": 150
+      },
+      {
+        "type": "Business",
+        "ticketPrice": 200,
+        "totalSeats": 40,
+        "availableSeats": 40
+      },
+      {
+        "type": "First",
+        "ticketPrice": 500,
+        "totalSeats": 10,
+        "availableSeats": 10
+      }
+    ],
+    "status": "Active",
+    "reviews": [],
+    "createdAt": "2025-12-06T23:13:03.662108Z",
+    "updatedAt": "2025-12-06T23:13:03.662110Z"
+  },
+  {
+    "flightId": "FLT-_001-SFOLAX-22546",
+    "providerId": "SEED_HC2_PROV_001",
+    "providerName": "Provider-_001",
+    "departureAirport": "SFO",
+    "arrivalAirport": "LAX",
+    "departureTime": "13:00",
+    "arrivalTime": "09:00",
+    "duration": 120,
+    "operatingDays": [
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday",
+      "Sunday"
+    ],
+    "availableFrom": "2024-12-01T00:00:00.000Z",
+    "availableTo": "2025-01-31T23:59:59.000Z",
+    "seatTypes": [
+      {
+        "type": "Economy",
+        "ticketPrice": 100,
+        "totalSeats": 150,
+        "availableSeats": 150
+      },
+      {
+        "type": "Business",
+        "ticketPrice": 200,
+        "totalSeats": 40,
+        "availableSeats": 40
+      },
+      {
+        "type": "First",
+        "ticketPrice": 500,
+        "totalSeats": 10,
+        "availableSeats": 10
+      }
+    ],
+    "status": "Active",
+    "reviews": [],
+    "createdAt": "2025-12-06T23:13:03.662112Z",
+    "updatedAt": "2025-12-06T23:13:03.662113Z"
+  },
+  {
+    "flightId": "FLT-_001-SFOMIA-98802",
+    "providerId": "SEED_HC2_PROV_001",
+    "providerName": "Provider-_001",
+    "departureAirport": "SFO",
+    "arrivalAirport": "MIA",
+    "departureTime": "09:00",
+    "arrivalTime": "11:00",
+    "duration": 120,
+    "operatingDays": [
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday",
+      "Sunday"
+    ],
+    "availableFrom": "2024-12-01T00:00:00.000Z",
+    "availableTo": "2025-01-31T23:59:59.000Z",
+    "seatTypes": [
+      {
+        "type": "Economy",
+        "ticketPrice": 100,
+        "totalSeats": 150,
+        "availableSeats": 150
+      },
+      {
+        "type": "Business",
+        "ticketPrice": 200,
+        "totalSeats": 40,
+        "availableSeats": 40
+      },
+      {
+        "type": "First",
+        "ticketPrice": 500,
+        "totalSeats": 10,
+        "availableSeats": 10
+      }
+    ],
+    "status": "Active",
+    "reviews": [],
+    "createdAt": "2025-12-06T23:13:03.662116Z",
+    "updatedAt": "2025-12-06T23:13:03.662117Z"
+  },
+  {
+    "flightId": "FLT-_001-SFOMIA-18128",
+    "providerId": "SEED_HC2_PROV_001",
+    "providerName": "Provider-_001",
+    "departureAirport": "SFO",
+    "arrivalAirport": "MIA",
+    "departureTime": "09:00",
+    "arrivalTime": "11:00",
+    "duration": 120,
+    "operatingDays": [
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday",
+      "Sunday"
+    ],
+    "availableFrom": "2024-12-01T00:00:00.000Z",
+    "availableTo": "2025-01-31T23:59:59.000Z",
+    "seatTypes": [
+      {
+        "type": "Economy",
+        "ticketPrice": 100,
+        "totalSeats": 150,
+        "availableSeats": 150
+      },
+      {
+        "type": "Business",
+        "ticketPrice": 200,
+        "totalSeats": 40,
+        "availableSeats": 40
+      },
+      {
+        "type": "First",
+        "ticketPrice": 500,
+        "totalSeats": 10,
+        "availableSeats": 10
+      }
+    ],
+    "status": "Active",
+    "reviews": [],
+    "createdAt": "2025-12-06T23:13:03.662119Z",
+    "updatedAt": "2025-12-06T23:13:03.662120Z"
+  },
+  {
+    "flightId": "FLT-_001-SFOMIA-39107",
+    "providerId": "SEED_HC2_PROV_001",
+    "providerName": "Provider-_001",
+    "departureAirport": "SFO",
+    "arrivalAirport": "MIA",
+    "departureTime": "17:00",
+    "arrivalTime": "15:00",
+    "duration": 120,
+    "operatingDays": [
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday",
+      "Sunday"
+    ],
+    "availableFrom": "2024-12-01T00:00:00.000Z",
+    "availableTo": "2025-01-31T23:59:59.000Z",
+    "seatTypes": [
+      {
+        "type": "Economy",
+        "ticketPrice": 100,
+        "totalSeats": 150,
+        "availableSeats": 150
+      },
+      {
+        "type": "Business",
+        "ticketPrice": 200,
+        "totalSeats": 40,
+        "availableSeats": 40
+      },
+      {
+        "type": "First",
+        "ticketPrice": 500,
+        "totalSeats": 10,
+        "availableSeats": 10
+      }
+    ],
+    "status": "Active",
+    "reviews": [],
+    "createdAt": "2025-12-06T23:13:03.662123Z",
+    "updatedAt": "2025-12-06T23:13:03.662124Z"
+  },
+  {
+    "flightId": "FLT-_001-SFOSEA-94084",
+    "providerId": "SEED_HC2_PROV_001",
+    "providerName": "Provider-_001",
+    "departureAirport": "SFO",
+    "arrivalAirport": "SEA",
+    "departureTime": "13:00",
+    "arrivalTime": "15:00",
+    "duration": 120,
+    "operatingDays": [
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday",
+      "Sunday"
+    ],
+    "availableFrom": "2024-12-01T00:00:00.000Z",
+    "availableTo": "2025-01-31T23:59:59.000Z",
+    "seatTypes": [
+      {
+        "type": "Economy",
+        "ticketPrice": 100,
+        "totalSeats": 150,
+        "availableSeats": 150
+      },
+      {
+        "type": "Business",
+        "ticketPrice": 200,
+        "totalSeats": 40,
+        "availableSeats": 40
+      },
+      {
+        "type": "First",
+        "ticketPrice": 500,
+        "totalSeats": 10,
+        "availableSeats": 10
+      }
+    ],
+    "status": "Active",
+    "reviews": [],
+    "createdAt": "2025-12-06T23:13:03.662126Z",
+    "updatedAt": "2025-12-06T23:13:03.662127Z"
+  },
+  {
+    "flightId": "FLT-_001-SFOSEA-90163",
+    "providerId": "SEED_HC2_PROV_001",
+    "providerName": "Provider-_001",
+    "departureAirport": "SFO",
+    "arrivalAirport": "SEA",
+    "departureTime": "13:00",
+    "arrivalTime": "11:00",
+    "duration": 120,
+    "operatingDays": [
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday",
+      "Sunday"
+    ],
+    "availableFrom": "2024-12-01T00:00:00.000Z",
+    "availableTo": "2025-01-31T23:59:59.000Z",
+    "seatTypes": [
+      {
+        "type": "Economy",
+        "ticketPrice": 100,
+        "totalSeats": 150,
+        "availableSeats": 150
+      },
+      {
+        "type": "Business",
+        "ticketPrice": 200,
+        "totalSeats": 40,
+        "availableSeats": 40
+      },
+      {
+        "type": "First",
+        "ticketPrice": 500,
+        "totalSeats": 10,
+        "availableSeats": 10
+      }
+    ],
+    "status": "Active",
+    "reviews": [],
+    "createdAt": "2025-12-06T23:13:03.662130Z",
+    "updatedAt": "2025-12-06T23:13:03.662131Z"
+  },
+  {
+    "flightId": "FLT-_001-SFOLAX-80413",
+    "providerId": "SEED_HC2_PROV_001",
+    "providerName": "Provider-_001",
+    "departureAirport": "SFO",
+    "arrivalAirport": "LAX",
+    "departureTime": "07:00",
+    "arrivalTime": "19:00",
+    "duration": 120,
+    "operatingDays": [
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday",
+      "Sunday"
+    ],
+    "availableFrom": "2024-12-01T00:00:00.000Z",
+    "availableTo": "2025-01-31T23:59:59.000Z",
+    "seatTypes": [
+      {
+        "type": "Economy",
+        "ticketPrice": 100,
+        "totalSeats": 150,
+        "availableSeats": 150
+      },
+      {
+        "type": "Business",
+        "ticketPrice": 200,
+        "totalSeats": 40,
+        "availableSeats": 40
+      },
+      {
+        "type": "First",
+        "ticketPrice": 500,
+        "totalSeats": 10,
+        "availableSeats": 10
+      }
+    ],
+    "status": "Active",
+    "reviews": [],
+    "createdAt": "2025-12-06T23:13:03.662133Z",
+    "updatedAt": "2025-12-06T23:13:03.662134Z"
+  },
+  {
+    "flightId": "FLT-_001-SFOLAX-24295",
+    "providerId": "SEED_HC2_PROV_001",
+    "providerName": "Provider-_001",
+    "departureAirport": "SFO",
+    "arrivalAirport": "LAX",
+    "departureTime": "09:00",
+    "arrivalTime": "15:00",
+    "duration": 120,
+    "operatingDays": [
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday",
+      "Sunday"
+    ],
+    "availableFrom": "2024-12-01T00:00:00.000Z",
+    "availableTo": "2025-01-31T23:59:59.000Z",
+    "seatTypes": [
+      {
+        "type": "Economy",
+        "ticketPrice": 100,
+        "totalSeats": 150,
+        "availableSeats": 150
+      },
+      {
+        "type": "Business",
+        "ticketPrice": 200,
+        "totalSeats": 40,
+        "availableSeats": 40
+      },
+      {
+        "type": "First",
+        "ticketPrice": 500,
+        "totalSeats": 10,
+        "availableSeats": 10
+      }
+    ],
+    "status": "Active",
+    "reviews": [],
+    "createdAt": "2025-12-06T23:13:03.662136Z",
+    "updatedAt": "2025-12-06T23:13:03.662137Z"
+  },
+  {
+    "flightId": "FLT-_001-SFOSEA-49613",
+    "providerId": "SEED_HC2_PROV_001",
+    "providerName": "Provider-_001",
+    "departureAirport": "SFO",
+    "arrivalAirport": "SEA",
+    "departureTime": "09:00",
+    "arrivalTime": "15:00",
+    "duration": 120,
+    "operatingDays": [
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday",
+      "Sunday"
+    ],
+    "availableFrom": "2024-12-01T00:00:00.000Z",
+    "availableTo": "2025-01-31T23:59:59.000Z",
+    "seatTypes": [
+      {
+        "type": "Economy",
+        "ticketPrice": 100,
+        "totalSeats": 150,
+        "availableSeats": 150
+      },
+      {
+        "type": "Business",
+        "ticketPrice": 200,
+        "totalSeats": 40,
+        "availableSeats": 40
+      },
+      {
+        "type": "First",
+        "ticketPrice": 500,
+        "totalSeats": 10,
+        "availableSeats": 10
+      }
+    ],
+    "status": "Active",
+    "reviews": [],
+    "createdAt": "2025-12-06T23:13:03.662140Z",
+    "updatedAt": "2025-12-06T23:13:03.662141Z"
+  },
+  {
+    "flightId": "FLT-_001-SFOMIA-93164",
+    "providerId": "SEED_HC2_PROV_001",
+    "providerName": "Provider-_001",
+    "departureAirport": "SFO",
+    "arrivalAirport": "MIA",
+    "departureTime": "17:00",
+    "arrivalTime": "19:00",
+    "duration": 120,
+    "operatingDays": [
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday",
+      "Sunday"
+    ],
+    "availableFrom": "2024-12-01T00:00:00.000Z",
+    "availableTo": "2025-01-31T23:59:59.000Z",
+    "seatTypes": [
+      {
+        "type": "Economy",
+        "ticketPrice": 100,
+        "totalSeats": 150,
+        "availableSeats": 150
+      },
+      {
+        "type": "Business",
+        "ticketPrice": 200,
+        "totalSeats": 40,
+        "availableSeats": 40
+      },
+      {
+        "type": "First",
+        "ticketPrice": 500,
+        "totalSeats": 10,
+        "availableSeats": 10
+      }
+    ],
+    "status": "Active",
+    "reviews": [],
+    "createdAt": "2025-12-06T23:13:03.662144Z",
+    "updatedAt": "2025-12-06T23:13:03.662145Z"
+  },
+  {
+    "flightId": "FLT-_001-SFOLAX-90020",
+    "providerId": "SEED_HC2_PROV_001",
+    "providerName": "Provider-_001",
+    "departureAirport": "SFO",
+    "arrivalAirport": "LAX",
+    "departureTime": "09:00",
+    "arrivalTime": "09:00",
+    "duration": 120,
+    "operatingDays": [
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday",
+      "Sunday"
+    ],
+    "availableFrom": "2024-12-01T00:00:00.000Z",
+    "availableTo": "2025-01-31T23:59:59.000Z",
+    "seatTypes": [
+      {
+        "type": "Economy",
+        "ticketPrice": 100,
+        "totalSeats": 150,
+        "availableSeats": 150
+      },
+      {
+        "type": "Business",
+        "ticketPrice": 200,
+        "totalSeats": 40,
+        "availableSeats": 40
+      },
+      {
+        "type": "First",
+        "ticketPrice": 500,
+        "totalSeats": 10,
+        "availableSeats": 10
+      }
+    ],
+    "status": "Active",
+    "reviews": [],
+    "createdAt": "2025-12-06T23:13:03.662148Z",
+    "updatedAt": "2025-12-06T23:13:03.662149Z"
+  },
+  {
+    "flightId": "FLT-_001-SFOMIA-38649",
+    "providerId": "SEED_HC2_PROV_001",
+    "providerName": "Provider-_001",
+    "departureAirport": "SFO",
+    "arrivalAirport": "MIA",
+    "departureTime": "13:00",
+    "arrivalTime": "11:00",
+    "duration": 120,
+    "operatingDays": [
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday",
+      "Sunday"
+    ],
+    "availableFrom": "2024-12-01T00:00:00.000Z",
+    "availableTo": "2025-01-31T23:59:59.000Z",
+    "seatTypes": [
+      {
+        "type": "Economy",
+        "ticketPrice": 100,
+        "totalSeats": 150,
+        "availableSeats": 150
+      },
+      {
+        "type": "Business",
+        "ticketPrice": 200,
+        "totalSeats": 40,
+        "availableSeats": 40
+      },
+      {
+        "type": "First",
+        "ticketPrice": 500,
+        "totalSeats": 10,
+        "availableSeats": 10
+      }
+    ],
+    "status": "Active",
+    "reviews": [],
+    "createdAt": "2025-12-06T23:13:03.662151Z",
+    "updatedAt": "2025-12-06T23:13:03.662152Z"
+  },
+  {
+    "flightId": "FLT-_002-SFOSEA-70181",
+    "providerId": "SEED_HC2_PROV_002",
+    "providerName": "Provider-_002",
+    "departureAirport": "SFO",
+    "arrivalAirport": "SEA",
+    "departureTime": "17:00",
+    "arrivalTime": "11:00",
+    "duration": 120,
+    "operatingDays": [
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday",
+      "Sunday"
+    ],
+    "availableFrom": "2024-12-01T00:00:00.000Z",
+    "availableTo": "2025-01-31T23:59:59.000Z",
+    "seatTypes": [
+      {
+        "type": "Economy",
+        "ticketPrice": 100,
+        "totalSeats": 150,
+        "availableSeats": 150
+      },
+      {
+        "type": "Business",
+        "ticketPrice": 200,
+        "totalSeats": 40,
+        "availableSeats": 40
+      },
+      {
+        "type": "First",
+        "ticketPrice": 500,
+        "totalSeats": 10,
+        "availableSeats": 10
+      }
+    ],
+    "status": "Active",
+    "reviews": [],
+    "createdAt": "2025-12-06T23:13:03.662155Z",
+    "updatedAt": "2025-12-06T23:13:03.662156Z"
+  },
+  {
+    "flightId": "FLT-_002-SFOMIA-60149",
+    "providerId": "SEED_HC2_PROV_002",
+    "providerName": "Provider-_002",
+    "departureAirport": "SFO",
+    "arrivalAirport": "MIA",
+    "departureTime": "17:00",
+    "arrivalTime": "11:00",
+    "duration": 120,
+    "operatingDays": [
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday",
+      "Sunday"
+    ],
+    "availableFrom": "2024-12-01T00:00:00.000Z",
+    "availableTo": "2025-01-31T23:59:59.000Z",
+    "seatTypes": [
+      {
+        "type": "Economy",
+        "ticketPrice": 100,
+        "totalSeats": 150,
+        "availableSeats": 150
+      },
+      {
+        "type": "Business",
+        "ticketPrice": 200,
+        "totalSeats": 40,
+        "availableSeats": 40
+      },
+      {
+        "type": "First",
+        "ticketPrice": 500,
+        "totalSeats": 10,
+        "availableSeats": 10
+      }
+    ],
+    "status": "Active",
+    "reviews": [],
+    "createdAt": "2025-12-06T23:13:03.662158Z",
+    "updatedAt": "2025-12-06T23:13:03.662159Z"
+  },
+  {
+    "flightId": "FLT-_002-SFOLAX-70193",
+    "providerId": "SEED_HC2_PROV_002",
+    "providerName": "Provider-_002",
+    "departureAirport": "SFO",
+    "arrivalAirport": "LAX",
+    "departureTime": "07:00",
+    "arrivalTime": "09:00",
+    "duration": 120,
+    "operatingDays": [
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday",
+      "Sunday"
+    ],
+    "availableFrom": "2024-12-01T00:00:00.000Z",
+    "availableTo": "2025-01-31T23:59:59.000Z",
+    "seatTypes": [
+      {
+        "type": "Economy",
+        "ticketPrice": 100,
+        "totalSeats": 150,
+        "availableSeats": 150
+      },
+      {
+        "type": "Business",
+        "ticketPrice": 200,
+        "totalSeats": 40,
+        "availableSeats": 40
+      },
+      {
+        "type": "First",
+        "ticketPrice": 500,
+        "totalSeats": 10,
+        "availableSeats": 10
+      }
+    ],
+    "status": "Active",
+    "reviews": [],
+    "createdAt": "2025-12-06T23:13:03.662162Z",
+    "updatedAt": "2025-12-06T23:13:03.662163Z"
+  },
+  {
+    "flightId": "FLT-_002-SFOLAX-14374",
+    "providerId": "SEED_HC2_PROV_002",
+    "providerName": "Provider-_002",
+    "departureAirport": "SFO",
+    "arrivalAirport": "LAX",
+    "departureTime": "09:00",
+    "arrivalTime": "19:00",
+    "duration": 120,
+    "operatingDays": [
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday",
+      "Sunday"
+    ],
+    "availableFrom": "2024-12-01T00:00:00.000Z",
+    "availableTo": "2025-01-31T23:59:59.000Z",
+    "seatTypes": [
+      {
+        "type": "Economy",
+        "ticketPrice": 100,
+        "totalSeats": 150,
+        "availableSeats": 150
+      },
+      {
+        "type": "Business",
+        "ticketPrice": 200,
+        "totalSeats": 40,
+        "availableSeats": 40
+      },
+      {
+        "type": "First",
+        "ticketPrice": 500,
+        "totalSeats": 10,
+        "availableSeats": 10
+      }
+    ],
+    "status": "Active",
+    "reviews": [],
+    "createdAt": "2025-12-06T23:13:03.662165Z",
+    "updatedAt": "2025-12-06T23:13:03.662166Z"
+  },
+  {
+    "flightId": "FLT-_002-SFOLAX-78539",
+    "providerId": "SEED_HC2_PROV_002",
+    "providerName": "Provider-_002",
+    "departureAirport": "SFO",
+    "arrivalAirport": "LAX",
+    "departureTime": "09:00",
+    "arrivalTime": "19:00",
+    "duration": 120,
+    "operatingDays": [
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday",
+      "Sunday"
+    ],
+    "availableFrom": "2024-12-01T00:00:00.000Z",
+    "availableTo": "2025-01-31T23:59:59.000Z",
+    "seatTypes": [
+      {
+        "type": "Economy",
+        "ticketPrice": 100,
+        "totalSeats": 150,
+        "availableSeats": 150
+      },
+      {
+        "type": "Business",
+        "ticketPrice": 200,
+        "totalSeats": 40,
+        "availableSeats": 40
+      },
+      {
+        "type": "First",
+        "ticketPrice": 500,
+        "totalSeats": 10,
+        "availableSeats": 10
+      }
+    ],
+    "status": "Active",
+    "reviews": [],
+    "createdAt": "2025-12-06T23:13:03.662169Z",
+    "updatedAt": "2025-12-06T23:13:03.662170Z"
+  },
+  {
+    "flightId": "FLT-_002-SFOSEA-34096",
+    "providerId": "SEED_HC2_PROV_002",
+    "providerName": "Provider-_002",
+    "departureAirport": "SFO",
+    "arrivalAirport": "SEA",
+    "departureTime": "17:00",
+    "arrivalTime": "15:00",
+    "duration": 120,
+    "operatingDays": [
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday",
+      "Sunday"
+    ],
+    "availableFrom": "2024-12-01T00:00:00.000Z",
+    "availableTo": "2025-01-31T23:59:59.000Z",
+    "seatTypes": [
+      {
+        "type": "Economy",
+        "ticketPrice": 100,
+        "totalSeats": 150,
+        "availableSeats": 150
+      },
+      {
+        "type": "Business",
+        "ticketPrice": 200,
+        "totalSeats": 40,
+        "availableSeats": 40
+      },
+      {
+        "type": "First",
+        "ticketPrice": 500,
+        "totalSeats": 10,
+        "availableSeats": 10
+      }
+    ],
+    "status": "Active",
+    "reviews": [],
+    "createdAt": "2025-12-06T23:13:03.662172Z",
+    "updatedAt": "2025-12-06T23:13:03.662173Z"
+  },
+  {
+    "flightId": "FLT-_002-SFOLAX-76045",
+    "providerId": "SEED_HC2_PROV_002",
+    "providerName": "Provider-_002",
+    "departureAirport": "SFO",
+    "arrivalAirport": "LAX",
+    "departureTime": "09:00",
+    "arrivalTime": "19:00",
+    "duration": 120,
+    "operatingDays": [
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday",
+      "Sunday"
+    ],
+    "availableFrom": "2024-12-01T00:00:00.000Z",
+    "availableTo": "2025-01-31T23:59:59.000Z",
+    "seatTypes": [
+      {
+        "type": "Economy",
+        "ticketPrice": 100,
+        "totalSeats": 150,
+        "availableSeats": 150
+      },
+      {
+        "type": "Business",
+        "ticketPrice": 200,
+        "totalSeats": 40,
+        "availableSeats": 40
+      },
+      {
+        "type": "First",
+        "ticketPrice": 500,
+        "totalSeats": 10,
+        "availableSeats": 10
+      }
+    ],
+    "status": "Active",
+    "reviews": [],
+    "createdAt": "2025-12-06T23:13:03.662175Z",
+    "updatedAt": "2025-12-06T23:13:03.662177Z"
+  },
+  {
+    "flightId": "FLT-_002-SFOMIA-45889",
+    "providerId": "SEED_HC2_PROV_002",
+    "providerName": "Provider-_002",
+    "departureAirport": "SFO",
+    "arrivalAirport": "MIA",
+    "departureTime": "09:00",
+    "arrivalTime": "19:00",
+    "duration": 120,
+    "operatingDays": [
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday",
+      "Sunday"
+    ],
+    "availableFrom": "2024-12-01T00:00:00.000Z",
+    "availableTo": "2025-01-31T23:59:59.000Z",
+    "seatTypes": [
+      {
+        "type": "Economy",
+        "ticketPrice": 100,
+        "totalSeats": 150,
+        "availableSeats": 150
+      },
+      {
+        "type": "Business",
+        "ticketPrice": 200,
+        "totalSeats": 40,
+        "availableSeats": 40
+      },
+      {
+        "type": "First",
+        "ticketPrice": 500,
+        "totalSeats": 10,
+        "availableSeats": 10
+      }
+    ],
+    "status": "Active",
+    "reviews": [],
+    "createdAt": "2025-12-06T23:13:03.662180Z",
+    "updatedAt": "2025-12-06T23:13:03.662181Z"
+  },
+  {
+    "flightId": "FLT-_002-SFOMIA-62727",
+    "providerId": "SEED_HC2_PROV_002",
+    "providerName": "Provider-_002",
+    "departureAirport": "SFO",
+    "arrivalAirport": "MIA",
+    "departureTime": "17:00",
+    "arrivalTime": "09:00",
+    "duration": 120,
+    "operatingDays": [
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday",
+      "Sunday"
+    ],
+    "availableFrom": "2024-12-01T00:00:00.000Z",
+    "availableTo": "2025-01-31T23:59:59.000Z",
+    "seatTypes": [
+      {
+        "type": "Economy",
+        "ticketPrice": 100,
+        "totalSeats": 150,
+        "availableSeats": 150
+      },
+      {
+        "type": "Business",
+        "ticketPrice": 200,
+        "totalSeats": 40,
+        "availableSeats": 40
+      },
+      {
+        "type": "First",
+        "ticketPrice": 500,
+        "totalSeats": 10,
+        "availableSeats": 10
+      }
+    ],
+    "status": "Active",
+    "reviews": [],
+    "createdAt": "2025-12-06T23:13:03.662183Z",
+    "updatedAt": "2025-12-06T23:13:03.662184Z"
+  },
+  {
+    "flightId": "FLT-_002-SFOMIA-57779",
+    "providerId": "SEED_HC2_PROV_002",
+    "providerName": "Provider-_002",
+    "departureAirport": "SFO",
+    "arrivalAirport": "MIA",
+    "departureTime": "07:00",
+    "arrivalTime": "09:00",
+    "duration": 120,
+    "operatingDays": [
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday",
+      "Sunday"
+    ],
+    "availableFrom": "2024-12-01T00:00:00.000Z",
+    "availableTo": "2025-01-31T23:59:59.000Z",
+    "seatTypes": [
+      {
+        "type": "Economy",
+        "ticketPrice": 100,
+        "totalSeats": 150,
+        "availableSeats": 150
+      },
+      {
+        "type": "Business",
+        "ticketPrice": 200,
+        "totalSeats": 40,
+        "availableSeats": 40
+      },
+      {
+        "type": "First",
+        "ticketPrice": 500,
+        "totalSeats": 10,
+        "availableSeats": 10
+      }
+    ],
+    "status": "Active",
+    "reviews": [],
+    "createdAt": "2025-12-06T23:13:03.662186Z",
+    "updatedAt": "2025-12-06T23:13:03.662188Z"
+  },
+  {
+    "flightId": "FLT-_002-SFOSEA-88930",
+    "providerId": "SEED_HC2_PROV_002",
+    "providerName": "Provider-_002",
+    "departureAirport": "SFO",
+    "arrivalAirport": "SEA",
+    "departureTime": "09:00",
+    "arrivalTime": "15:00",
+    "duration": 120,
+    "operatingDays": [
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday",
+      "Sunday"
+    ],
+    "availableFrom": "2024-12-01T00:00:00.000Z",
+    "availableTo": "2025-01-31T23:59:59.000Z",
+    "seatTypes": [
+      {
+        "type": "Economy",
+        "ticketPrice": 100,
+        "totalSeats": 150,
+        "availableSeats": 150
+      },
+      {
+        "type": "Business",
+        "ticketPrice": 200,
+        "totalSeats": 40,
+        "availableSeats": 40
+      },
+      {
+        "type": "First",
+        "ticketPrice": 500,
+        "totalSeats": 10,
+        "availableSeats": 10
+      }
+    ],
+    "status": "Active",
+    "reviews": [],
+    "createdAt": "2025-12-06T23:13:03.662190Z",
+    "updatedAt": "2025-12-06T23:13:03.662191Z"
+  },
+  {
+    "flightId": "FLT-_002-SFOSEA-12657",
+    "providerId": "SEED_HC2_PROV_002",
+    "providerName": "Provider-_002",
+    "departureAirport": "SFO",
+    "arrivalAirport": "SEA",
+    "departureTime": "17:00",
+    "arrivalTime": "11:00",
+    "duration": 120,
+    "operatingDays": [
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday",
+      "Sunday"
+    ],
+    "availableFrom": "2024-12-01T00:00:00.000Z",
+    "availableTo": "2025-01-31T23:59:59.000Z",
+    "seatTypes": [
+      {
+        "type": "Economy",
+        "ticketPrice": 100,
+        "totalSeats": 150,
+        "availableSeats": 150
+      },
+      {
+        "type": "Business",
+        "ticketPrice": 200,
+        "totalSeats": 40,
+        "availableSeats": 40
+      },
+      {
+        "type": "First",
+        "ticketPrice": 500,
+        "totalSeats": 10,
+        "availableSeats": 10
+      }
+    ],
+    "status": "Active",
+    "reviews": [],
+    "createdAt": "2025-12-06T23:13:03.662193Z",
+    "updatedAt": "2025-12-06T23:13:03.662194Z"
+  },
+  {
+    "flightId": "FLT-_002-SFOSEA-91196",
+    "providerId": "SEED_HC2_PROV_002",
+    "providerName": "Provider-_002",
+    "departureAirport": "SFO",
+    "arrivalAirport": "SEA",
+    "departureTime": "09:00",
+    "arrivalTime": "15:00",
+    "duration": 120,
+    "operatingDays": [
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday",
+      "Sunday"
+    ],
+    "availableFrom": "2024-12-01T00:00:00.000Z",
+    "availableTo": "2025-01-31T23:59:59.000Z",
+    "seatTypes": [
+      {
+        "type": "Economy",
+        "ticketPrice": 100,
+        "totalSeats": 150,
+        "availableSeats": 150
+      },
+      {
+        "type": "Business",
+        "ticketPrice": 200,
+        "totalSeats": 40,
+        "availableSeats": 40
+      },
+      {
+        "type": "First",
+        "ticketPrice": 500,
+        "totalSeats": 10,
+        "availableSeats": 10
+      }
+    ],
+    "status": "Active",
+    "reviews": [],
+    "createdAt": "2025-12-06T23:13:03.662197Z",
+    "updatedAt": "2025-12-06T23:13:03.662198Z"
+  },
+  {
+    "flightId": "FLT-_002-SFOSEA-75379",
+    "providerId": "SEED_HC2_PROV_002",
+    "providerName": "Provider-_002",
+    "departureAirport": "SFO",
+    "arrivalAirport": "SEA",
+    "departureTime": "09:00",
+    "arrivalTime": "09:00",
+    "duration": 120,
+    "operatingDays": [
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday",
+      "Sunday"
+    ],
+    "availableFrom": "2024-12-01T00:00:00.000Z",
+    "availableTo": "2025-01-31T23:59:59.000Z",
+    "seatTypes": [
+      {
+        "type": "Economy",
+        "ticketPrice": 100,
+        "totalSeats": 150,
+        "availableSeats": 150
+      },
+      {
+        "type": "Business",
+        "ticketPrice": 200,
+        "totalSeats": 40,
+        "availableSeats": 40
+      },
+      {
+        "type": "First",
+        "ticketPrice": 500,
+        "totalSeats": 10,
+        "availableSeats": 10
+      }
+    ],
+    "status": "Active",
+    "reviews": [],
+    "createdAt": "2025-12-06T23:13:03.662200Z",
+    "updatedAt": "2025-12-06T23:13:03.662201Z"
+  },
+  {
+    "flightId": "FLT-_002-SFOMIA-89570",
+    "providerId": "SEED_HC2_PROV_002",
+    "providerName": "Provider-_002",
+    "departureAirport": "SFO",
+    "arrivalAirport": "MIA",
+    "departureTime": "09:00",
+    "arrivalTime": "09:00",
+    "duration": 120,
+    "operatingDays": [
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday",
+      "Sunday"
+    ],
+    "availableFrom": "2024-12-01T00:00:00.000Z",
+    "availableTo": "2025-01-31T23:59:59.000Z",
+    "seatTypes": [
+      {
+        "type": "Economy",
+        "ticketPrice": 100,
+        "totalSeats": 150,
+        "availableSeats": 150
+      },
+      {
+        "type": "Business",
+        "ticketPrice": 200,
+        "totalSeats": 40,
+        "availableSeats": 40
+      },
+      {
+        "type": "First",
+        "ticketPrice": 500,
+        "totalSeats": 10,
+        "availableSeats": 10
+      }
+    ],
+    "status": "Active",
+    "reviews": [],
+    "createdAt": "2025-12-06T23:13:03.662203Z",
+    "updatedAt": "2025-12-06T23:13:03.662204Z"
+  },
+  {
+    "flightId": "FLT-_003-SFOSEA-11109",
+    "providerId": "SEED_HC2_PROV_003",
+    "providerName": "Provider-_003",
+    "departureAirport": "SFO",
+    "arrivalAirport": "SEA",
+    "departureTime": "13:00",
+    "arrivalTime": "19:00",
+    "duration": 120,
+    "operatingDays": [
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday",
+      "Sunday"
+    ],
+    "availableFrom": "2024-12-01T00:00:00.000Z",
+    "availableTo": "2025-01-31T23:59:59.000Z",
+    "seatTypes": [
+      {
+        "type": "Economy",
+        "ticketPrice": 100,
+        "totalSeats": 150,
+        "availableSeats": 150
+      },
+      {
+        "type": "Business",
+        "ticketPrice": 200,
+        "totalSeats": 40,
+        "availableSeats": 40
+      },
+      {
+        "type": "First",
+        "ticketPrice": 500,
+        "totalSeats": 10,
+        "availableSeats": 10
+      }
+    ],
+    "status": "Active",
+    "reviews": [],
+    "createdAt": "2025-12-06T23:13:03.662207Z",
+    "updatedAt": "2025-12-06T23:13:03.662208Z"
+  },
+  {
+    "flightId": "FLT-_003-SFOMIA-88940",
+    "providerId": "SEED_HC2_PROV_003",
+    "providerName": "Provider-_003",
+    "departureAirport": "SFO",
+    "arrivalAirport": "MIA",
+    "departureTime": "07:00",
+    "arrivalTime": "15:00",
+    "duration": 120,
+    "operatingDays": [
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday",
+      "Sunday"
+    ],
+    "availableFrom": "2024-12-01T00:00:00.000Z",
+    "availableTo": "2025-01-31T23:59:59.000Z",
+    "seatTypes": [
+      {
+        "type": "Economy",
+        "ticketPrice": 100,
+        "totalSeats": 150,
+        "availableSeats": 150
+      },
+      {
+        "type": "Business",
+        "ticketPrice": 200,
+        "totalSeats": 40,
+        "availableSeats": 40
+      },
+      {
+        "type": "First",
+        "ticketPrice": 500,
+        "totalSeats": 10,
+        "availableSeats": 10
+      }
+    ],
+    "status": "Active",
+    "reviews": [],
+    "createdAt": "2025-12-06T23:13:03.662210Z",
+    "updatedAt": "2025-12-06T23:13:03.662211Z"
+  },
+  {
+    "flightId": "FLT-_003-SFOLAX-34457",
+    "providerId": "SEED_HC2_PROV_003",
+    "providerName": "Provider-_003",
+    "departureAirport": "SFO",
+    "arrivalAirport": "LAX",
+    "departureTime": "17:00",
+    "arrivalTime": "09:00",
+    "duration": 120,
+    "operatingDays": [
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday",
+      "Sunday"
+    ],
+    "availableFrom": "2024-12-01T00:00:00.000Z",
+    "availableTo": "2025-01-31T23:59:59.000Z",
+    "seatTypes": [
+      {
+        "type": "Economy",
+        "ticketPrice": 100,
+        "totalSeats": 150,
+        "availableSeats": 150
+      },
+      {
+        "type": "Business",
+        "ticketPrice": 200,
+        "totalSeats": 40,
+        "availableSeats": 40
+      },
+      {
+        "type": "First",
+        "ticketPrice": 500,
+        "totalSeats": 10,
+        "availableSeats": 10
+      }
+    ],
+    "status": "Active",
+    "reviews": [],
+    "createdAt": "2025-12-06T23:13:03.662214Z",
+    "updatedAt": "2025-12-06T23:13:03.662215Z"
+  },
+  {
+    "flightId": "FLT-_003-SFOSEA-35684",
+    "providerId": "SEED_HC2_PROV_003",
+    "providerName": "Provider-_003",
+    "departureAirport": "SFO",
+    "arrivalAirport": "SEA",
+    "departureTime": "09:00",
+    "arrivalTime": "11:00",
+    "duration": 120,
+    "operatingDays": [
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday",
+      "Sunday"
+    ],
+    "availableFrom": "2024-12-01T00:00:00.000Z",
+    "availableTo": "2025-01-31T23:59:59.000Z",
+    "seatTypes": [
+      {
+        "type": "Economy",
+        "ticketPrice": 100,
+        "totalSeats": 150,
+        "availableSeats": 150
+      },
+      {
+        "type": "Business",
+        "ticketPrice": 200,
+        "totalSeats": 40,
+        "availableSeats": 40
+      },
+      {
+        "type": "First",
+        "ticketPrice": 500,
+        "totalSeats": 10,
+        "availableSeats": 10
+      }
+    ],
+    "status": "Active",
+    "reviews": [],
+    "createdAt": "2025-12-06T23:13:03.662217Z",
+    "updatedAt": "2025-12-06T23:13:03.662218Z"
+  },
+  {
+    "flightId": "FLT-_003-SFOMIA-80013",
+    "providerId": "SEED_HC2_PROV_003",
+    "providerName": "Provider-_003",
+    "departureAirport": "SFO",
+    "arrivalAirport": "MIA",
+    "departureTime": "07:00",
+    "arrivalTime": "09:00",
+    "duration": 120,
+    "operatingDays": [
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday",
+      "Sunday"
+    ],
+    "availableFrom": "2024-12-01T00:00:00.000Z",
+    "availableTo": "2025-01-31T23:59:59.000Z",
+    "seatTypes": [
+      {
+        "type": "Economy",
+        "ticketPrice": 100,
+        "totalSeats": 150,
+        "availableSeats": 150
+      },
+      {
+        "type": "Business",
+        "ticketPrice": 200,
+        "totalSeats": 40,
+        "availableSeats": 40
+      },
+      {
+        "type": "First",
+        "ticketPrice": 500,
+        "totalSeats": 10,
+        "availableSeats": 10
+      }
+    ],
+    "status": "Active",
+    "reviews": [],
+    "createdAt": "2025-12-06T23:13:03.662220Z",
+    "updatedAt": "2025-12-06T23:13:03.662221Z"
+  },
+  {
+    "flightId": "FLT-_003-SFOLAX-24668",
+    "providerId": "SEED_HC2_PROV_003",
+    "providerName": "Provider-_003",
+    "departureAirport": "SFO",
+    "arrivalAirport": "LAX",
+    "departureTime": "13:00",
+    "arrivalTime": "11:00",
+    "duration": 120,
+    "operatingDays": [
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday",
+      "Sunday"
+    ],
+    "availableFrom": "2024-12-01T00:00:00.000Z",
+    "availableTo": "2025-01-31T23:59:59.000Z",
+    "seatTypes": [
+      {
+        "type": "Economy",
+        "ticketPrice": 100,
+        "totalSeats": 150,
+        "availableSeats": 150
+      },
+      {
+        "type": "Business",
+        "ticketPrice": 200,
+        "totalSeats": 40,
+        "availableSeats": 40
+      },
+      {
+        "type": "First",
+        "ticketPrice": 500,
+        "totalSeats": 10,
+        "availableSeats": 10
+      }
+    ],
+    "status": "Active",
+    "reviews": [],
+    "createdAt": "2025-12-06T23:13:03.662224Z",
+    "updatedAt": "2025-12-06T23:13:03.662225Z"
+  },
+  {
+    "flightId": "FLT-_003-SFOSEA-16125",
+    "providerId": "SEED_HC2_PROV_003",
+    "providerName": "Provider-_003",
+    "departureAirport": "SFO",
+    "arrivalAirport": "SEA",
+    "departureTime": "07:00",
+    "arrivalTime": "19:00",
+    "duration": 120,
+    "operatingDays": [
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday",
+      "Sunday"
+    ],
+    "availableFrom": "2024-12-01T00:00:00.000Z",
+    "availableTo": "2025-01-31T23:59:59.000Z",
+    "seatTypes": [
+      {
+        "type": "Economy",
+        "ticketPrice": 100,
+        "totalSeats": 150,
+        "availableSeats": 150
+      },
+      {
+        "type": "Business",
+        "ticketPrice": 200,
+        "totalSeats": 40,
+        "availableSeats": 40
+      },
+      {
+        "type": "First",
+        "ticketPrice": 500,
+        "totalSeats": 10,
+        "availableSeats": 10
+      }
+    ],
+    "status": "Active",
+    "reviews": [],
+    "createdAt": "2025-12-06T23:13:03.662228Z",
+    "updatedAt": "2025-12-06T23:13:03.662229Z"
+  },
+  {
+    "flightId": "FLT-_003-SFOSEA-30877",
+    "providerId": "SEED_HC2_PROV_003",
+    "providerName": "Provider-_003",
+    "departureAirport": "SFO",
+    "arrivalAirport": "SEA",
+    "departureTime": "13:00",
+    "arrivalTime": "15:00",
+    "duration": 120,
+    "operatingDays": [
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday",
+      "Sunday"
+    ],
+    "availableFrom": "2024-12-01T00:00:00.000Z",
+    "availableTo": "2025-01-31T23:59:59.000Z",
+    "seatTypes": [
+      {
+        "type": "Economy",
+        "ticketPrice": 100,
+        "totalSeats": 150,
+        "availableSeats": 150
+      },
+      {
+        "type": "Business",
+        "ticketPrice": 200,
+        "totalSeats": 40,
+        "availableSeats": 40
+      },
+      {
+        "type": "First",
+        "ticketPrice": 500,
+        "totalSeats": 10,
+        "availableSeats": 10
+      }
+    ],
+    "status": "Active",
+    "reviews": [],
+    "createdAt": "2025-12-06T23:13:03.662232Z",
+    "updatedAt": "2025-12-06T23:13:03.662233Z"
+  },
+  {
+    "flightId": "FLT-_003-SFOSEA-46301",
+    "providerId": "SEED_HC2_PROV_003",
+    "providerName": "Provider-_003",
+    "departureAirport": "SFO",
+    "arrivalAirport": "SEA",
+    "departureTime": "07:00",
+    "arrivalTime": "11:00",
+    "duration": 120,
+    "operatingDays": [
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday",
+      "Sunday"
+    ],
+    "availableFrom": "2024-12-01T00:00:00.000Z",
+    "availableTo": "2025-01-31T23:59:59.000Z",
+    "seatTypes": [
+      {
+        "type": "Economy",
+        "ticketPrice": 100,
+        "totalSeats": 150,
+        "availableSeats": 150
+      },
+      {
+        "type": "Business",
+        "ticketPrice": 200,
+        "totalSeats": 40,
+        "availableSeats": 40
+      },
+      {
+        "type": "First",
+        "ticketPrice": 500,
+        "totalSeats": 10,
+        "availableSeats": 10
+      }
+    ],
+    "status": "Active",
+    "reviews": [],
+    "createdAt": "2025-12-06T23:13:03.662235Z",
+    "updatedAt": "2025-12-06T23:13:03.662236Z"
+  },
+  {
+    "flightId": "FLT-_003-SFOLAX-66998",
+    "providerId": "SEED_HC2_PROV_003",
+    "providerName": "Provider-_003",
+    "departureAirport": "SFO",
+    "arrivalAirport": "LAX",
+    "departureTime": "07:00",
+    "arrivalTime": "19:00",
+    "duration": 120,
+    "operatingDays": [
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday",
+      "Sunday"
+    ],
+    "availableFrom": "2024-12-01T00:00:00.000Z",
+    "availableTo": "2025-01-31T23:59:59.000Z",
+    "seatTypes": [
+      {
+        "type": "Economy",
+        "ticketPrice": 100,
+        "totalSeats": 150,
+        "availableSeats": 150
+      },
+      {
+        "type": "Business",
+        "ticketPrice": 200,
+        "totalSeats": 40,
+        "availableSeats": 40
+      },
+      {
+        "type": "First",
+        "ticketPrice": 500,
+        "totalSeats": 10,
+        "availableSeats": 10
+      }
+    ],
+    "status": "Active",
+    "reviews": [],
+    "createdAt": "2025-12-06T23:13:03.662238Z",
+    "updatedAt": "2025-12-06T23:13:03.662239Z"
+  },
+  {
+    "flightId": "FLT-_003-SFOMIA-59734",
+    "providerId": "SEED_HC2_PROV_003",
+    "providerName": "Provider-_003",
+    "departureAirport": "SFO",
+    "arrivalAirport": "MIA",
+    "departureTime": "13:00",
+    "arrivalTime": "19:00",
+    "duration": 120,
+    "operatingDays": [
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday",
+      "Sunday"
+    ],
+    "availableFrom": "2024-12-01T00:00:00.000Z",
+    "availableTo": "2025-01-31T23:59:59.000Z",
+    "seatTypes": [
+      {
+        "type": "Economy",
+        "ticketPrice": 100,
+        "totalSeats": 150,
+        "availableSeats": 150
+      },
+      {
+        "type": "Business",
+        "ticketPrice": 200,
+        "totalSeats": 40,
+        "availableSeats": 40
+      },
+      {
+        "type": "First",
+        "ticketPrice": 500,
+        "totalSeats": 10,
+        "availableSeats": 10
+      }
+    ],
+    "status": "Active",
+    "reviews": [],
+    "createdAt": "2025-12-06T23:13:03.662242Z",
+    "updatedAt": "2025-12-06T23:13:03.662243Z"
+  },
+  {
+    "flightId": "FLT-_003-SFOMIA-73091",
+    "providerId": "SEED_HC2_PROV_003",
+    "providerName": "Provider-_003",
+    "departureAirport": "SFO",
+    "arrivalAirport": "MIA",
+    "departureTime": "17:00",
+    "arrivalTime": "19:00",
+    "duration": 120,
+    "operatingDays": [
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday",
+      "Sunday"
+    ],
+    "availableFrom": "2024-12-01T00:00:00.000Z",
+    "availableTo": "2025-01-31T23:59:59.000Z",
+    "seatTypes": [
+      {
+        "type": "Economy",
+        "ticketPrice": 100,
+        "totalSeats": 150,
+        "availableSeats": 150
+      },
+      {
+        "type": "Business",
+        "ticketPrice": 200,
+        "totalSeats": 40,
+        "availableSeats": 40
+      },
+      {
+        "type": "First",
+        "ticketPrice": 500,
+        "totalSeats": 10,
+        "availableSeats": 10
+      }
+    ],
+    "status": "Active",
+    "reviews": [],
+    "createdAt": "2025-12-06T23:13:03.662245Z",
+    "updatedAt": "2025-12-06T23:13:03.662246Z"
+  },
+  {
+    "flightId": "FLT-_003-SFOSEA-78787",
+    "providerId": "SEED_HC2_PROV_003",
+    "providerName": "Provider-_003",
+    "departureAirport": "SFO",
+    "arrivalAirport": "SEA",
+    "departureTime": "17:00",
+    "arrivalTime": "11:00",
+    "duration": 120,
+    "operatingDays": [
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday",
+      "Sunday"
+    ],
+    "availableFrom": "2024-12-01T00:00:00.000Z",
+    "availableTo": "2025-01-31T23:59:59.000Z",
+    "seatTypes": [
+      {
+        "type": "Economy",
+        "ticketPrice": 100,
+        "totalSeats": 150,
+        "availableSeats": 150
+      },
+      {
+        "type": "Business",
+        "ticketPrice": 200,
+        "totalSeats": 40,
+        "availableSeats": 40
+      },
+      {
+        "type": "First",
+        "ticketPrice": 500,
+        "totalSeats": 10,
+        "availableSeats": 10
+      }
+    ],
+    "status": "Active",
+    "reviews": [],
+    "createdAt": "2025-12-06T23:13:03.662248Z",
+    "updatedAt": "2025-12-06T23:13:03.662249Z"
+  },
+  {
+    "flightId": "FLT-_003-SFOLAX-86660",
+    "providerId": "SEED_HC2_PROV_003",
+    "providerName": "Provider-_003",
+    "departureAirport": "SFO",
+    "arrivalAirport": "LAX",
+    "departureTime": "13:00",
+    "arrivalTime": "11:00",
+    "duration": 120,
+    "operatingDays": [
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday",
+      "Sunday"
+    ],
+    "availableFrom": "2024-12-01T00:00:00.000Z",
+    "availableTo": "2025-01-31T23:59:59.000Z",
+    "seatTypes": [
+      {
+        "type": "Economy",
+        "ticketPrice": 100,
+        "totalSeats": 150,
+        "availableSeats": 150
+      },
+      {
+        "type": "Business",
+        "ticketPrice": 200,
+        "totalSeats": 40,
+        "availableSeats": 40
+      },
+      {
+        "type": "First",
+        "ticketPrice": 500,
+        "totalSeats": 10,
+        "availableSeats": 10
+      }
+    ],
+    "status": "Active",
+    "reviews": [],
+    "createdAt": "2025-12-06T23:13:03.662252Z",
+    "updatedAt": "2025-12-06T23:13:03.662253Z"
+  },
+  {
+    "flightId": "FLT-_003-SFOMIA-30477",
+    "providerId": "SEED_HC2_PROV_003",
+    "providerName": "Provider-_003",
+    "departureAirport": "SFO",
+    "arrivalAirport": "MIA",
+    "departureTime": "09:00",
+    "arrivalTime": "19:00",
+    "duration": 120,
+    "operatingDays": [
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday",
+      "Sunday"
+    ],
+    "availableFrom": "2024-12-01T00:00:00.000Z",
+    "availableTo": "2025-01-31T23:59:59.000Z",
+    "seatTypes": [
+      {
+        "type": "Economy",
+        "ticketPrice": 100,
+        "totalSeats": 150,
+        "availableSeats": 150
+      },
+      {
+        "type": "Business",
+        "ticketPrice": 200,
+        "totalSeats": 40,
+        "availableSeats": 40
+      },
+      {
+        "type": "First",
+        "ticketPrice": 500,
+        "totalSeats": 10,
+        "availableSeats": 10
+      }
+    ],
+    "status": "Active",
+    "reviews": [],
+    "createdAt": "2025-12-06T23:13:03.662256Z",
+    "updatedAt": "2025-12-06T23:13:03.662257Z"
+  }
+]
