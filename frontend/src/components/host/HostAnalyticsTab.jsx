@@ -325,6 +325,76 @@ const HostAnalyticsTab = () => {
         </div>
       </div>
 
+      {/* Monthly Revenue Trend */}
+      {profitability?.monthlyRevenue && profitability.monthlyRevenue.length > 0 && (
+        <div className="card bg-white shadow-md">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-xl font-semibold text-gray-800 flex items-center gap-2">
+              <DollarSign className="w-5 h-5" />
+              Monthly Revenue Trend
+            </h3>
+            <span className="text-sm text-gray-600">Revenue and bookings by month</span>
+          </div>
+          <ResponsiveContainer width="100%" height={350}>
+            <LineChart data={profitability.monthlyRevenue}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="monthName" />
+              <YAxis yAxisId="left" />
+              <YAxis yAxisId="right" orientation="right" />
+              <Tooltip 
+                formatter={(value, name) => {
+                  if (name === 'Revenue') return `$${value.toLocaleString()}`;
+                  return value;
+                }}
+              />
+              <Legend />
+              <Line 
+                yAxisId="left"
+                type="monotone" 
+                dataKey="revenue" 
+                stroke="#3b82f6" 
+                strokeWidth={3} 
+                name="Revenue ($)" 
+                dot={{ r: 5 }}
+                activeDot={{ r: 8 }}
+              />
+              <Line 
+                yAxisId="right"
+                type="monotone" 
+                dataKey="bookingCount" 
+                stroke="#10b981" 
+                strokeWidth={2} 
+                name="Bookings" 
+                dot={{ r: 4 }}
+              />
+            </LineChart>
+          </ResponsiveContainer>
+          <div className="mt-4 grid grid-cols-3 gap-4">
+            <div className="p-3 bg-blue-50 rounded">
+              <p className="text-xs text-gray-600">Total Revenue</p>
+              <p className="text-lg font-bold text-blue-600">
+                ${profitability.monthlyRevenue.reduce((sum, m) => sum + (m.revenue || 0), 0).toLocaleString()}
+              </p>
+            </div>
+            <div className="p-3 bg-green-50 rounded">
+              <p className="text-xs text-gray-600">Total Bookings</p>
+              <p className="text-lg font-bold text-green-600">
+                {profitability.monthlyRevenue.reduce((sum, m) => sum + (m.bookingCount || 0), 0)}
+              </p>
+            </div>
+            <div className="p-3 bg-purple-50 rounded">
+              <p className="text-xs text-gray-600">Avg per Booking</p>
+              <p className="text-lg font-bold text-purple-600">
+                ${(
+                  profitability.monthlyRevenue.reduce((sum, m) => sum + (m.revenue || 0), 0) /
+                  Math.max(profitability.monthlyRevenue.reduce((sum, m) => sum + (m.bookingCount || 0), 0), 1)
+                ).toFixed(2)}
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Least Viewed Sections */}
       <div className="card bg-white shadow-md">
         <div className="flex items-center justify-between mb-4">
