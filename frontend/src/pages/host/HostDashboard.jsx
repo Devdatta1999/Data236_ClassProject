@@ -5,6 +5,7 @@ import api from '../../services/apiService'
 import { Plus, TrendingUp, DollarSign, List, Star, BarChart3, Package } from 'lucide-react'
 import CreateListingRequest from '../../components/host/CreateListingRequest'
 import HostAnalyticsTab from '../../components/host/HostAnalyticsTab'
+import HostProfitability from '../../components/host/HostProfitability'
 import MyListingsTab from '../../components/host/MyListingsTab'
 
 const HostDashboard = () => {
@@ -28,7 +29,7 @@ const HostDashboard = () => {
     // Restore tab from localStorage on mount
     try {
       const savedTab = localStorage.getItem('hostDashboardTab')
-      if (savedTab && ['overview', 'listings', 'create', 'profitability'].includes(savedTab)) {
+      if (savedTab && ['overview', 'listings', 'create', 'profitability', 'analytics'].includes(savedTab)) {
         setActiveTab(savedTab)
       }
     } catch (e) {
@@ -79,6 +80,7 @@ const HostDashboard = () => {
     { id: 'listings', label: 'My Listings', icon: Package },
     { id: 'create', label: 'Create Listing Request', icon: Plus },
     { id: 'profitability', label: 'Profitability', icon: TrendingUp },
+    { id: 'analytics', label: 'Analytics', icon: BarChart3 },
   ]
 
   return (
@@ -213,7 +215,8 @@ const HostDashboard = () => {
 
         {activeTab === 'listings' && <MyListingsTab onRefresh={fetchListings} />}
         {activeTab === 'create' && <CreateListingRequest onSuccess={fetchListings} />}
-        {activeTab === 'profitability' && <HostAnalyticsTab />}
+        {activeTab === 'profitability' && <HostProfitability profitability={profitability} />}
+        {activeTab === 'analytics' && <HostAnalyticsTab />}
       </div>
     </div>
   )

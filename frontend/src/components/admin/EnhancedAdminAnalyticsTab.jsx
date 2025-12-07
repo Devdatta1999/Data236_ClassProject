@@ -187,7 +187,10 @@ const EnhancedAdminAnalyticsTab = () => {
             <label className="block text-sm font-medium text-gray-700 mb-1">Filter by Host</label>
             <select
               value={selectedProviderId}
-              onChange={(e) => setSelectedProviderId(e.target.value)}
+              onChange={(e) => {
+                setSelectedProviderId(e.target.value);
+                setLoading(true); // Show loading when filter changes
+              }}
               className="border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 min-w-[200px]"
             >
               <option value="">All Hosts</option>
@@ -256,7 +259,7 @@ const EnhancedAdminAnalyticsTab = () => {
             Revenue Trend {selectedYear}
           </h3>
         </div>
-        <ResponsiveContainer width="100%" height={300}>
+        <ResponsiveContainer width="100%" height={300} key={`revenue-trend-${selectedProviderId}-${selectedYear}`}>
           <LineChart data={revenueTrend}>
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis dataKey="monthName" />
@@ -281,7 +284,7 @@ const EnhancedAdminAnalyticsTab = () => {
             <span className="text-sm text-gray-600">Hotels, Flights & Cars</span>
           </div>
           {topProperties && topProperties.length > 0 ? (
-            <ResponsiveContainer width="100%" height={400}>
+            <ResponsiveContainer width="100%" height={400} key={`top-properties-${selectedProviderId}-${selectedYear}`}>
               <BarChart data={topProperties.slice(0, 10)} layout="vertical">
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis type="number" />
@@ -316,7 +319,7 @@ const EnhancedAdminAnalyticsTab = () => {
               City-wise Revenue ({selectedYear})
             </h3>
           </div>
-          <ResponsiveContainer width="100%" height={400}>
+          <ResponsiveContainer width="100%" height={400} key={`city-revenue-${selectedProviderId}-${selectedYear}`}>
             <PieChart>
               <Pie
                 data={cityRevenue.slice(0, 10)}
@@ -347,7 +350,7 @@ const EnhancedAdminAnalyticsTab = () => {
           </h3>
         </div>
         {topProviders && topProviders.length > 0 ? (
-          <ResponsiveContainer width="100%" height={350}>
+          <ResponsiveContainer width="100%" height={350} key={`top-providers-${selectedProviderId}-${selectedMonth}-${selectedYear}`}>
             <BarChart data={topProviders.slice(0, 10)}>
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="providerName" angle={-45} textAnchor="end" height={100} fontSize={11} />
