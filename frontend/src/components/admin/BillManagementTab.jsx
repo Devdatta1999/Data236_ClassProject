@@ -477,11 +477,156 @@ const BillManagementTab = () => {
               {/* Invoice Details */}
               {selectedBill.invoice_details && (
                 <div>
-                  <h3 className="text-xl font-semibold mb-4">Invoice Details</h3>
-                  <div className="bg-gray-50 rounded-lg p-4">
-                    <pre className="whitespace-pre-wrap text-sm text-gray-700">
-                      {JSON.stringify(selectedBill.invoice_details, null, 2)}
-                    </pre>
+                  <h3 className="text-xl font-semibold mb-4 flex items-center space-x-2">
+                    <FileText className="w-5 h-5" />
+                    <span>Invoice Details</span>
+                  </h3>
+                  <div className="bg-white border border-gray-200 rounded-lg p-6 space-y-4">
+                    {/* Payment Information */}
+                    {(selectedBill.invoice_details.cardHolderName || selectedBill.invoice_details.last4Digits || selectedBill.invoice_details.expiryDate) && (
+                      <div className="border-b border-gray-200 pb-4">
+                        <h4 className="font-semibold text-gray-900 mb-3 flex items-center space-x-2">
+                          <CreditCard className="w-4 h-4" />
+                          <span>Payment Information</span>
+                        </h4>
+                        <div className="grid md:grid-cols-2 gap-3 text-sm">
+                          {selectedBill.invoice_details.cardHolderName && (
+                            <div>
+                              <span className="text-gray-600">Card Holder:</span>
+                              <p className="font-medium text-gray-900">{selectedBill.invoice_details.cardHolderName}</p>
+                            </div>
+                          )}
+                          {selectedBill.invoice_details.last4Digits && (
+                            <div>
+                              <span className="text-gray-600">Card Number:</span>
+                              <p className="font-medium text-gray-900">•••• {selectedBill.invoice_details.last4Digits}</p>
+                            </div>
+                          )}
+                          {selectedBill.invoice_details.expiryDate && (
+                            <div>
+                              <span className="text-gray-600">Expiry Date:</span>
+                              <p className="font-medium text-gray-900">{selectedBill.invoice_details.expiryDate}</p>
+                            </div>
+                          )}
+                          {selectedBill.invoice_details.zipCode && (
+                            <div>
+                              <span className="text-gray-600">Billing ZIP Code:</span>
+                              <p className="font-medium text-gray-900">{selectedBill.invoice_details.zipCode}</p>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Booking Details */}
+                    {selectedBill.invoice_details.booking && (
+                      <div className="border-b border-gray-200 pb-4">
+                        <h4 className="font-semibold text-gray-900 mb-3 flex items-center space-x-2">
+                          <FileText className="w-4 h-4" />
+                          <span>Booking Information</span>
+                        </h4>
+                        <div className="grid md:grid-cols-2 gap-3 text-sm">
+                          {selectedBill.invoice_details.booking.listingType && (
+                            <div>
+                              <span className="text-gray-600">Type:</span>
+                              <p className="font-medium text-gray-900">{selectedBill.invoice_details.booking.listingType}</p>
+                            </div>
+                          )}
+                          {selectedBill.invoice_details.booking.quantity && (
+                            <div>
+                              <span className="text-gray-600">Quantity:</span>
+                              <p className="font-medium text-gray-900">{selectedBill.invoice_details.booking.quantity}</p>
+                            </div>
+                          )}
+                          {selectedBill.invoice_details.booking.roomType && (
+                            <div>
+                              <span className="text-gray-600">Room Type:</span>
+                              <p className="font-medium text-gray-900">{selectedBill.invoice_details.booking.roomType}</p>
+                            </div>
+                          )}
+                          {selectedBill.invoice_details.booking.seatType && (
+                            <div>
+                              <span className="text-gray-600">Seat Type:</span>
+                              <p className="font-medium text-gray-900">{selectedBill.invoice_details.booking.seatType}</p>
+                            </div>
+                          )}
+                          {selectedBill.invoice_details.booking.listingId && (
+                            <div>
+                              <span className="text-gray-600">Listing ID:</span>
+                              <p className="font-medium text-gray-900">{selectedBill.invoice_details.booking.listingId}</p>
+                            </div>
+                          )}
+                          {selectedBill.invoice_details.booking.bookingId && (
+                            <div>
+                              <span className="text-gray-600">Booking ID:</span>
+                              <p className="font-medium text-gray-900">{selectedBill.invoice_details.booking.bookingId}</p>
+                            </div>
+                          )}
+                          {selectedBill.invoice_details.booking.checkInDate && (
+                            <div>
+                              <span className="text-gray-600">Check-In Date:</span>
+                              <p className="font-medium text-gray-900">
+                                {format(new Date(selectedBill.invoice_details.booking.checkInDate), 'MMM dd, yyyy')}
+                              </p>
+                            </div>
+                          )}
+                          {selectedBill.invoice_details.booking.checkOutDate && (
+                            <div>
+                              <span className="text-gray-600">Check-Out Date:</span>
+                              <p className="font-medium text-gray-900">
+                                {format(new Date(selectedBill.invoice_details.booking.checkOutDate), 'MMM dd, yyyy')}
+                              </p>
+                            </div>
+                          )}
+                          {selectedBill.invoice_details.booking.travelDate && (
+                            <div>
+                              <span className="text-gray-600">Travel Date:</span>
+                              <p className="font-medium text-gray-900">
+                                {format(new Date(selectedBill.invoice_details.booking.travelDate), 'MMM dd, yyyy')}
+                              </p>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Transaction Details */}
+                    <div className="border-b border-gray-200 pb-4">
+                      <h4 className="font-semibold text-gray-900 mb-3 flex items-center space-x-2">
+                        <DollarSign className="w-4 h-4" />
+                        <span>Transaction Details</span>
+                      </h4>
+                      <div className="grid md:grid-cols-2 gap-3 text-sm">
+                        {selectedBill.invoice_details.checkoutId && (
+                          <div>
+                            <span className="text-gray-600">Checkout ID:</span>
+                            <p className="font-medium text-gray-900">{selectedBill.invoice_details.checkoutId}</p>
+                          </div>
+                        )}
+                        {selectedBill.invoice_details.bookingCount !== undefined && (
+                          <div>
+                            <span className="text-gray-600">Booking Count:</span>
+                            <p className="font-medium text-gray-900">{selectedBill.invoice_details.bookingCount}</p>
+                          </div>
+                        )}
+                        {selectedBill.invoice_details.totalAmount !== undefined && (
+                          <div>
+                            <span className="text-gray-600">Invoice Total:</span>
+                            <p className="font-medium text-gray-900">{formatCurrency(selectedBill.invoice_details.totalAmount)}</p>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Final Total */}
+                    <div className="bg-primary-50 rounded-lg p-4 border-2 border-primary-200">
+                      <div className="flex justify-between items-center">
+                        <span className="text-lg font-semibold text-primary-700">Final Amount:</span>
+                        <span className="text-2xl font-bold text-primary-600">
+                          {formatCurrency(selectedBill.total_amount)}
+                        </span>
+                      </div>
+                    </div>
                   </div>
                 </div>
               )}

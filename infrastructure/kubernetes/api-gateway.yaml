@@ -4,7 +4,7 @@ metadata:
   name: aerive-api-gateway
   namespace: aerive
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: aerive-api-gateway
@@ -15,8 +15,8 @@ spec:
     spec:
       containers:
       - name: api-gateway
-        image: aerive/api-gateway:latest
-        imagePullPolicy: Never
+        image: 985121561706.dkr.ecr.us-east-1.amazonaws.com/aerive/api-gateway:latest
+        imagePullPolicy: Always
         ports:
         - containerPort: 3000
         envFrom:

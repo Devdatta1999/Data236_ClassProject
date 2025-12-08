@@ -229,6 +229,32 @@ app.use('/api/admin', createProxyMiddleware({
   }
 }));
 
+// Analytics Routes (also proxied to Admin Service)
+app.use('/api/analytics', createProxyMiddleware({
+  target: ADMIN_SERVICE,
+  changeOrigin: true,
+  pathRewrite: {
+    '^/api/analytics': '/api/analytics'
+  },
+  buffer: false,
+  onProxyReq: (proxyReq, req, res) => {
+    logger.info(`Proxying to Admin Service (Analytics): ${req.method} ${req.path}`);
+    if (req.body && typeof req.body === 'object') {
+      const bodyData = JSON.stringify(req.body);
+      proxyReq.setHeader('Content-Type', 'application/json');
+      proxyReq.setHeader('Content-Length', Buffer.byteLength(bodyData));
+      proxyReq.write(bodyData);
+      proxyReq.end();
+    }
+  },
+  onError: (err, req, res) => {
+    logger.error('Analytics Service proxy error:', err);
+    if (!res.headersSent) {
+      res.status(502).json({ error: 'Analytics service unavailable', details: err.message });
+    }
+  }
+}));
+
 // Error handler
 app.use(errorHandler);
 

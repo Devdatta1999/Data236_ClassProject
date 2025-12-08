@@ -4,7 +4,7 @@ metadata:
   name: aerive-listing-service
   namespace: aerive
 spec:
-  replicas: 3
+  replicas: 2
   selector:
     matchLabels:
       app: aerive-listing-service
@@ -15,8 +15,8 @@ spec:
     spec:
       containers:
       - name: listing-service
-        image: aerive/listing-service:latest
-        imagePullPolicy: Never
+        image: 985121561706.dkr.ecr.us-east-1.amazonaws.com/aerive/listing-service:latest
+        imagePullPolicy: Always
         ports:
         - containerPort: 3002
         envFrom:
@@ -30,10 +30,10 @@ spec:
         resources:
           requests:
             memory: "256Mi"
-            cpu: "250m"
+            cpu: "100m"
           limits:
             memory: "512Mi"
-            cpu: "500m"
+            cpu: "200m"
         livenessProbe:
           httpGet:
             path: /health
