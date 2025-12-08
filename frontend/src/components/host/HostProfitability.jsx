@@ -1,21 +1,76 @@
+import { useState, useEffect } from 'react'
+import { useSelector } from 'react-redux'
 import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts'
+import api from '../../services/apiService'
 
 const HostProfitability = ({ profitability }) => {
-  const revenueData = [
-    { month: 'Jan', revenue: 10000, bookings: 25 },
-    { month: 'Feb', revenue: 15000, bookings: 35 },
-    { month: 'Mar', revenue: 12000, bookings: 30 },
-    { month: 'Apr', revenue: 18000, bookings: 45 },
-    { month: 'May', revenue: 20000, bookings: 50 },
-    { month: 'Jun', revenue: 25000, bookings: 60 },
-  ]
+  const { user } = useSelector((state) => state.auth)
+  const [monthlyData, setMonthlyData] = useState([])
+  const [loading, setLoading] = useState(true)
+
+  // Get providerId from user
+  const providerId = user?.providerId || (() => {
+    try {
+      const storedUser = JSON.parse(localStorage.getItem('user') || 'null')
+      return storedUser?.providerId || null
+    } catch (e) {
+      return null
+    }
+  })()
+
+  useEffect(() => {
+    if (providerId) {
+      fetchProfitabilityData()
+    } else {
+      setLoading(false)
+    }
+  }, [providerId])
+
+  const fetchProfitabilityData = async () => {
+    try {
+      setLoading(true)
+      const response = await api.get(`/api/analytics/host/${providerId}/profitability`)
+      if (response?.data?.success && response.data.data?.monthlyRevenue) {
+        // Transform monthlyRevenue to chart format
+        const chartData = response.data.data.monthlyRevenue.map(item => ({
+          month: item.monthName,
+          revenue: item.revenue || 0,
+          bookings: item.bookingCount || 0
+        }))
+        setMonthlyData(chartData)
+      } else {
+        // Fallback to empty data
+        setMonthlyData([])
+      }
+    } catch (error) {
+      console.error('Failed to fetch profitability data:', error)
+      setMonthlyData([])
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  // Use real data if available, otherwise show empty
+  const revenueData = monthlyData.length > 0 ? monthlyData : []
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+          <p className="mt-4 text-gray-600">Loading profitability data...</p>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="space-y-6">
       <div className="card">
         <h3 className="text-xl font-semibold mb-4">Revenue Trend</h3>
-        <ResponsiveContainer width="100%" height={300}>
-          <LineChart data={revenueData}>
+        {revenueData.length > 0 ? (
+          <ResponsiveContainer width="100%" height={300}>
+            <LineChart data={revenueData}>
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis dataKey="month" />
             <YAxis />
@@ -24,12 +79,18 @@ const HostProfitability = ({ profitability }) => {
             <Line type="monotone" dataKey="revenue" stroke="#3b82f6" strokeWidth={2} name="Revenue ($)" />
           </LineChart>
         </ResponsiveContainer>
+        ) : (
+          <div className="flex items-center justify-center h-64 text-gray-500">
+            <p>No revenue data available</p>
+          </div>
+        )}
       </div>
 
       <div className="card">
         <h3 className="text-xl font-semibold mb-4">Bookings Trend</h3>
-        <ResponsiveContainer width="100%" height={300}>
-          <BarChart data={revenueData}>
+        {revenueData.length > 0 ? (
+          <ResponsiveContainer width="100%" height={300}>
+            <BarChart data={revenueData}>
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis dataKey="month" />
             <YAxis />
@@ -38,6 +99,11 @@ const HostProfitability = ({ profitability }) => {
             <Bar dataKey="bookings" fill="#10b981" name="Bookings" />
           </BarChart>
         </ResponsiveContainer>
+        ) : (
+          <div className="flex items-center justify-center h-64 text-gray-500">
+            <p>No bookings data available</p>
+          </div>
+        )}
       </div>
 
       <div className="grid md:grid-cols-2 gap-6">

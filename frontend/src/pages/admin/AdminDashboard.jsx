@@ -7,8 +7,7 @@ import { CheckCircle, XCircle, Plus, BarChart3, Users, TrendingUp, ListChecks, R
 import PendingRequestsTab from '../../components/admin/PendingRequestsTab'
 import ApprovedListingsTab from '../../components/admin/ApprovedListingsTab'
 import CreateListingTab from '../../components/admin/CreateListingTab'
-import AdminAnalyticsTab from '../../components/admin/AdminAnalyticsTab'
-import HostAnalyticsTab from '../../components/admin/HostAnalyticsTab'
+import EnhancedAdminAnalyticsTab from '../../components/admin/EnhancedAdminAnalyticsTab'
 import UserManagementTab from '../../components/admin/UserManagementTab'
 import BillManagementTab from '../../components/admin/BillManagementTab'
 
@@ -66,8 +65,7 @@ const AdminDashboard = () => {
     { id: 'create', label: 'Create Listing', icon: Plus },
     { id: 'users', label: 'User Management', icon: Users },
     { id: 'bills', label: 'Bill Management', icon: Receipt },
-    { id: 'admin-dashboard', label: 'Admin Dashboard', icon: BarChart3 },
-    { id: 'host-dashboard', label: 'Host Dashboard', icon: TrendingUp },
+    { id: 'admin-dashboard', label: 'Admin Analytics', icon: BarChart3 },
   ]
 
   return (
@@ -112,8 +110,7 @@ const AdminDashboard = () => {
         {selectedTab === 'create' && <CreateListingTab />}
         {selectedTab === 'users' && <UserManagementTab />}
         {selectedTab === 'bills' && <BillManagementTab />}
-        {selectedTab === 'admin-dashboard' && <AdminAnalyticsTab analytics={analytics} />}
-        {selectedTab === 'host-dashboard' && <HostAnalyticsTab />}
+        {selectedTab === 'admin-dashboard' && <EnhancedAdminAnalyticsTab />}
       </div>
     </div>
   )
