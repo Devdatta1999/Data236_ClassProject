@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jmeterTestPlan version="1.2" properties="5.0" jmeter="5.6.3">
+  <hashTree>
+    <TestPlan guiclass="TestPlanGui" testclass="TestPlan" testname="Base Performance Test" enabled="true">
+      <stringProp name="TestPlan.comments">HTTP requests without caching - Base performance baseline</stringProp>
+      <boolProp name="TestPlan.functional_mode">false</boolProp>
+      <boolProp name="TestPlan.tearDown_on_shutdown">true</boolProp>
+      <boolProp name="TestPlan.serialize_threadgroups">false</boolProp>
+      <elementProp name="TestPlan.arguments" elementType="Arguments" guiclass="ArgumentsPanel">
+        <collectionProp name="Arguments.arguments">
+          <elementProp name="API_GATEWAY_URL" elementType="Argument">
+            <stringProp name="Argument.name">API_GATEWAY_URL</stringProp>
+            <stringProp name="Argument.value">http://localhost:3000</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+        </collectionProp>
+      </elementProp>
+    </TestPlan>
+    <hashTree>
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Thread Group">
+        <stringProp name="ThreadGroup.num_threads">${__P(USERS,100)}</stringProp>
+        <stringProp name="ThreadGroup.ramp_time">${__P(RAMP_UP,10)}</stringProp>
+        <stringProp name="ThreadGroup.duration">${__P(DURATION,300)}</stringProp>
+        <boolProp name="ThreadGroup.same_user_on_next_iteration">true</boolProp>
+        <boolProp name="ThreadGroup.scheduler">true</boolProp>
+        <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
+        <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller">
+          <intProp name="LoopController.loops">-1</intProp>
+          <boolProp name="LoopController.continue_forever">false</boolProp>
+        </elementProp>
+      </ThreadGroup>
+      <hashTree>
+        <CSVDataSet guiclass="TestBeanGUI" testclass="CSVDataSet" testname="Users CSV">
+          <stringProp name="delimiter">,</stringProp>
+          <stringProp name="fileEncoding">UTF-8</stringProp>
+          <stringProp name="filename">/Users/spartan/Documents/236/Project/Data236_ClassProject/performance-testing/test-data/users.csv</stringProp>
+          <boolProp name="ignoreFirstLine">true</boolProp>
+          <boolProp name="quoted">false</boolProp>
+          <boolProp name="recycle">true</boolProp>
+          <stringProp name="shareMode">shareMode.all</stringProp>
+          <stringProp name="variableNames">userId,email,password,firstName,lastName,phoneNumber,address,city,state,zipCode,ssn</stringProp>
+          <boolProp name="quotedData">false</boolProp>
+          <boolProp name="stopThread">false</boolProp>
+        </CSVDataSet>
+        <hashTree/>
+      </hashTree>
+    </hashTree>
+  </hashTree>
+</jmeterTestPlan>

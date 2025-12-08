@@ -1,0 +1,34 @@
+{
+  "base": {
+    "avgLatency": 788,
+    "p95Latency": 1309,
+    "throughput": 70.01,
+    "errorRate": 1.81,
+    "totalRequests": 25214,
+    "totalTime": 360.163
+  },
+  "cache": {
+    "avgLatency": 306,
+    "p95Latency": 523,
+    "throughput": 93.76,
+    "errorRate": 2.07,
+    "totalRequests": 33492,
+    "totalTime": 357.228
+  },
+  "kafka": {
+    "avgLatency": 234,
+    "p95Latency": 399,
+    "throughput": 118.01,
+    "errorRate": 1.98,
+    "totalRequests": 41520,
+    "totalTime": 351.831
+  },
+  "full": {
+    "avgLatency": 190,
+    "p95Latency": 323,
+    "throughput": 134.22,
+    "errorRate": 1.99,
+    "totalRequests": 49808,
+    "totalTime": 371.092
+  }
+}

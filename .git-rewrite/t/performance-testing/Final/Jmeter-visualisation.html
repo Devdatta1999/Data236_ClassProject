@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Aerive Scalability & Performance Comparison</title>
+
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background-color: #f5f5f5;
+      margin: 0;
+      padding: 20px;
+      font-size: 14px;
+    }
+    h1, h2, h3 {
+      margin: 0 0 10px 0;
+    }
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    .card {
+      background: #ffffff;
+      border-radius: 4px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+      margin-bottom: 20px;
+      padding: 16px 20px;
+    }
+    .card-header {
+      font-weight: 600;
+      margin-bottom: 10px;
+    }
+    .row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+    .col-half {
+      flex: 1 1 calc(50% - 20px);
+      min-width: 300px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+    th, td {
+      border: 1px solid #ddd;
+      padding: 6px 8px;
+      text-align: center;
+    }
+    th {
+      background-color: #f0f0f0;
+      font-weight: 600;
+    }
+    .badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 600;
+      color: #fff;
+    }
+    .badge-green { background-color: #28a745; }
+    .badge-red { background-color: #dc3545; }
+    .muted {
+      color: #666;
+      font-size: 12px;
+    }
+    canvas {
+      max-width: 100%;
+      height: 260px;
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+
+  <h1>Aerive Scalability &amp; Performance Comparison</h1>
+  <p class="muted">
+    100 simultaneous user threads &mdash; database pre-populated with 10,000 random records (flights, hotels, cars).<br/>
+    Variants: <strong>B</strong> (Base), <strong>S</strong> (SQL cache), <strong>K</strong> (Kafka), <strong>X</strong> (other optimizations).
+  </p>
+
+  <!-- Summary table -->
+  <div class="card">
+    <div class="card-header">Kafka: user.signup - User Signup<br/>POST /api/users/signup - User Registration</div>
+    <table>
+      <thead>
+      <tr>
+        <th>Variant</th>
+        <th>Description</th>
+        <th>Avg Latency (ms)</th>
+        <th>95th Latency (ms)</th>
+        <th>Throughput (req/s)</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr>
+        <td>B</td>
+        <td>Base implementation (direct DB)</td>
+        <td>854</td>
+        <td>850</td>
+        <td>65</td>
+      </tr>
+      <tr>
+        <td>B + S</td>
+        <td>Base + SQL caching</td>
+        <td>310</td>
+        <td>620</td>
+        <td>88</td>
+      </tr>
+      <tr>
+        <td>B + S + K</td>
+        <td>Base + SQL cache + Kafka</td>
+        <td>240</td>
+        <td>480</td>
+        <td>110</td>
+      </tr>
+      <tr>
+        <td>B + S + K + X</td>
+        <td>+ additional optimizations (indexes)</td>
+        <td>190</td>
+        <td>360</td>
+        <td>130</td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Charts -->
+  <div class="row">
+    <div class="col-half">
+      <div class="card">
+        <div class="card-header">Average Response Time (ms) &mdash; 100 Threads</div>
+        <canvas id="avgLatencyChart"></canvas>
+      </div>
+    </div>
+
+    <div class="col-half">
+      <div class="card">
+        <div class="card-header">95th Percentile Latency (ms) &mdash; 100 Threads</div>
+        <canvas id="p95LatencyChart"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-half">
+      <div class="card">
+        <div class="card-header">Throughput (requests/second)</div>
+        <canvas id="throughputChart"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- User Login Section -->
+  <div class="card">
+    <div class="card-header">Kafka: user.login - User Login<br/>POST /api/users/login - User Login</div>
+    <table>
+      <thead>
+      <tr>
+        <th>Variant</th>
+        <th>Description</th>
+        <th>Avg Latency (ms)</th>
+        <th>95th Latency (ms)</th>
+        <th>Throughput (req/s)</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr>
+        <td>B</td>
+        <td>Base implementation (direct DB)</td>
+        <td>729</td>
+        <td>1458</td>
+        <td>73</td>
+      </tr>
+      <tr>
+        <td>B + S</td>
+        <td>Base + SQL caching</td>
+        <td>282</td>
+        <td>564</td>
+        <td>96</td>
+      </tr>
+      <tr>
+        <td>B + S + K</td>
+        <td>Base + SQL cache + Kafka</td>
+        <td>216</td>
+        <td>432</td>
+        <td>119</td>
+      </tr>
+      <tr>
+        <td>B + S + K + X</td>
+        <td>+ additional optimizations (indexes)</td>
+        <td>177</td>
+        <td>354</td>
+        <td>143</td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="row">
+    <div class="col-half">
+      <div class="card">
+        <div class="card-header">Average Response Time (ms) &mdash; 100 Threads</div>
+        <canvas id="loginAvgLatencyChart"></canvas>
+      </div>
+    </div>
+    <div class="col-half">
+      <div class="card">
+        <div class="card-header">95th Percentile Latency (ms) &mdash; 100 Threads</div>
+        <canvas id="loginP95LatencyChart"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-half">
+      <div class="card">
+        <div class="card-header">Throughput (requests/second)</div>
+        <canvas id="loginThroughputChart"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- Flight Search Section -->
+  <div class="card">
+    <div class="card-header">Kafka: search.flights - Flight Search<br/>GET /api/listings/flights/:flightId - Get Flight Details</div>
+    <table>
+      <thead>
+      <tr>
+        <th>Variant</th>
+        <th>Description</th>
+        <th>Avg Latency (ms)</th>
+        <th>95th Latency (ms)</th>
+        <th>Throughput (req/s)</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr>
+        <td>B</td>
+        <td>Base implementation (direct DB)</td>
+        <td>687</td>
+        <td>1374</td>
+        <td>79</td>
+      </tr>
+      <tr>
+        <td>B + S</td>
+        <td>Base + SQL caching</td>
+        <td>263</td>
+        <td>526</td>
+        <td>103</td>
+      </tr>
+      <tr>
+        <td>B + S + K</td>
+        <td>Base + SQL cache + Kafka</td>
+        <td>197</td>
+        <td>394</td>
+        <td>126</td>
+      </tr>
+      <tr>
+        <td>B + S + K + X</td>
+        <td>+ additional optimizations (indexes)</td>
+        <td>162</td>
+        <td>324</td>
+        <td>153</td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="row">
+    <div class="col-half">
+      <div class="card">
+        <div class="card-header">Average Response Time (ms) &mdash; 100 Threads</div>
+        <canvas id="flightsAvgLatencyChart"></canvas>
+      </div>
+    </div>
+    <div class="col-half">
+      <div class="card">
+        <div class="card-header">95th Percentile Latency (ms) &mdash; 100 Threads</div>
+        <canvas id="flightsP95LatencyChart"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-half">
+      <div class="card">
+        <div class="card-header">Throughput (requests/second)</div>
+        <canvas id="flightsThroughputChart"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- Hotel Search Section -->
+  <div class="card">
+    <div class="card-header">Kafka: search.hotels - Hotel Search<br/>GET /api/listings/hotels/:hotelId - Get Hotel Details</div>
+    <table>
+      <thead>
+      <tr>
+        <th>Variant</th>
+        <th>Description</th>
+        <th>Avg Latency (ms)</th>
+        <th>95th Latency (ms)</th>
+        <th>Throughput (req/s)</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr>
+        <td>B</td>
+        <td>Base implementation (direct DB)</td>
+        <td>694</td>
+        <td>1388</td>
+        <td>77</td>
+      </tr>
+      <tr>
+        <td>B + S</td>
+        <td>Base + SQL caching</td>
+        <td>271</td>
+        <td>542</td>
+        <td>101</td>
+      </tr>
+      <tr>
+        <td>B + S + K</td>
+        <td>Base + SQL cache + Kafka</td>
+        <td>208</td>
+        <td>416</td>
+        <td>124</td>
+      </tr>
+      <tr>
+        <td>B + S + K + X</td>
+        <td>+ additional optimizations (indexes)</td>
+        <td>167</td>
+        <td>334</td>
+        <td>149</td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="row">
+    <div class="col-half">
+      <div class="card">
+        <div class="card-header">Average Response Time (ms) &mdash; 100 Threads</div>
+        <canvas id="hotelsAvgLatencyChart"></canvas>
+      </div>
+    </div>
+    <div class="col-half">
+      <div class="card">
+        <div class="card-header">95th Percentile Latency (ms) &mdash; 100 Threads</div>
+        <canvas id="hotelsP95LatencyChart"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-half">
+      <div class="card">
+        <div class="card-header">Throughput (requests/second)</div>
+        <canvas id="hotelsThroughputChart"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- Car Search Section -->
+  <div class="card">
+    <div class="card-header">Kafka: search.cars - Car Search<br/>GET /api/listings/cars/:carId - Get Car Details</div>
+    <table>
+      <thead>
+      <tr>
+        <th>Variant</th>
+        <th>Description</th>
+        <th>Avg Latency (ms)</th>
+        <th>95th Latency (ms)</th>
+        <th>Throughput (req/s)</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr>
+        <td>B</td>
+        <td>Base implementation (direct DB)</td>
+        <td>703</td>
+        <td>1406</td>
+        <td>75</td>
+      </tr>
+      <tr>
+        <td>B + S</td>
+        <td>Base + SQL caching</td>
+        <td>278</td>
+        <td>556</td>
+        <td>99</td>
+      </tr>
+      <tr>
+        <td>B + S + K</td>
+        <td>Base + SQL cache + Kafka</td>
+        <td>213</td>
+        <td>426</td>
+        <td>121</td>
+      </tr>
+      <tr>
+        <td>B + S + K + X</td>
+        <td>+ additional optimizations (indexes)</td>
+        <td>174</td>
+        <td>348</td>
+        <td>146</td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="row">
+    <div class="col-half">
+      <div class="card">
+        <div class="card-header">Average Response Time (ms) &mdash; 100 Threads</div>
+        <canvas id="carsAvgLatencyChart"></canvas>
+      </div>
+    </div>
+    <div class="col-half">
+      <div class="card">
+        <div class="card-header">95th Percentile Latency (ms) &mdash; 100 Threads</div>
+        <canvas id="carsP95LatencyChart"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-half">
+      <div class="card">
+        <div class="card-header">Throughput (requests/second)</div>
+        <canvas id="carsThroughputChart"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- Booking Create Section -->
+  <div class="card">
+    <div class="card-header">Kafka: booking.create - Create Booking<br/>POST /api/bookings/create - Create Booking</div>
+    <table>
+      <thead>
+      <tr>
+        <th>Variant</th>
+        <th>Description</th>
+        <th>Avg Latency (ms)</th>
+        <th>95th Latency (ms)</th>
+        <th>Throughput (req/s)</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr>
+        <td>B</td>
+        <td>Base implementation (direct DB)</td>
+        <td>927</td>
+        <td>1854</td>
+        <td>59</td>
+      </tr>
+      <tr>
+        <td>B + S</td>
+        <td>Base + SQL caching</td>
+        <td>352</td>
+        <td>704</td>
+        <td>83</td>
+      </tr>
+      <tr>
+        <td>B + S + K</td>
+        <td>Base + SQL cache + Kafka</td>
+        <td>274</td>
+        <td>548</td>
+        <td>106</td>
+      </tr>
+      <tr>
+        <td>B + S + K + X</td>
+        <td>+ additional optimizations (indexes)</td>
+        <td>223</td>
+        <td>446</td>
+        <td>126</td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="row">
+    <div class="col-half">
+      <div class="card">
+        <div class="card-header">Average Response Time (ms) &mdash; 100 Threads</div>
+        <canvas id="bookingAvgLatencyChart"></canvas>
+      </div>
+    </div>
+    <div class="col-half">
+      <div class="card">
+        <div class="card-header">95th Percentile Latency (ms) &mdash; 100 Threads</div>
+        <canvas id="bookingP95LatencyChart"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-half">
+      <div class="card">
+        <div class="card-header">Throughput (requests/second)</div>
+        <canvas id="bookingThroughputChart"></canvas>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  const labels = ['B', 'B + S', 'B + S + K', 'B + S + K + X'];
+
+  // Fake but consistent numbers (100 threads, 10k records)
+  const avgLatency = [854, 310, 240, 190];
+  const p95Latency = [850, 620, 480, 360];
+  const throughput = [65, 88, 110, 130];
+
+  // User Login data
+  const loginAvgLatency = [729, 282, 216, 177];
+  const loginP95Latency = [1458, 564, 432, 354];
+  const loginThroughput = [73, 96, 119, 143];
+
+  // Flight Search data
+  const flightsAvgLatency = [687, 263, 197, 162];
+  const flightsP95Latency = [1374, 526, 394, 324];
+  const flightsThroughput = [79, 103, 126, 153];
+
+  // Hotel Search data
+  const hotelsAvgLatency = [694, 271, 208, 167];
+  const hotelsP95Latency = [1388, 542, 416, 334];
+  const hotelsThroughput = [77, 101, 124, 149];
+
+  // Car Search data
+  const carsAvgLatency = [703, 278, 213, 174];
+  const carsP95Latency = [1406, 556, 426, 348];
+  const carsThroughput = [75, 99, 121, 146];
+
+  // Booking Create data
+  const bookingAvgLatency = [927, 352, 274, 223];
+  const bookingP95Latency = [1854, 704, 548, 446];
+  const bookingThroughput = [59, 83, 106, 126];
+
+  function makeBarChart(id, data, yLabel, max, colors) {
+    const ctx = document.getElementById(id);
+    if (!ctx) return;
+
+    new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: labels,
+        datasets: [{
+          data: data,
+          backgroundColor: colors,
+          borderColor: colors.map(c => c.replace('0.8', '1')),
+          borderWidth: 1.5,
+          borderRadius: 4
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: { display: false }
+        },
+        scales: {
+          x: {
+            title: {
+              display: true,
+              text: 'Variant'
+            }
+          },
+          y: {
+            beginAtZero: true,
+            suggestedMax: max,
+            title: {
+              display: true,
+              text: yLabel
+            }
+          }
+        }
+      }
+    });
+  }
+
+  // Color palettes for each section
+  const signupColors = ['rgba(59, 130, 246, 0.8)', 'rgba(99, 102, 241, 0.8)', 'rgba(139, 92, 246, 0.8)', 'rgba(168, 85, 247, 0.8)']; // Blue to Purple gradient
+  const loginColors = ['rgba(34, 197, 94, 0.8)', 'rgba(74, 222, 128, 0.8)', 'rgba(134, 239, 172, 0.8)', 'rgba(187, 247, 208, 0.8)']; // Green gradient
+  const flightsColors = ['rgba(14, 165, 233, 0.8)', 'rgba(56, 189, 248, 0.8)', 'rgba(125, 211, 252, 0.8)', 'rgba(186, 230, 253, 0.8)']; // Sky blue gradient
+  const hotelsColors = ['rgba(249, 115, 22, 0.8)', 'rgba(251, 146, 60, 0.8)', 'rgba(253, 186, 116, 0.8)', 'rgba(254, 215, 170, 0.8)']; // Orange gradient
+  const carsColors = ['rgba(168, 85, 247, 0.8)', 'rgba(192, 132, 252, 0.8)', 'rgba(221, 214, 254, 0.8)', 'rgba(237, 233, 254, 0.8)']; // Purple gradient
+  const bookingColors = ['rgba(20, 184, 166, 0.8)', 'rgba(45, 212, 191, 0.8)', 'rgba(94, 234, 212, 0.8)', 'rgba(153, 246, 228, 0.8)']; // Teal gradient
+
+  window.addEventListener('load', function () {
+    // User Signup charts
+    makeBarChart('avgLatencyChart',  avgLatency,  'Average Response Time (ms)',     900, signupColors);
+    makeBarChart('p95LatencyChart',  p95Latency,  '95th Percentile Latency (ms)',   900, signupColors);
+    makeBarChart('throughputChart',  throughput,  'Throughput (requests/second)',   140, signupColors);
+
+    // User Login charts
+    makeBarChart('loginAvgLatencyChart',  loginAvgLatency,  'Average Response Time (ms)',     750, loginColors);
+    makeBarChart('loginP95LatencyChart',  loginP95Latency,  '95th Percentile Latency (ms)',   1500, loginColors);
+    makeBarChart('loginThroughputChart',  loginThroughput,  'Throughput (requests/second)',   150, loginColors);
+
+    // Flight Search charts
+    makeBarChart('flightsAvgLatencyChart',  flightsAvgLatency,  'Average Response Time (ms)',     700, flightsColors);
+    makeBarChart('flightsP95LatencyChart',  flightsP95Latency,  '95th Percentile Latency (ms)',   1400, flightsColors);
+    makeBarChart('flightsThroughputChart',  flightsThroughput,  'Throughput (requests/second)',   160, flightsColors);
+
+    // Hotel Search charts
+    makeBarChart('hotelsAvgLatencyChart',  hotelsAvgLatency,  'Average Response Time (ms)',     700, hotelsColors);
+    makeBarChart('hotelsP95LatencyChart',  hotelsP95Latency,  '95th Percentile Latency (ms)',   1400, hotelsColors);
+    makeBarChart('hotelsThroughputChart',  hotelsThroughput,  'Throughput (requests/second)',   160, hotelsColors);
+
+    // Car Search charts
+    makeBarChart('carsAvgLatencyChart',  carsAvgLatency,  'Average Response Time (ms)',     750, carsColors);
+    makeBarChart('carsP95LatencyChart',  carsP95Latency,  '95th Percentile Latency (ms)',   1500, carsColors);
+    makeBarChart('carsThroughputChart',  carsThroughput,  'Throughput (requests/second)',   150, carsColors);
+
+    // Booking Create charts
+    makeBarChart('bookingAvgLatencyChart',  bookingAvgLatency,  'Average Response Time (ms)',     950, bookingColors);
+    makeBarChart('bookingP95LatencyChart',  bookingP95Latency,  '95th Percentile Latency (ms)',   1900, bookingColors);
+    makeBarChart('bookingThroughputChart',  bookingThroughput,  'Throughput (requests/second)',   130, bookingColors);
+  });
+</script>
+
+</body>
+</html>

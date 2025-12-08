@@ -1,0 +1,201 @@
+type,departureAirport,arrivalAirport,departureDate,returnDate,tripType,seatType,numberOfPassengers,city,state,checkInDate,checkOutDate,numberOfRooms,numberOfAdults,starRating,location,pickupDate,dropoffDate,carType,transmissionType
+flight,MSP,DEN,2025-12-17,2025-12-23,one-way,Business,1,,,,,,,,,,,,
+car,,,,,,,,,,,,,,,New York, GA,2025-12-20,2025-12-23,Hatchback,Manual
+hotel,,,,,,,,Philadelphia,MA,2025-12-10,2025-12-13,2,1,3,,,,,
+hotel,,,,,,,,Las Vegas,NY,2025-12-24,2025-12-28,2,2,5,,,,,
+flight,MIA,ORD,2025-12-13,2025-12-19,one-way,Economy,2,,,,,,,,,,,,
+hotel,,,,,,,,Memphis,PA,2025-12-16,2025-12-20,1,2,5,,,,,
+flight,LAX,DTW,2025-12-29,2026-01-02,round-trip,First,1,,,,,,,,,,,,
+car,,,,,,,,,,,,,,,Philadelphia, NY,2025-12-03,2025-12-04,Convertible,Manual
+flight,SEA,DFW,2025-12-25,2025-12-27,round-trip,Business,1,,,,,,,,,,,,
+flight,IAH,DCA,2025-12-02,2025-12-06,round-trip,Business,3,,,,,,,,,,,,
+hotel,,,,,,,,San Diego,OH,2025-12-16,2025-12-18,2,2,3,,,,,
+hotel,,,,,,,,Las Vegas,GA,2025-12-30,2026-01-01,1,1,4,,,,,
+car,,,,,,,,,,,,,,,San Jose, FL,2025-12-27,2026-01-01,SUV,Automatic
+car,,,,,,,,,,,,,,,Oklahoma City, WA,2025-12-05,2025-12-06,Truck,Automatic
+car,,,,,,,,,,,,,,,Los Angeles, VA,2025-12-11,2025-12-14,Hatchback,Automatic
+hotel,,,,,,,,Milwaukee,MO,2025-12-27,2025-12-31,2,2,3,,,,,
+flight,BWI,MIA,2025-12-15,2025-12-22,round-trip,First,2,,,,,,,,,,,,
+flight,MSP,PHX,2025-12-01,2025-12-07,one-way,Business,1,,,,,,,,,,,,
+hotel,,,,,,,,Louisville,OH,2025-12-06,2025-12-08,1,1,3,,,,,
+flight,LAX,SFO,2025-12-07,2025-12-08,round-trip,Economy,1,,,,,,,,,,,,
+flight,ORD,PHL,2025-12-06,2025-12-07,one-way,First,2,,,,,,,,,,,,
+hotel,,,,,,,,Los Angeles,GA,2025-12-16,2025-12-22,1,2,4,,,,,
+car,,,,,,,,,,,,,,,Las Vegas, IL,2025-12-19,2025-12-24,Convertible,Manual
+car,,,,,,,,,,,,,,,Jacksonville, IL,2025-12-18,2025-12-19,Coupe,Manual
+flight,LGA,IAH,2025-12-15,2025-12-22,one-way,Business,3,,,,,,,,,,,,
+hotel,,,,,,,,Austin,WA,2025-12-10,2025-12-11,1,2,3,,,,,
+hotel,,,,,,,,Boston,MI,2025-12-18,2025-12-21,1,2,5,,,,,
+flight,IAH,SFO,2025-12-20,2025-12-24,round-trip,Business,2,,,,,,,,,,,,
+hotel,,,,,,,,El Paso,GA,2025-12-14,2025-12-16,2,2,3,,,,,
+hotel,,,,,,,,El Paso,PA,2025-12-07,2025-12-08,1,3,4,,,,,
+car,,,,,,,,,,,,,,,Memphis, MA,2025-12-04,2025-12-09,Sedan,Automatic
+car,,,,,,,,,,,,,,,San Diego, NJ,2025-12-26,2026-01-01,Sedan,Automatic
+flight,LAS,HNL,2025-12-01,2025-12-07,round-trip,Economy,2,,,,,,,,,,,,
+flight,DCA,HNL,2025-12-23,2025-12-25,one-way,Economy,1,,,,,,,,,,,,
+flight,MDW,IAH,2025-12-11,2025-12-17,round-trip,Economy,1,,,,,,,,,,,,
+flight,SEA,LAX,2025-12-20,2025-12-25,round-trip,First,1,,,,,,,,,,,,
+hotel,,,,,,,,San Jose,WA,2025-12-26,2025-12-28,2,3,5,,,,,
+hotel,,,,,,,,Baltimore,TX,2025-12-17,2025-12-21,2,2,5,,,,,
+hotel,,,,,,,,Boston,PA,2025-12-02,2025-12-05,2,1,4,,,,,
+hotel,,,,,,,,Philadelphia,NC,2025-12-14,2025-12-15,2,2,4,,,,,
+car,,,,,,,,,,,,,,,Dallas, PA,2025-12-26,2025-12-28,Convertible,Manual
+hotel,,,,,,,,Jacksonville,TN,2025-12-10,2025-12-14,1,2,5,,,,,
+flight,SFO,HNL,2025-12-12,2025-12-19,one-way,First,1,,,,,,,,,,,,
+car,,,,,,,,,,,,,,,San Jose, VA,2025-12-09,2025-12-13,Truck,Manual
+flight,MSP,IAH,2025-12-23,2025-12-30,round-trip,Business,3,,,,,,,,,,,,
+car,,,,,,,,,,,,,,,Portland, IL,2025-12-28,2026-01-01,Coupe,Manual
+hotel,,,,,,,,San Francisco,PA,2025-12-05,2025-12-07,1,1,3,,,,,
+flight,DCA,LAX,2025-12-10,2025-12-14,one-way,First,3,,,,,,,,,,,,
+flight,HNL,BWI,2025-12-29,2026-01-03,one-way,Business,3,,,,,,,,,,,,
+flight,LGA,MIA,2025-12-01,2025-12-05,round-trip,Economy,3,,,,,,,,,,,,
+car,,,,,,,,,,,,,,,Phoenix, VA,2025-12-28,2026-01-04,Truck,Automatic
+hotel,,,,,,,,Nashville,OH,2025-12-29,2026-01-05,2,3,5,,,,,
+car,,,,,,,,,,,,,,,Las Vegas, IN,2025-12-04,2025-12-06,Sedan,Manual
+flight,LAX,LAS,2025-12-18,2025-12-21,one-way,Business,3,,,,,,,,,,,,
+car,,,,,,,,,,,,,,,Baltimore, PA,2025-12-24,2025-12-30,Convertible,Automatic
+car,,,,,,,,,,,,,,,Oklahoma City, WI,2025-12-13,2025-12-14,Sedan,Manual
+flight,PHL,SEA,2025-12-29,2025-12-31,one-way,Economy,2,,,,,,,,,,,,
+hotel,,,,,,,,Portland,OH,2025-12-17,2025-12-20,2,3,3,,,,,
+flight,SLC,DCA,2025-12-27,2026-01-01,round-trip,First,1,,,,,,,,,,,,
+flight,DTW,DFW,2025-12-09,2025-12-16,one-way,Business,1,,,,,,,,,,,,
+flight,DTW,SLC,2025-12-16,2025-12-17,round-trip,First,1,,,,,,,,,,,,
+hotel,,,,,,,,Nashville,NC,2025-12-24,2025-12-25,1,3,3,,,,,
+hotel,,,,,,,,Dallas,IL,2025-12-10,2025-12-16,1,2,3,,,,,
+car,,,,,,,,,,,,,,,Charlotte, TN,2025-12-19,2025-12-26,Coupe,Manual
+car,,,,,,,,,,,,,,,San Francisco, TN,2025-12-13,2025-12-14,Sedan,Automatic
+flight,PHL,DEN,2025-12-07,2025-12-08,round-trip,First,3,,,,,,,,,,,,
+car,,,,,,,,,,,,,,,Seattle, CA,2025-12-09,2025-12-16,Hatchback,Manual
+car,,,,,,,,,,,,,,,Nashville, PA,2025-12-07,2025-12-13,Coupe,Manual
+car,,,,,,,,,,,,,,,Chicago, PA,2025-12-30,2025-12-31,Sedan,Automatic
+hotel,,,,,,,,Denver,WA,2025-12-24,2025-12-28,1,2,5,,,,,
+flight,SEA,IAH,2025-12-07,2025-12-08,one-way,First,3,,,,,,,,,,,,
+hotel,,,,,,,,New York,TX,2025-12-12,2025-12-16,2,3,5,,,,,
+hotel,,,,,,,,Seattle,OH,2025-12-07,2025-12-08,1,2,5,,,,,
+flight,ORD,PHX,2025-12-30,2026-01-03,round-trip,Business,1,,,,,,,,,,,,
+flight,HNL,MIA,2025-12-19,2025-12-22,round-trip,Economy,3,,,,,,,,,,,,
+flight,DTW,HNL,2025-12-19,2025-12-20,one-way,Economy,1,,,,,,,,,,,,
+car,,,,,,,,,,,,,,,Chicago, AZ,2025-12-18,2025-12-25,Hatchback,Automatic
+car,,,,,,,,,,,,,,,Los Angeles, TX,2025-12-04,2025-12-06,Convertible,Automatic
+flight,SFO,MSP,2025-12-12,2025-12-14,one-way,Business,1,,,,,,,,,,,,
+flight,HNL,LAX,2025-12-03,2025-12-07,round-trip,First,2,,,,,,,,,,,,
+hotel,,,,,,,,San Jose,NJ,2025-12-18,2025-12-21,2,3,3,,,,,
+flight,ORD,BWI,2025-12-16,2025-12-17,round-trip,First,2,,,,,,,,,,,,
+flight,SEA,MIA,2025-12-29,2026-01-05,round-trip,Business,2,,,,,,,,,,,,
+flight,DCA,MIA,2025-12-10,2025-12-16,round-trip,Economy,3,,,,,,,,,,,,
+car,,,,,,,,,,,,,,,Washington, IL,2025-12-20,2025-12-24,Coupe,Automatic
+hotel,,,,,,,,Las Vegas,TX,2025-12-06,2025-12-11,1,1,4,,,,,
+flight,SFO,LGA,2025-12-27,2026-01-01,round-trip,Economy,1,,,,,,,,,,,,
+hotel,,,,,,,,Philadelphia,MO,2025-12-12,2025-12-17,1,3,3,,,,,
+car,,,,,,,,,,,,,,,San Diego, NC,2025-12-20,2025-12-22,Sedan,Manual
+flight,MIA,IAH,2025-12-14,2025-12-20,one-way,First,3,,,,,,,,,,,,
+flight,MDW,DEN,2025-12-12,2025-12-14,one-way,First,2,,,,,,,,,,,,
+hotel,,,,,,,,Fort Worth,MD,2025-12-24,2025-12-31,2,1,4,,,,,
+flight,PHL,DTW,2025-12-17,2025-12-23,one-way,Business,2,,,,,,,,,,,,
+hotel,,,,,,,,Memphis,VA,2025-12-24,2025-12-29,2,1,5,,,,,
+hotel,,,,,,,,Washington,GA,2025-12-20,2025-12-22,2,1,4,,,,,
+flight,DEN,MIA,2025-12-14,2025-12-18,one-way,First,1,,,,,,,,,,,,
+flight,IAH,JFK,2025-12-04,2025-12-08,one-way,Economy,1,,,,,,,,,,,,
+car,,,,,,,,,,,,,,,Louisville, TN,2025-12-25,2025-12-26,Truck,Automatic
+hotel,,,,,,,,Seattle,CA,2025-12-23,2025-12-29,2,1,3,,,,,
+hotel,,,,,,,,San Antonio,VA,2025-12-13,2025-12-16,2,3,5,,,,,
+flight,DEN,ORD,2025-12-06,2025-12-11,round-trip,First,3,,,,,,,,,,,,
+car,,,,,,,,,,,,,,,Chicago, PA,2025-12-17,2025-12-24,SUV,Manual
+hotel,,,,,,,,San Jose,GA,2025-12-14,2025-12-21,2,1,3,,,,,
+hotel,,,,,,,,Charlotte,AZ,2025-12-10,2025-12-12,2,2,4,,,,,
+car,,,,,,,,,,,,,,,El Paso, VA,2025-12-28,2025-12-29,SUV,Manual
+flight,SFO,SLC,2025-12-19,2025-12-24,one-way,Business,2,,,,,,,,,,,,
+car,,,,,,,,,,,,,,,San Francisco, TN,2025-12-21,2025-12-26,Convertible,Automatic
+flight,ORD,DCA,2025-12-03,2025-12-08,one-way,Business,2,,,,,,,,,,,,
+hotel,,,,,,,,Austin,MO,2025-12-19,2025-12-20,2,1,5,,,,,
+car,,,,,,,,,,,,,,,Las Vegas, VA,2025-12-15,2025-12-18,Truck,Automatic
+car,,,,,,,,,,,,,,,San Francisco, VA,2025-12-01,2025-12-08,Truck,Manual
+car,,,,,,,,,,,,,,,Chicago, WI,2025-12-17,2025-12-19,Coupe,Manual
+hotel,,,,,,,,Austin,IL,2025-12-06,2025-12-12,1,3,5,,,,,
+hotel,,,,,,,,Portland,IL,2025-12-03,2025-12-10,2,1,4,,,,,
+hotel,,,,,,,,Milwaukee,CA,2025-12-09,2025-12-10,1,1,4,,,,,
+flight,SFO,ORD,2025-12-01,2025-12-08,round-trip,Business,2,,,,,,,,,,,,
+hotel,,,,,,,,Memphis,OH,2025-12-09,2025-12-10,2,2,5,,,,,
+car,,,,,,,,,,,,,,,New York, MO,2025-12-01,2025-12-04,Coupe,Manual
+flight,PHX,PHL,2025-12-15,2025-12-22,round-trip,Economy,1,,,,,,,,,,,,
+hotel,,,,,,,,Boston,VA,2025-12-11,2025-12-17,1,1,5,,,,,
+car,,,,,,,,,,,,,,,Houston, CA,2025-12-22,2025-12-27,Coupe,Manual
+hotel,,,,,,,,Milwaukee,AZ,2025-12-29,2026-01-04,1,1,4,,,,,
+hotel,,,,,,,,Denver,NC,2025-12-30,2026-01-01,1,1,3,,,,,
+hotel,,,,,,,,Austin,MA,2025-12-06,2025-12-11,2,3,3,,,,,
+flight,HNL,DEN,2025-12-22,2025-12-26,one-way,Business,3,,,,,,,,,,,,
+flight,MIA,HNL,2025-12-18,2025-12-21,one-way,First,2,,,,,,,,,,,,
+hotel,,,,,,,,Dallas,AZ,2025-12-25,2025-12-27,1,3,3,,,,,
+flight,SLC,DEN,2025-12-12,2025-12-13,one-way,First,3,,,,,,,,,,,,
+car,,,,,,,,,,,,,,,Washington, MA,2025-12-28,2025-12-30,Convertible,Manual
+hotel,,,,,,,,San Diego,WI,2025-12-22,2025-12-23,2,2,4,,,,,
+hotel,,,,,,,,Phoenix,NC,2025-12-06,2025-12-09,1,1,5,,,,,
+flight,BWI,LAX,2025-12-11,2025-12-15,round-trip,First,2,,,,,,,,,,,,
+flight,MSP,LAS,2025-12-16,2025-12-22,round-trip,Business,3,,,,,,,,,,,,
+car,,,,,,,,,,,,,,,Portland, WA,2025-12-28,2026-01-03,Hatchback,Manual
+flight,MIA,JFK,2025-12-05,2025-12-10,round-trip,Economy,1,,,,,,,,,,,,
+flight,LAX,PHL,2025-12-23,2025-12-25,one-way,Business,2,,,,,,,,,,,,
+flight,PHX,IAH,2025-12-23,2025-12-30,one-way,Economy,3,,,,,,,,,,,,
+hotel,,,,,,,,El Paso,MD,2025-12-26,2025-12-29,1,3,4,,,,,
+car,,,,,,,,,,,,,,,Washington, GA,2025-12-18,2025-12-25,SUV,Manual
+flight,LAS,DFW,2025-12-17,2025-12-19,round-trip,Business,3,,,,,,,,,,,,
+flight,LAS,LGA,2025-12-01,2025-12-04,one-way,Business,3,,,,,,,,,,,,
+hotel,,,,,,,,Milwaukee,MO,2025-12-01,2025-12-02,1,2,5,,,,,
+hotel,,,,,,,,Houston,TN,2025-12-17,2025-12-24,2,1,4,,,,,
+car,,,,,,,,,,,,,,,Boston, FL,2025-12-19,2025-12-23,Hatchback,Manual
+hotel,,,,,,,,Portland,WA,2025-12-11,2025-12-16,1,2,3,,,,,
+hotel,,,,,,,,Los Angeles,GA,2025-12-11,2025-12-15,2,1,3,,,,,
+flight,LAS,LGA,2025-12-01,2025-12-04,one-way,Economy,1,,,,,,,,,,,,
+flight,BWI,LAX,2025-12-11,2025-12-14,one-way,Economy,2,,,,,,,,,,,,
+flight,DEN,IAH,2025-12-09,2025-12-10,one-way,Business,2,,,,,,,,,,,,
+hotel,,,,,,,,Las Vegas,TX,2025-12-30,2026-01-05,2,2,3,,,,,
+flight,LGA,MSP,2025-12-06,2025-12-12,one-way,Business,2,,,,,,,,,,,,
+car,,,,,,,,,,,,,,,Nashville, AZ,2025-12-23,2025-12-24,Coupe,Manual
+hotel,,,,,,,,New York,GA,2025-12-20,2025-12-25,2,3,4,,,,,
+car,,,,,,,,,,,,,,,Boston, NY,2025-12-04,2025-12-09,Truck,Manual
+hotel,,,,,,,,Charlotte,WI,2025-12-11,2025-12-12,1,1,5,,,,,
+flight,DEN,PHL,2025-12-06,2025-12-11,one-way,First,1,,,,,,,,,,,,
+flight,HNL,SLC,2025-12-21,2025-12-28,one-way,Economy,3,,,,,,,,,,,,
+hotel,,,,,,,,Nashville,VA,2025-12-03,2025-12-05,2,2,4,,,,,
+flight,MSP,DFW,2025-12-03,2025-12-08,one-way,Economy,3,,,,,,,,,,,,
+flight,SLC,HNL,2025-12-02,2025-12-06,one-way,Economy,3,,,,,,,,,,,,
+flight,SLC,MIA,2025-12-15,2025-12-18,round-trip,Business,1,,,,,,,,,,,,
+car,,,,,,,,,,,,,,,Nashville, IN,2025-12-04,2025-12-06,Convertible,Automatic
+hotel,,,,,,,,Baltimore,TX,2025-12-09,2025-12-14,2,3,5,,,,,
+car,,,,,,,,,,,,,,,Portland, MO,2025-12-03,2025-12-10,SUV,Automatic
+hotel,,,,,,,,Houston,WA,2025-12-04,2025-12-08,2,2,4,,,,,
+flight,MIA,MSP,2025-12-21,2025-12-24,round-trip,First,2,,,,,,,,,,,,
+car,,,,,,,,,,,,,,,Phoenix, MD,2025-12-27,2025-12-29,SUV,Manual
+flight,MIA,DCA,2025-12-07,2025-12-13,round-trip,Economy,2,,,,,,,,,,,,
+car,,,,,,,,,,,,,,,Boston, MI,2025-12-05,2025-12-09,Coupe,Automatic
+flight,HNL,SFO,2025-12-03,2025-12-04,one-way,Economy,1,,,,,,,,,,,,
+hotel,,,,,,,,Denver,MI,2025-12-02,2025-12-03,2,2,5,,,,,
+hotel,,,,,,,,Oklahoma City,NY,2025-12-10,2025-12-14,2,1,4,,,,,
+hotel,,,,,,,,Fort Worth,IN,2025-12-14,2025-12-17,2,3,5,,,,,
+hotel,,,,,,,,Washington,WA,2025-12-13,2025-12-17,2,1,5,,,,,
+flight,LAS,DTW,2025-12-07,2025-12-12,round-trip,Business,2,,,,,,,,,,,,
+hotel,,,,,,,,Columbus,TX,2025-12-01,2025-12-07,1,3,5,,,,,
+flight,DCA,LGA,2025-12-07,2025-12-08,one-way,Economy,2,,,,,,,,,,,,
+flight,ORD,MDW,2025-12-28,2025-12-30,one-way,Economy,2,,,,,,,,,,,,
+flight,LAS,HNL,2025-12-30,2025-12-31,one-way,Economy,3,,,,,,,,,,,,
+flight,MSP,JFK,2025-12-23,2025-12-30,one-way,Business,1,,,,,,,,,,,,
+flight,PHL,DFW,2025-12-07,2025-12-12,one-way,Business,3,,,,,,,,,,,,
+hotel,,,,,,,,San Diego,TX,2025-12-02,2025-12-03,1,2,4,,,,,
+flight,SLC,MDW,2025-12-18,2025-12-24,one-way,Business,3,,,,,,,,,,,,
+flight,BWI,SLC,2025-12-17,2025-12-21,round-trip,First,1,,,,,,,,,,,,
+hotel,,,,,,,,Baltimore,TN,2025-12-04,2025-12-08,2,1,5,,,,,
+car,,,,,,,,,,,,,,,Louisville, MI,2025-12-20,2025-12-23,Convertible,Automatic
+flight,DFW,DEN,2025-12-01,2025-12-07,one-way,First,3,,,,,,,,,,,,
+hotel,,,,,,,,Columbus,MA,2025-12-19,2025-12-23,2,1,4,,,,,
+hotel,,,,,,,,Seattle,AZ,2025-12-15,2025-12-17,2,3,3,,,,,
+flight,PHL,DTW,2025-12-11,2025-12-17,round-trip,First,3,,,,,,,,,,,,
+hotel,,,,,,,,Milwaukee,NC,2025-12-02,2025-12-04,1,1,5,,,,,
+car,,,,,,,,,,,,,,,Chicago, GA,2025-12-08,2025-12-13,SUV,Automatic
+hotel,,,,,,,,Las Vegas,WI,2025-12-01,2025-12-02,1,2,5,,,,,
+flight,SFO,MSP,2025-12-09,2025-12-10,one-way,First,3,,,,,,,,,,,,
+car,,,,,,,,,,,,,,,Phoenix, MO,2025-12-06,2025-12-08,Truck,Automatic
+car,,,,,,,,,,,,,,,Phoenix, AZ,2025-12-28,2026-01-03,Coupe,Automatic
+car,,,,,,,,,,,,,,,Nashville, WI,2025-12-12,2025-12-19,Coupe,Automatic
+hotel,,,,,,,,Louisville,PA,2025-12-22,2025-12-25,1,1,3,,,,,
+flight,PHL,BWI,2025-12-23,2025-12-28,round-trip,Business,3,,,,,,,,,,,,
+car,,,,,,,,,,,,,,,Portland, NC,2025-12-14,2025-12-18,Sedan,Automatic
