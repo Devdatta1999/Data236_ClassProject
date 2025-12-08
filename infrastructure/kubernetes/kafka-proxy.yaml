@@ -4,7 +4,7 @@ metadata:
   name: aerive-kafka-proxy
   namespace: aerive
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: aerive-kafka-proxy
@@ -15,8 +15,8 @@ spec:
     spec:
       containers:
       - name: kafka-proxy
-        image: aerive/kafka-proxy:latest
-        imagePullPolicy: Never
+        image: 985121561706.dkr.ecr.us-east-1.amazonaws.com/aerive/kafka-proxy:latest
+        imagePullPolicy: Always
         ports:
         - containerPort: 3007
         envFrom:

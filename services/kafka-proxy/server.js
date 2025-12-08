@@ -48,6 +48,8 @@ let consumerReconnectAttempts = 0;
 const MAX_CONSUMER_RECONNECT_ATTEMPTS = 10;
 let consumerReconnectTimeout = null;
 let consumerHealthCheckInterval = null;
+let isInitializingConsumer = false; // Guard to prevent multiple simultaneous initializations
+let consumerRunCalled = false; // Track if run() has been called to prevent multiple calls
 
 // Middleware
 app.use(cors());
@@ -181,6 +183,25 @@ async function initResponseConsumer(retryAttempt = 0) {
       responseConsumer = null;
     }
   }
+  
+  // Prevent multiple simultaneous initialization attempts
+  if (isInitializingConsumer) {
+    // Wait for existing initialization to complete
+    let waitCount = 0;
+    while (isInitializingConsumer && waitCount < 30) {
+      await new Promise(resolve => setTimeout(resolve, 500));
+      waitCount++;
+      if (consumerReady && responseConsumer) {
+        return responseConsumer;
+      }
+    }
+  }
+  
+  if (isInitializingConsumer) {
+    throw new Error('Consumer initialization timeout');
+  }
+  
+  isInitializingConsumer = true;
 
   try {
     // Clean up existing consumer if any
@@ -192,25 +213,28 @@ async function initResponseConsumer(retryAttempt = 0) {
       }
       responseConsumer = null;
       consumerReady = false;
+      consumerRunCalled = false; // Reset flag when disconnecting
     }
 
     // Use unique consumer group per pod so each pod consumes all messages
+    // For single replica, use a fixed group ID to avoid rebalancing issues
     const podName = process.env.HOSTNAME || `kafka-proxy-${Date.now()}`;
     const uniqueGroupId = `kafka-proxy-response-${podName}`;
     
     responseConsumer = kafka.consumer({ 
       groupId: uniqueGroupId,
-      sessionTimeout: 30000, // Increased for stability
-      heartbeatInterval: 10000, // Increased heartbeat interval
+      sessionTimeout: 60000, // Increased to 60s for better stability
+      heartbeatInterval: 3000, // Heartbeat every 3s (must be < sessionTimeout/3)
       maxBytesPerPartition: 1048576,
       minBytes: 1,
       maxBytes: 10485760,
-      maxWaitTimeInMs: 100, // Poll every 100ms
+      maxWaitTimeInMs: 500, // Poll every 500ms
       retry: {
         retries: 8,
         initialRetryTime: 100,
         maxRetryTime: 30000
-      }
+      },
+      allowAutoTopicCreation: true
     });
 
     await responseConsumer.connect();
@@ -232,7 +256,29 @@ async function initResponseConsumer(retryAttempt = 0) {
 
     console.log(`Subscribed to response topics: ${responseTopics.join(', ')}`);
 
-    // Start consuming messages
+    // CRITICAL: Prevent multiple run() calls - this causes rebalancing loops
+    if (consumerRunCalled) {
+      console.log('Consumer run() already called, skipping to prevent rebalancing');
+      consumerReady = true;
+      return responseConsumer;
+    }
+
+    // CRITICAL: Check if consumer is already running
+    try {
+      if (responseConsumer.isRunning && responseConsumer.isRunning()) {
+        console.log('Consumer is already running, skipping run() to prevent rebalancing');
+        consumerRunCalled = true; // Mark as called
+        consumerReady = true;
+        return responseConsumer;
+      }
+    } catch (e) {
+      // isRunning() might throw, ignore and continue
+    }
+
+    // Mark that we're about to call run() to prevent duplicate calls
+    consumerRunCalled = true;
+
+    // Start consuming messages (only once)
     await responseConsumer.run({
       autoCommit: true,
       autoCommitInterval: 5000, // Commit every 5 seconds
@@ -292,7 +338,8 @@ async function initResponseConsumer(retryAttempt = 0) {
 
     consumerReady = true;
     consumerReconnectAttempts = 0; // Reset on successful connection
-    console.log('Response consumer ready and consuming messages');
+    isInitializingConsumer = false; // Clear initialization flag
+    console.log('Response consumer ready and consuming messages (run() called once)');
     
     // Start health check interval
     startConsumerHealthCheck();
@@ -302,6 +349,7 @@ async function initResponseConsumer(retryAttempt = 0) {
     console.error(`Failed to initialize response consumer (attempt ${retryAttempt + 1}):`, error.message);
     consumerReady = false;
     responseConsumer = null;
+    isInitializingConsumer = false; // Clear flag on error
     
     // Retry with exponential backoff
     if (retryAttempt < MAX_CONSUMER_RECONNECT_ATTEMPTS) {
@@ -343,33 +391,31 @@ function scheduleConsumerReconnect() {
 
 /**
  * Start periodic health check for consumer
+ * DISABLED: The isRunning() check is unreliable and causes unnecessary reconnects
+ * KafkaJS handles reconnection automatically on errors
  */
 function startConsumerHealthCheck() {
+  // Health check disabled - KafkaJS handles reconnection automatically
+  // Only reconnect on actual errors, not based on isRunning() status
   if (consumerHealthCheckInterval) {
     clearInterval(consumerHealthCheckInterval);
   }
 
+  // Minimal health check - only verify consumer exists, don't check isRunning()
   consumerHealthCheckInterval = setInterval(() => {
     try {
-      if (responseConsumer) {
-        const isRunning = responseConsumer.isRunning ? responseConsumer.isRunning() : false;
-        if (!isRunning && consumerReconnectAttempts < MAX_CONSUMER_RECONNECT_ATTEMPTS) {
-          console.warn('Consumer detected as not running, scheduling reconnect...');
-          consumerReady = false;
-          clearInterval(consumerHealthCheckInterval);
-          scheduleConsumerReconnect();
-        }
-      } else if (!consumerReady && consumerReconnectAttempts < MAX_CONSUMER_RECONNECT_ATTEMPTS) {
+      // Only check if consumer is null, not if it's "running"
+      // KafkaJS will automatically reconnect on connection errors
+      if (!responseConsumer && !consumerReady && consumerReconnectAttempts < MAX_CONSUMER_RECONNECT_ATTEMPTS) {
         console.warn('Consumer is null, scheduling reconnect...');
         scheduleConsumerReconnect();
       }
+      // Don't check isRunning() - it's unreliable and causes false positives
     } catch (error) {
       console.error('Consumer health check failed:', error.message);
-      consumerReady = false;
-      clearInterval(consumerHealthCheckInterval);
-      scheduleConsumerReconnect();
+      // Only reconnect on actual errors, not on isRunning() false positives
     }
-  }, 10000); // Check every 10 seconds
+  }, 30000); // Check every 30 seconds (less aggressive)
 }
 
 // Cleanup pending requests that have timed out
@@ -414,7 +460,10 @@ app.post('/api/kafka/send', async (req, res) => {
     // If responseTopic is provided, ensure consumer is ready (with automatic retry)
     if (responseTopic) {
       try {
+        // Only initialize if not already ready to prevent multiple initializations
+        if (!consumerReady || !responseConsumer) {
         await initResponseConsumer();
+        }
         if (!consumerReady) {
           throw new Error('Response consumer is not ready');
         }
@@ -437,10 +486,12 @@ app.post('/api/kafka/send', async (req, res) => {
     let responsePromise;
     if (responseTopic) {
       responsePromise = new Promise((resolve, reject) => {
+        // Add buffer for network latency in EKS
+        const timeoutWithBuffer = timeout + 10000; // Add 10s buffer
         const timeoutId = setTimeout(() => {
           pendingRequests.delete(requestId);
-          reject(new Error(`Response timeout after ${timeout}ms`));
-        }, timeout);
+          reject(new Error(`Response timeout after ${timeoutWithBuffer}ms`));
+        }, timeoutWithBuffer);
 
         pendingRequests.set(requestId, {
           resolve,
@@ -551,13 +602,23 @@ app.listen(PORT, async () => {
     console.log('Producer will be initialized on first request with automatic retry');
   }
 
-  // Initialize response consumer on startup (with retry)
+  // Initialize response consumer on startup - ONLY ONCE
+  // Use a delay to ensure Kafka is fully ready
+  setTimeout(async () => {
+    if (!consumerReady && !isInitializingConsumer) {
   try {
+        console.log('Initializing response consumer on startup...');
     await initResponseConsumer();
+        console.log('Response consumer initialized successfully on startup');
   } catch (error) {
     console.error('Failed to initialize response consumer on startup:', error.message);
     console.log('Consumer will be initialized on first request with automatic retry');
+        // Don't retry here - let the first request trigger initialization
+      }
+    } else {
+      console.log('Consumer already initialized or initialization in progress, skipping startup init');
   }
+  }, 5000); // Wait 5s for Kafka to be fully ready
 });
 
 module.exports = app;

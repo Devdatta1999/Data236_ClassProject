@@ -17,13 +17,13 @@ const KAFKA_PROXY_URL = import.meta.env.VITE_KAFKA_PROXY_URL || 'http://localhos
  * @param {number} maxRetries - Maximum number of retry attempts
  * @returns {Promise} Response data
  */
-export const sendEventAndWait = async (topic, event, responseTopic, timeout = 30000, maxRetries = 3) => {
+export const sendEventAndWait = async (topic, event, responseTopic, timeout = 60000, maxRetries = 3) => {
   let lastError = null;
   
   for (let attempt = 1; attempt <= maxRetries; attempt++) {
     try {
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), timeout + 5000); // Add 5s buffer for network
+      const timeoutId = setTimeout(() => controller.abort(), timeout + 10000); // Add 10s buffer for network latency in EKS
       
       const response = await fetch(`${KAFKA_PROXY_URL}/api/kafka/send`, {
         method: 'POST',

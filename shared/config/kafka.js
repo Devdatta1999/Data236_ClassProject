@@ -132,17 +132,18 @@ async function createConsumer(groupId, topics, messageHandler) {
 
       const consumer = kafka.consumer({ 
         groupId,
-        sessionTimeout: 30000, // Increased for stability
-        heartbeatInterval: 10000, // Increased heartbeat interval
+        sessionTimeout: 60000, // Increased to 60s for EKS network latency
+        heartbeatInterval: 3000, // Must be < sessionTimeout/3 (3s < 20s) - critical for stability
         maxBytesPerPartition: 1048576,
         minBytes: 1,
         maxBytes: 10485760,
-        maxWaitTimeInMs: 100, // Poll every 100ms
+        maxWaitTimeInMs: 500, // Poll every 500ms (less aggressive)
         retry: {
           retries: 8,
           initialRetryTime: 100,
           maxRetryTime: 30000
-        }
+        },
+        allowAutoTopicCreation: true
       });
 
       await consumer.connect();
@@ -175,21 +176,11 @@ async function createConsumer(groupId, topics, messageHandler) {
       reconnectAttempts = 0; // Reset on successful setup
       logger.info(`Kafka consumer ${groupId} created and subscribed to topics: ${topics.join(', ')}`);
       
-      // Start periodic health check to detect disconnections
-      const healthCheckInterval = setInterval(() => {
-        try {
-          const isRunning = consumer.isRunning ? consumer.isRunning() : false;
-          if (!isRunning && reconnectAttempts < maxReconnectAttempts) {
-            logger.warn(`Kafka consumer ${groupId} detected as not running, scheduling reconnect...`);
-            clearInterval(healthCheckInterval);
-            scheduleReconnect();
-          }
-        } catch (error) {
-          logger.error(`Health check failed for consumer ${groupId}:`, error.message);
-          clearInterval(healthCheckInterval);
-          scheduleReconnect();
-        }
-      }, 10000); // Check every 10 seconds
+      // DISABLED: Aggressive health check that causes unnecessary reconnects
+      // KafkaJS handles reconnection automatically on actual connection errors
+      // The isRunning() check is unreliable and causes false positives
+      // Only reconnect on actual errors, not based on isRunning() status
+      // Health check disabled - KafkaJS will automatically reconnect on connection errors
       
       return consumer;
     } catch (error) {

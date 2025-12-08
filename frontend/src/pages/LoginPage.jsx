@@ -31,7 +31,7 @@ const LoginPage = () => {
             password: formData.password,
           },
           'user-events-response',
-          30000
+          60000 // Increased timeout for EKS network latency
         )
 
         dispatch(loginSuccess({

@@ -1,0 +1,54 @@
+---
+# EFS Storage Class for AWS EKS
+# Note: This requires EFS CSI driver to be installed in the cluster
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: efs-sc
+provisioner: efs.csi.aws.com
+parameters:
+  provisioningMode: efs-ap
+  fileSystemId: ""  # Will be set after EFS is created
+  directoryPerms: "0755"
+---
+# PersistentVolumeClaim for user uploads (profile pictures)
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: aerive-user-uploads-pvc
+  namespace: aerive
+spec:
+  accessModes:
+    - ReadWriteMany
+  storageClassName: efs-sc
+  resources:
+    requests:
+      storage: 5Gi
+---
+# PersistentVolumeClaim for listing uploads (hotel images)
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: aerive-uploads-pvc
+  namespace: aerive
+spec:
+  accessModes:
+    - ReadWriteMany
+  storageClassName: efs-sc
+  resources:
+    requests:
+      storage: 10Gi
+---
+# PersistentVolumeClaim for provider uploads (provider profile pictures)
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: aerive-provider-uploads-pvc
+  namespace: aerive
+spec:
+  accessModes:
+    - ReadWriteMany
+  storageClassName: efs-sc
+  resources:
+    requests:
+      storage: 5Gi
