@@ -587,8 +587,7 @@ const processPayment = asyncHandler(async (req, res) => {
         }
 
         const testCardNumbers = [
-          '1111111111111111', '4111111111111111', '5555555555554444',
-          '4242424242424242', '4000000000000002', '4000000000009995'
+          '1111111111111111'  // Only all 1's works for test cards
         ];
         const isTestCard = testCardNumbers.includes(decryptedCardNumber);
 

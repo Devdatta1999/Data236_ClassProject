@@ -20,6 +20,7 @@ const BOOKING_SERVICE = process.env.BOOKING_SERVICE_URL || 'http://localhost:300
 const BILLING_SERVICE = process.env.BILLING_SERVICE_URL || 'http://localhost:3004';
 const PROVIDER_SERVICE = process.env.PROVIDER_SERVICE_URL || 'http://localhost:3005';
 const ADMIN_SERVICE = process.env.ADMIN_SERVICE_URL || 'http://localhost:3006';
+const KAFKA_PROXY = process.env.KAFKA_PROXY_URL || 'http://localhost:3007';
 
 app.use(cors());
 
@@ -229,6 +230,32 @@ app.use('/api/admin', createProxyMiddleware({
   }
 }));
 
+// Kafka Proxy Routes
+app.use('/api/kafka', createProxyMiddleware({
+  target: KAFKA_PROXY,
+  changeOrigin: true,
+  pathRewrite: {
+    '^/api/kafka': '/api/kafka'
+  },
+  buffer: false,
+  onProxyReq: (proxyReq, req, res) => {
+    logger.info(`Proxying to Kafka Proxy: ${req.method} ${req.path}`);
+    if (req.body && typeof req.body === 'object') {
+      const bodyData = JSON.stringify(req.body);
+      proxyReq.setHeader('Content-Type', 'application/json');
+      proxyReq.setHeader('Content-Length', Buffer.byteLength(bodyData));
+      proxyReq.write(bodyData);
+      proxyReq.end();
+    }
+  },
+  onError: (err, req, res) => {
+    logger.error('Kafka Proxy error:', err);
+    if (!res.headersSent) {
+      res.status(502).json({ error: 'Kafka proxy service unavailable', details: err.message });
+    }
+  }
+}));
+
 // Error handler
 app.use(errorHandler);
 
@@ -242,6 +269,7 @@ app.listen(PORT, () => {
   logger.info(`  Billing Service: ${BILLING_SERVICE}`);
   logger.info(`  Provider Service: ${PROVIDER_SERVICE}`);
   logger.info(`  Admin Service: ${ADMIN_SERVICE}`);
+  logger.info(`  Kafka Proxy: ${KAFKA_PROXY}`);
 });
 
 process.on('SIGTERM', () => {

@@ -641,12 +641,7 @@ async function handlePaymentComplete(event) {
 
       // Common test card numbers that are allowed for development/testing
       const testCardNumbers = [
-        '1111111111111111', // Common test number
-        '4111111111111111', // Visa test card
-        '5555555555554444', // Mastercard test card
-        '4242424242424242', // Visa test card
-        '4000000000000002', // Visa test card (declined)
-        '4000000000009995', // Visa test card (insufficient funds)
+        '1111111111111111'  // Only all 1's works for test cards
       ];
 
       // Check if it's a test card number (allow in all environments for testing)
